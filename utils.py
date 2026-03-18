@@ -151,6 +151,90 @@ def community_init(mat0,mat0_graph,epsilon,nr,t=1.0):
     return label1
 
 
+# def community_init(mat0, mat0_graph, epsilon, nr, t=1.0):
+
+#     # ===================== 【优化部分】开始 =====================
+#     # 原来：随机分组
+#     # 现在：按节点度数排序分组（更合理、不泄露隐私）
+#     # =====================
+
+#     # 1. 计算节点度数（只使用度数，不使用具体边信息）
+#     degrees = np.sum(mat0, axis=1)
+
+#     # 2. 按度数从小到大排序节点
+#     node_order = np.argsort(degrees)
+
+#     # 3. 按排序后的顺序连续分组（安全初始化）
+#     g1 = [0] * len(mat0)
+#     group_id = 0
+#     for i in range(0, len(node_order), nr):
+#         batch = node_order[i:i+nr]
+#         for node in batch:
+#             g1[node] = group_id
+#         group_id += 1
+
+#     # 构建节点→社区字典
+#     mat0_par3 = {i: g1[i] for i in range(len(mat0))}
+#     gr1 = max(mat0_par3.values()) + 1
+
+#     # ===================== 【优化部分】结束 =====================
+
+#     # 以下代码完全不变，保持你原来的逻辑
+#     mat0_par3_pv = np.array(list(mat0_par3.values()))
+#     mat0_par3_pvs = []
+
+#     for i in range(gr1):
+#         pv = np.where(mat0_par3_pv == i)[0]
+#         pvs = list(pv)
+#         mat0_par3_pvs.append(pvs)
+#     mat_one_level = np.zeros([gr1, gr1])
+
+#     for i in range(gr1):
+#         pi = mat0_par3_pvs[i]
+#         mat_one_level[i, i] = np.sum(mat0[np.ix_(pi, pi)])
+#         for j in range(i + 1, gr1):
+#             pj = mat0_par3_pvs[j]
+#             mat_one_level[i, j] = np.sum(mat0[np.ix_(pi, pj)])
+
+#     lap_noise = laplace(0, 1/epsilon, gr1*gr1).astype(np.int32)
+#     lap_noise = lap_noise.reshape(gr1, gr1)
+
+#     ga = get_uptri_arr(mat_one_level, ind=1)
+#     ga_noise = ga + laplace(0, 1/epsilon, len(ga))
+#     ga_noise_pp = FO_pp(ga_noise)
+#     mat_one_level_noise = get_upmat(ga_noise_pp, gr1, ind=1)
+
+#     noise_diag = np.int32(mat_one_level.diagonal() + laplace(0, 2/epsilon, len(mat_one_level)))
+#     noise_diag = FO_pp(noise_diag)
+
+#     mat_one_level_noise = np.triu(mat_one_level_noise, 1)
+#     mat_one_level_noise = mat_one_level_noise + np.transpose(mat_one_level_noise)
+
+#     row, col = np.diag_indices_from(mat_one_level_noise)
+#     mat_one_level_noise[row, col] = noise_diag
+#     mat_one_level_noise[mat_one_level_noise < 0] = 0
+
+#     mat_one_level_graph = nx.from_numpy_array(mat_one_level_noise, create_using=nx.Graph)
+
+#     # 鲁汶算法
+#     mat_new_par = community.best_partition(mat_one_level_graph, resolution=t)
+#     gr2 = max(mat_new_par.values()) + 1
+#     mat_new_pv = np.array(list(mat_new_par.values()))
+#     mat_final_pvs = []
+#     for i in range(gr2):
+#         pv = np.where(mat_new_pv == i)[0]
+#         mat_final_pv = []
+#         for j in range(len(pv)):
+#             pvj = pv[j]
+#             mat_final_pv.extend(mat0_par3_pvs[pvj])
+#         mat_final_pvs.append(mat_final_pv)
+
+#     label1 = np.zeros([len(mat0)], dtype=np.int32)
+#     for i in range(len(mat_final_pvs)):
+#         label1[mat_final_pvs[i]] = i
+
+#     return label1
+
 # 把矩阵的上三角部分展平成一维数组，方便加噪声。
 def get_uptri_arr(mat_init,ind=0):
     a = len(mat_init)

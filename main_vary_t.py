@@ -251,7 +251,7 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
             col_len = len(data_col)
             data_col = np.array(data_col).reshape(1,col_len)
             data1 = pd.DataFrame(data_col,columns=cols)
-            all_data = all_data.append(data1)   
+            all_data = pd.concat([all_data, data1], ignore_index=True)  
                 
 
         all_nmi_arr.append(np.mean(nmi_arr))
