@@ -284,6 +284,94 @@ def __comm_adjust_em(graph, status, weight_key, resolution, random_state, epsilo
             
         new_mod = __modularity(status, resolution)
         
+# 尝试改进
+# def __comm_adjust_em(graph, status, weight_key, resolution, random_state, epsilon, divide):
+    
+#     import numpy as np
+#     import random
+
+#     nb_pass_done = 0
+#     cur_mod = __modularity(status, resolution)
+#     new_mod = cur_mod
+  
+#     pass_max = round(divide)
+
+#     deltau = 1
+#     c1 = epsilon / (2 * pass_max * deltau * 2 )
+    
+#     # print('epsilon per step (c1):', c1)
+
+#     while nb_pass_done < pass_max:
+#         cur_mod = new_mod
+#         nb_pass_done += 1
+        
+#         # iteration over the nodes
+#         for node in __randomize(graph.nodes(), random_state):
+            
+#             com_node = status.node2com[node]
+            
+#             # obtain all communities
+#             candi_communities = __allcom(node, graph, status, weight_key)
+            
+#             remove_cost = - resolution * candi_communities.get(com_node, 0)
+
+#             # remove the node from the original community
+#             __remove(node, com_node,
+#                      candi_communities.get(com_node, 0.), status)
+
+#             coms = []
+#             incrs = []
+
+#             for com, dnc in __randomize(candi_communities.items(), random_state):
+#                 incr = remove_cost + resolution * dnc
+#                 incrs.append(incr)
+#                 coms.append(com)
+
+#             incrs = np.array(incrs)
+
+#             # ===== Exponential Mechanism =====
+#             scaled_incrs = incrs * c1
+#             incrs_m = max(np.max(scaled_incrs), 0)
+#             exp_inc = np.exp(scaled_incrs - incrs_m)
+#             prob_inc = exp_inc / np.sum(exp_inc)
+
+#             # ===== DEBUG（核心）=====
+#             if nb_pass_done == 1 and random.random() < 0.01:
+                
+#                 k = len(prob_inc)
+#                 uniform_p = 1.0 / k
+                
+#                 max_p = np.max(prob_inc)
+#                 min_p = np.min(prob_inc)
+#                 mean_p = np.mean(prob_inc)
+
+#                 entropy = -np.sum(prob_inc * np.log(prob_inc + 1e-12))
+#                 max_entropy = np.log(k)
+
+#                 print("------ EM Debug ------")
+#                 print(f"c1: {c1:.6f}")
+#                 print(f"候选社区数: {k}")
+#                 print(f"incr range: [{np.min(incrs):.4f}, {np.max(incrs):.4f}]")
+#                 print(f"scaled incr range: [{np.min(scaled_incrs):.4f}, {np.max(scaled_incrs):.4f}]")
+#                 print(f"max prob: {max_p:.4f}")
+#                 print(f"min prob: {min_p:.4f}")
+#                 print(f"mean prob: {mean_p:.4f} (uniform={uniform_p:.4f})")
+#                 print(f"max/mean: {max_p/mean_p:.2f}")
+#                 print(f"entropy: {entropy:.4f} / {max_entropy:.4f}")
+#                 print(f"是否接近随机: {abs(max_p - uniform_p) < 0.05}")
+#                 print("----------------------")
+
+#             # sample community
+#             best_com = np.random.choice(coms, p=prob_inc)
+
+#             # insert node
+#             __insert(node, best_com,
+#                      candi_communities.get(best_com, 0.), status)
+            
+#         new_mod = __modularity(status, resolution)
+
+#     return status
+
 
 
 def __neighcom(node, graph, status, weight_key):

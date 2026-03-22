@@ -151,6 +151,105 @@ def community_init(mat0,mat0_graph,epsilon,nr,t=1.0):
     return label1
 
 
+def community_init_dp_degree_adaptive(mat0, mat0_graph, epsilon, nr=None, t=1.0, alpha=0.3):
+    """
+    DP度排序 + 自适应分组版本
+
+    参数：
+    epsilon : 总预算（用于初始化阶段）
+    nr      : 可选（不再使用固定分组）
+    alpha   : 分给“度排序”的预算比例（推荐 0.2~0.4）
+    """
+
+    n = len(mat0)
+
+    # ===== Step0: 隐私预算拆分 =====
+    e_deg = alpha * epsilon
+    e_init = (1 - alpha) * epsilon
+
+    # ===== Step1: DP度序列 =====
+    deg = np.sum(mat0, axis=1)
+
+    deg_noise = deg + laplace(0, 1 / e_deg, n)
+
+    # 排序（降序）
+    sort_idx = np.argsort(-deg_noise)
+
+    # ===== Step2: 自适应分组（√n）=====
+    group_size = int(np.sqrt(n))
+    group_size = max(group_size, 1)
+
+    num_groups = int(np.ceil(n / group_size))
+
+    g1 = np.zeros(n, dtype=np.int32)
+    for i in range(n):
+        g1[sort_idx[i]] = i // group_size
+
+    mat0_par3 = {i: int(g1[i]) for i in range(n)}
+    gr1 = max(mat0_par3.values()) + 1
+
+    # ===== Step3: 社区 → 节点集合 =====
+    mat0_par3_pv = np.array(list(mat0_par3.values()))
+    mat0_par3_pvs = []
+
+    for i in range(gr1):
+        pv = np.where(mat0_par3_pv == i)[0]
+        mat0_par3_pvs.append(list(pv))
+
+    # ===== Step4: 构建社区级图 =====
+    mat_one_level = np.zeros([gr1, gr1])
+
+    for i in range(gr1):
+        pi = mat0_par3_pvs[i]
+        mat_one_level[i, i] = np.sum(mat0[np.ix_(pi, pi)])
+        for j in range(i + 1, gr1):
+            pj = mat0_par3_pvs[j]
+            mat_one_level[i, j] = np.sum(mat0[np.ix_(pi, pj)])
+
+    # ===== Step5: DP扰动 =====
+    ga = get_uptri_arr(mat_one_level, ind=1)
+    ga_noise = ga + laplace(0, 1 / e_init, len(ga))
+    ga_noise_pp = FO_pp(ga_noise)
+    mat_one_level_noise = get_upmat(ga_noise_pp, gr1, ind=1)
+
+    noise_diag = np.int32(
+        mat_one_level.diagonal() + laplace(0, 2 / e_init, len(mat_one_level))
+    )
+    noise_diag = FO_pp(noise_diag)
+
+    mat_one_level_noise = np.triu(mat_one_level_noise, 1)
+    mat_one_level_noise = mat_one_level_noise + mat_one_level_noise.T
+
+    row, col = np.diag_indices_from(mat_one_level_noise)
+    mat_one_level_noise[row, col] = noise_diag
+    mat_one_level_noise[mat_one_level_noise < 0] = 0
+
+    mat_one_level_graph = nx.from_numpy_array(mat_one_level_noise, create_using=nx.Graph)
+
+    # ===== Step6: Louvain =====
+    mat_new_par = community.best_partition(mat_one_level_graph, resolution=t)
+
+    gr2 = max(mat_new_par.values()) + 1
+    mat_new_pv = np.array(list(mat_new_par.values()))
+
+    mat_final_pvs = []
+    for i in range(gr2):
+        pv = np.where(mat_new_pv == i)[0]
+        mat_final_pv = []
+        for j in range(len(pv)):
+            mat_final_pv.extend(mat0_par3_pvs[pv[j]])
+        mat_final_pvs.append(mat_final_pv)
+
+    # ===== Step7: 输出标签 =====
+    label1 = np.zeros(n, dtype=np.int32)
+    for i in range(len(mat_final_pvs)):
+        label1[mat_final_pvs[i]] = i
+
+    return label1
+
+
+
+
 # def community_init(mat0, mat0_graph, epsilon, nr, t=1.0):
 
 #     # ===================== 【优化部分】开始 =====================

@@ -98,7 +98,17 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             t1 = time.time()
 
             # ===== Step1: 社区初始化 =====
-            mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
+
+
+            mat1_pvarr1 = community_init_dp_degree_adaptive(
+                mat0,
+                mat0_graph,
+                epsilon=e1,
+                t=t,
+                alpha = min(0.3, 0.5 / epsilon)   # 30%预算用于度排序
+            )
+
+           # mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
 
             # 转为字典格式
             part1 = {}
