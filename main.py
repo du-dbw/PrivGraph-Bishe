@@ -97,18 +97,18 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
 
             t1 = time.time()
 
-            # ===== Step1: 社区初始化 =====
-
-
-            mat1_pvarr1 = community_init_dp_degree_adaptive(
-                mat0,
-                mat0_graph,
+            # mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
+            
+            mat1_pvarr1 = community_init_dp_neighbor_fixed(
+                mat0, mat0_graph,
                 epsilon=e1,
                 t=t,
-                alpha = min(0.3, 0.5 / epsilon)   # 30%预算用于度排序
+                alpha=0.3,
+                beta=0.3,
+                C=None
             )
+            
 
-           # mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
 
             # 转为字典格式
             part1 = {}
@@ -191,6 +191,10 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             # save the graph
             # file_name = './result/' +  'PrivGraph_%s_%.1f_%d.txt' %(dataset_name,epsilon,exper)
             # write_edge_txt(mat2,mid,file_name)
+
+            # ===== [新增] Step 6.5: 后处理剪枝 =====
+            # mat2 = post_process_prune(mat2, mat1_pvs, dd_s, ev_mat, comm_n)
+            mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=0.5)
 
             # ===== Step7: 计算指标 =====
             mat2_edge = mat2_graph.number_of_edges()

@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os  # 用于创建文件夹
+import os
 
-# ===================== 数据1（你原来的数据） =====================
+# 获取当前脚本所在目录，而不是运行时工作目录
+script_dir = os.path.dirname(os.path.abspath(__file__))
+save_dir = os.path.join(script_dir, "charts")
 
-save_dir = "./charts/"
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
+
+print("图表将保存到:", save_dir)  # 确认路径
 dataset_name = "Chamelon"
 eps = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
 
@@ -18,30 +21,22 @@ all_diam_rel= [np.float64(0.5454545454545453), np.float64(0.48181818181818165), 
 all_cc_rel= [np.float64(0.8236013406769389), np.float64(0.24115588687731132), np.float64(0.08336667350628123), np.float64(0.06852707229124066), np.float64(0.07331441177652429), np.float64(0.04752155845381608), np.float64(0.08066886900598663)]
 all_mod_rel= [np.float64(0.5659459731137823), np.float64(0.37044396353984155), np.float64(0.22459102438326978), np.float64(0.21469693628019543), np.float64(0.19143063367803728), np.float64(0.16067173993489706), np.float64(0.2318674349078159)]
 
+nmi_1, overlap_1, mae_1, deg_kl_1, diam_1, cc_1, mod_1 = \
+    all_nmi_arr, all_evc_overlap, all_evc_MAE, all_deg_kl, all_diam_rel, all_cc_rel, all_mod_rel
 
-nmi_1 = all_nmi_arr
-overlap_1 =all_evc_overlap
-mae_1 =all_evc_MAE
-deg_kl_1 =all_deg_kl
-diam_1 =all_diam_rel
-cc_1 =all_cc_rel
-mod_1 =all_mod_rel
 
 # ===================== 数据2（你刚发的新数据） =====================
-all_nmi_arr= [np.float64(0.1869253932766368), np.float64(0.16012252293023482), np.float64(0.1980408259939664), np.float64(0.2112305058247647), np.float64(0.24099992799582037), np.float64(0.22426160321912506), np.float64(0.21910803422678593)]
-all_evc_overlap= [np.float64(0.45909090909090916), np.float64(0.4454545454545455), np.float64(0.6363636363636364), np.float64(0.5954545454545455), np.float64(0.6681818181818182), np.float64(0.6363636363636364), np.float64(0.6363636363636365)]
-all_evc_MAE= [np.float64(0.010725311989388914), np.float64(0.011904602327510718), np.float64(0.0032305732283285774), np.float64(0.004584723678551405), np.float64(0.0029820385775883107), np.float64(0.002287181424467024), np.float64(0.003882441237598092)]       
-all_deg_kl= [np.float64(1.8279524337747382), np.float64(1.609580627896553), np.float64(1.4301987905644586), np.float64(1.4030421334076744), np.float64(1.3442782545430971), np.float64(1.264824317051005), np.float64(1.3089075018114782)]
-all_diam_rel= [np.float64(0.47272727272727266), np.float64(0.5181818181818182), np.float64(0.509090909090909), np.float64(0.46363636363636357), np.float64(0.43636363636363634), np.float64(0.47272727272727255), np.float64(0.48181818181818165)]
-all_cc_rel= [np.float64(0.4080461256272847), np.float64(0.1620621995175383), np.float64(0.12498363293366385), np.float64(0.1682708924357094), np.float64(0.19302097451281844), np.float64(0.13909638234726657), np.float64(0.12644354831034949)]
-all_mod_rel= [np.float64(0.38157143752650735), np.float64(0.23344383746539946), np.float64(0.14957519296646649), np.float64(0.14095611922542017), np.float64(0.1236022453056214), np.float64(0.1168302502920475), np.float64(0.14554215091592096)]
-nmi_2 = all_nmi_arr
-overlap_2 =all_evc_overlap
-mae_2 =all_evc_MAE
-deg_kl_2 =all_deg_kl
-diam_2 =all_diam_rel
-cc_2 =all_cc_rel
-mod_2 =all_mod_rel
+all_nmi_arr= [np.float64(0.12927277478162888), np.float64(0.22039620669330046), np.float64(0.23059417148767175), np.float64(0.26728189999274654), np.float64(0.2667787645430639), np.float64(0.27202676186146235), np.float64(0.2807249029771147)]
+all_evc_overlap= [np.float64(0.32727272727272727), np.float64(0.6500000000000001), np.float64(0.759090909090909), np.float64(0.8545454545454545), np.float64(0.8181818181818181), np.float64(0.831818181818182), np.float64(0.8727272727272727)]
+all_evc_MAE= [np.float64(0.017949918040597347), np.float64(0.005898370329408269), np.float64(0.006711207206148177), np.float64(0.0055874121401625195), np.float64(0.006396112699050584), np.float64(0.005451724638477334), np.float64(0.004229946576010611)]
+all_deg_kl= [np.float64(2.8316222041283137), np.float64(1.4718477807678472), np.float64(1.2406959695142734), np.float64(1.2377980016307524), np.float64(1.1937261530256), np.float64(1.1676837107277493), np.float64(1.1494860314924484)]
+all_diam_rel= [np.float64(0.4545454545454544), np.float64(0.29999999999999993), np.float64(0.3272727272727272), np.float64(0.23636363636363633), np.float64(0.20909090909090908), np.float64(0.23636363636363633), np.float64(0.2636363636363636)]
+all_cc_rel= [np.float64(0.6999143117801654), np.float64(0.19434639166122375), np.float64(0.15844766323028264), np.float64(0.13932897996236523), np.float64(0.16274242665922906), np.float64(0.09653012322772145), np.float64(0.12001308304910956)]
+all_mod_rel= [np.float64(0.4935185725098082), np.float64(0.2878296383763083), np.float64(0.2812748922169501), np.float64(0.2698683355213888), np.float64(0.27125006505718785), np.float64(0.21304252681625618), np.float64(0.19264535035594516)]
+
+nmi_2, overlap_2, mae_2, deg_kl_2, diam_2, cc_2, mod_2 = \
+    all_nmi_arr, all_evc_overlap, all_evc_MAE, all_deg_kl, all_diam_rel, all_cc_rel, all_mod_rel
+
 
 metrics = [
     ("NMI", nmi_1, nmi_2),
