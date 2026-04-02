@@ -78,9 +78,6 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
         # 噪声参数
         ed = e3
         ev = e3
-
-        # ed = e3 * (1/3)   # 边统计，灵敏度1，分配更少
-        # ev = e3 * (2/3)   # 度序列，灵敏度2，分配更多
         ev_lambda = 1/ed
         dd_lam = 2/ev
 
@@ -100,8 +97,10 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
 
             t1 = time.time()
 
+            # ===== Step1: 社区初始化 =====
             mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
-            
+
+
             # mat1_pvarr1 = community_init_dp_neighbor_fixed(
             #     mat0, mat0_graph,
             #     epsilon=e1,
@@ -110,8 +109,6 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             #     beta=0.3,
             #     C=None
             # )
-            
-
 
             # 转为字典格式
             part1 = {}
@@ -164,9 +161,18 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
                 dd1 = list(dd1)
                 dd_s.append(dd1)
 
+
             # ===== Step6: 图重建 =====
             mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
+
+            # 建一个节点→社区的映射，用于debug检测
+            # node2comm = {}
+            # for ci in range(comm_n):
+            #     for nd in mat1_pvs[ci]:
+            #         node2comm[nd] = ci
+
             for i in range(comm_n):
+                pi = mat1_pvs[i]
                 # 社区内部边
                 dd_ind = mat1_pvs[i]
                 dd1 = dd_s[i]
@@ -183,25 +189,22 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
                         for ind in range(ev1):
                             mat2[c1[ind],c2[ind]] = 1
                             mat2[c2[ind],c1[ind]] = 1
-                pi = mat1_pvs[i] 
-                wi = np.array(dd_s[i], dtype=float) + 1e-6
 
-                # 加一个软上限：对已经超过平均度的节点降权
-                # mean_deg_i = np.mean(wi)
-                # wi = np.minimum(wi, mean_deg_i * 2)  # 超过2倍均值的截断
-                # wi = wi / wi.sum()
-                # for j in range(i+1,comm_n):
-                #     ev1 = ev_mat[i,j]
-                #     pj = mat1_pvs[j]
-                #     if ev1 > 0:
-                #         wj = np.array(dd_s[j], dtype=float) + 1e-6
-                #         wj = wj / wj.sum()
-                #         c1 = np.random.choice(pi, ev1, p=wi)
-                #         c2 = np.random.choice(pj, ev1, p=wj)
-                #         for ind in range(ev1):
-                #             mat2[c1[ind],c2[ind]] = 1
-                #             mat2[c2[ind],c1[ind]] = 1
 
+                    # print(f"[DEBUG] i={i}, j={j}, pi={pi[:5]}, mat1_pvs[i]={mat1_pvs[i][:5]}, 相同={pi==mat1_pvs[i]}")
+                       # 检测 c1 实际属于哪些社区
+                        # c1_comms = set(node2comm[int(nd)] for nd in c1)
+                        # c2_comms = set(node2comm[int(nd)] for nd in c2)
+
+                        # print(f"[DEBUG] i={i}, j={j}, 应连:社区{i}↔社区{j}, ev1={ev1}")
+                        # print(f"  c1采样自pi, c1实际属于社区{c1_comms}, 应属于社区{i}")
+                        # print(f"  c2采样自pj, c2实际属于社区{c2_comms}, 应属于社区{j}")
+                        # if c1_comms == c2_comms:
+                        #     print(f"  ⚠️ c1和c2都属于社区{c1_comms}! {ev1}条边全变成内部边!")
+                        # elif i not in c1_comms:
+                        #     print(f"  ⚠️ c1应来自社区{i}, 实际来自社区{c1_comms}, 边连错!")
+                        # else:
+                        #     print(f"  ✓ 正确: 社区{i}↔社区{j}")
 
 
             # 对称化邻接矩阵                
@@ -217,6 +220,7 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             # write_edge_txt(mat2,mid,file_name)
 
             # ===== [新增] Step 6.5: 后处理剪枝 =====
+            # 感觉第二个更好，但是差不太多
             # mat2 = post_process_prune(mat2, mat1_pvs, dd_s, ev_mat, comm_n)
             # mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=0.5)
 
@@ -349,6 +353,6 @@ if __name__ == '__main__':
 
     # run the function
     main_func(dataset_name=dataset_name,eps=eps,e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=exp_num)
+    # main_func(dataset_name=dataset_name,eps=[1],e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=1)
    
-
 

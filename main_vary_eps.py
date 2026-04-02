@@ -260,7 +260,7 @@ def main_vary_eps(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,exp_n
     # print('Done.%.2fs\n'%(time.time()-ti))
 
     res_path = './result'
-    save_name = res_path + '/' + '%s_%d_%.1f_%.2f_%.2f_%d.csv' %(dataset_name,N,e1_r,e2_r,exp_num)
+    save_name = res_path + '/' + '%s_%d_%.2f_%.2f_%d.csv' %(dataset_name, N, e1_r, e2_r, exp_num)
     if not os.path.exists(res_path):
         os.mkdir(res_path)
     
@@ -303,9 +303,9 @@ if __name__ == '__main__':
         for e2_ind in range(1,9):
             e2_r = e2_ind / 10
             e3_r = 1 - e1_r - e2_r
-            if e3_r > 0:
+            if e3_r > 0.01:
                 # run the function
-                main_vary_eps(dataset_name=dataset_name,epsilon=epsilon,e1_r=e1_r,e2_r=e2_r,N=n1,exp_num=exp_num)
+                main_vary_eps(dataset_name=dataset_name,epsilon=epsilon,e1_r=e1_r,e2_r=e2_r,N=n1,exp_num=exp_num,save_csv=True)
             
 
 
