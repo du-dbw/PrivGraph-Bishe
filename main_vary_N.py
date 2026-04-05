@@ -104,6 +104,18 @@ def main_vary_N(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N_List=[10,2
             # Community Initialization
             mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=n1)
 
+            # mat1_pvarr1 = community_init_dp_neighbor_fixed(
+            #     mat0, mat0_graph,
+            #     epsilon=e1,
+            #     nr = n1,
+            #     t=t1,
+            #     alpha=0.3,
+            #     beta=0.3,
+            #     C=None
+            # )
+
+
+
             part1 = {}
             for i in range(len(mat1_pvarr1)):
                 part1[i] = mat1_pvarr1[i]
@@ -184,6 +196,7 @@ def main_vary_N(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N_List=[10,2
             # write_edge_txt(mat2,mid,file_name)
 
             #evaluate
+            
             mat2_edge = mat2_graph.number_of_edges()
             mat2_node = mat2_graph.number_of_nodes()
 

@@ -272,7 +272,10 @@ def community_init_dp_neighbor_fixed(mat0, mat0_graph, epsilon, nr=None, t=1.0,
     score = d_noisy + beta * ns_noisy
 
     # 纯得分排序，不做任何分层
-    group_size = max(1, int(np.sqrt(n)))
+    # group_size = max(1, int(np.sqrt(n)))
+    group_size = nr if nr is not None else max(1, int(np.sqrt(n)))
+
+
     sort_idx   = np.argsort(-score)
 
     g1 = np.zeros(n, dtype=np.int32)

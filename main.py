@@ -13,7 +13,7 @@ import os
 
 
 
-def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=1/3,N=20,t=1.0,exp_num=10,save_csv=False):
+def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=1/3,N=20,t=1.0,exp_num=10,save_csv=False, auto_alloc=False):
 
     # 记录程序开始时间
     t_begin = time.time()
@@ -70,11 +70,32 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
     for ei in range(len(eps)):
         epsilon = eps[ei]
         ti = time.time()
-        # 将 epsilon 分配给不同步骤
-        e1 = e1_r * epsilon
-        e2 = e2_r * epsilon
-        e3_r = 1 - e1_r - e2_r
-        e3 = e3_r * epsilon
+
+        if auto_alloc:
+            # ===== 经验公式: 基于 (eps, n) 自动分配 =====
+            n = mat0_node
+            d = 2 * mat0_edge / mat0_node
+            _e3_r = np.clip(4.0 / (d * epsilon), 0.05, 0.20)
+            _e1_r = 0.368 + 0.363 / epsilon - 0.033 * np.log(n)
+            _e2_r = 1.0 - _e1_r - _e3_r
+
+            # clip + 归一化
+            _e1_r = np.clip(_e1_r, 0.05, 0.50)   # ← 关键: 限制 e1 上限为 0.50
+            _e2_r = np.clip(_e2_r, 0.15, 0.85)
+            _e3_r = np.clip(_e3_r, 0.05, 0.20)
+            total = _e1_r + _e2_r + _e3_r
+            _e1_r, _e2_r, _e3_r = _e1_r/total, _e2_r/total, _e3_r/total
+            total = _e1_r + _e2_r + _e3_r
+            _e1_r, _e2_r, _e3_r = _e1_r/total, _e2_r/total, _e3_r/total
+            print(f'[AutoAlloc] eps={epsilon}, e1_r={_e1_r:.3f}, e2_r={_e2_r:.3f}, e3_r={_e3_r:.3f}')
+        else:
+            _e1_r = e1_r
+            _e2_r = e2_r
+            _e3_r = 1 - e1_r - e2_r
+
+        e1 = _e1_r * epsilon
+        e2 = _e2_r * epsilon
+        e3 = _e3_r * epsilon
         # 噪声参数
         ed = e3
         ev = e3
@@ -99,7 +120,28 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
 
             # ===== Step1: 社区初始化 =====
             mat1_pvarr1 = community_init(mat0,mat0_graph,epsilon=e1,nr=N,t=t)
+            # ===== 插入修正 =====
+            if auto_alloc:
+                K = max(mat1_pvarr1) + 1
+                # 用社区大小估算平均社区内度（不访问 mat0）
+                comm_sizes = [np.sum(mat1_pvarr1 == ci) for ci in range(K)]
+                avg_comm_size = np.mean(comm_sizes)
+                # 用全图平均度和社区大小近似社区内度
+                d = 2 * mat0_edge / mat0_node   # 这个在函数开头就算过了，是公开信息
+                estimated_intra_deg = d * (avg_comm_size / mat0_node)  # 近似
+                SNR = estimated_intra_deg / (2.0 / e3) if e3 > 0 else 0
 
+                e2_f = np.clip(1.891 - 0.528/epsilon - 0.087*np.log(n) - 0.001*K - 0.234*SNR, 0.05, 0.85)
+                e3_f = np.clip(0.10, 0.05, 0.85)
+                remaining = 1.0 - _e1_r
+                _e2_r_new = remaining * e2_f / (e2_f + e3_f)
+                _e3_r_new = remaining - _e2_r_new
+
+                e2 = _e2_r_new * epsilon
+                e3 = _e3_r_new * epsilon
+                ev_lambda = 1/e3          
+                dd_lam = 2/e3
+            # ===== 修正结束 =====
 
             # mat1_pvarr1 = community_init_dp_neighbor_fixed(
             #     mat0, mat0_graph,
@@ -352,7 +394,8 @@ if __name__ == '__main__':
     t = 1.0
 
     # run the function
-    main_func(dataset_name=dataset_name,eps=eps,e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=exp_num)
-    # main_func(dataset_name=dataset_name,eps=[1],e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=1)
+    # main_func(dataset_name=dataset_name,eps=eps,e1_r=0.3,e2_r=0.5,N=n1,t=t,exp_num=exp_num)
+    main_func(dataset_name='Chamelon', eps=eps, auto_alloc=True, exp_num=10)
+    # main_func(dataset_name=dataset_name,eps=[2],e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=1)
    
 

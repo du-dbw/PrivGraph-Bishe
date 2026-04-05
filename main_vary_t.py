@@ -2,6 +2,7 @@ import community
 import networkx as nx
 import time
 import numpy as np
+import pandas as pd  # 【修复1】添加缺失的 pandas 导入
 
 from numpy.random import laplace
 from sklearn import metrics
@@ -67,8 +68,8 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
 
     for ti in range(len(t_List)):
         
-        ti = time.time()
         t = t_List[ti]
+        t_iter_start = time.time()  # 【修复3】记录本轮迭代开始时间
 
         n1 = N
         
@@ -98,7 +99,7 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
 
 
         for exper in range(exp_num):
-            print('-----------t=%d,exper=%d/%d-------------'%(t,exper+1,exp_num))
+            print('-----------t=%.1f,exper=%d/%d-------------'%(t,exper+1,exp_num))
 
 
             t1 = time.time()
@@ -135,11 +136,12 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
                     ev_mat[i,j] = int(np.sum(mat0[np.ix_(pi,pj)]))
                     ev_mat[j,i] = ev_mat[i,j]
 
-            ga = get_uptri_arr(ev_mat,ind=1)
-            ga_noise = ga + laplace(0,ev_lambda,len(ga))
-        
-            ga_noise_pp = FO_pp(ga_noise)
-            ev_mat = get_upmat(ga_noise_pp,comm_n,ind=1)
+            if comm_n > 1:
+                ga = get_uptri_arr(ev_mat,ind=1)
+                ga_noise = ga + laplace(0,ev_lambda,len(ga))
+            
+                ga_noise_pp = FO_pp(ga_noise)
+                ev_mat = get_upmat(ga_noise_pp,comm_n,ind=1)
 
             # degree sequence
             dd_s = []
@@ -158,6 +160,7 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
             # Graph Reconstruction
             mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
             for i in range(comm_n):
+                pi = mat1_pvs[i]  # 【修复2】显式设置 pi，与能跑的版本一致
                 # Intra-community
                 dd_ind = mat1_pvs[i]
                 dd1 = dd_s[i]
@@ -263,7 +266,7 @@ def main_vary_t(dataset_name='Chamelon',epsilon=2,e1_r=1/3,e2_r=1/3,N=20,t_List=
         all_diam_rel.append(np.mean(diam_rel_arr))
 
         
-        print('all_index=%d/%d Done.%.2fs\n'%(ti+1,len(t_List),time.time()-ti))
+        print('all_index=%d/%d Done.%.2fs\n'%(ti+1,len(t_List),time.time()-t_iter_start))  # 【修复3】ti -> t_iter_start
 
     res_path = './result'
     save_name = res_path + '/' + '%s_%.2f_%d_%.2f_%.2f_%d.csv' %(dataset_name,epsilon,N,e1_r,e2_r,exp_num)
@@ -313,6 +316,3 @@ if __name__ == '__main__':
 
     # run the function
     main_vary_t(dataset_name=dataset_name,epsilon=epsilon,e1_r=e1_r,e2_r=e2_r,N=N,t_List=t_List,exp_num=exp_num)
-   
-
-
