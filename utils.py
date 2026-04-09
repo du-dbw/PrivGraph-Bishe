@@ -396,7 +396,29 @@ def norm_sub_deal(data):
         data_seq = data
     return data_seq
         
-
+def my_FO_pp(data_noise):
+    data = np.array(data_noise, dtype=np.int32)
+    
+    sorted_idx = np.argsort(data)
+    left = 0                        # 指向最小值（负值）
+    right = len(data) - 1           # 指向最大值
+    
+    while left < right and data[sorted_idx[left]] < 0:
+        neg_val = -data[sorted_idx[left]]       # 比如 -10 → 10
+        data[sorted_idx[left]] = 0              # 倒数第一归零
+        data[sorted_idx[right]] -= neg_val      # 第一名减 10
+        
+        if data[sorted_idx[right]] < 0:         # 如果第一名也被减成负了
+            left += 1                           # 下一轮它会被处理
+        else:
+            left += 1
+            # right 不动，继续用这个最大值配对下一个负值
+            # 除非它已经变小了，可能不再是最大，但排序已固定，近似处理
+    
+    # 最后保险：仍有负值就归零
+    data[data < 0] = 0
+    
+    return data
 
 # 根据节点度序列，随机生成社区内部的边，用于构造图结构
 # generate graph(intra edges) based on degree sequence

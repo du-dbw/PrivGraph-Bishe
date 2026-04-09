@@ -181,72 +181,146 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
                     pj = mat1_pvs[j]
                     ev_mat[i,j] = int(np.sum(mat0[np.ix_(pi,pj)]))
                     ev_mat[j,i] = ev_mat[i,j]
+                
 
-            # 加拉普拉斯噪声
+            # 加拉普拉斯噪声,且FO_pp截断
             ga = get_uptri_arr(ev_mat,ind=1)
             ga_noise = ga + laplace(0,ev_lambda,len(ga))
         
             ga_noise_pp = FO_pp(ga_noise)
             ev_mat = get_upmat(ga_noise_pp,comm_n,ind=1)
 
+            # ev_total_before = np.sum(ga)           # 加噪前社区间边总数
+            # ev_total_after = np.sum(ga_noise_pp)   # 加噪后社区间边总数
+            # print(f'[DEBUG Step4] 社区数={comm_n}, 噪声尺度ev_lambda={ev_lambda:.2f}')
+            # print(f'[DEBUG Step4] 社区间边: 加噪前={ev_total_before:.0f}, 加噪后={ev_total_after:.0f}, 损失率={1-ev_total_after/(ev_total_before+1e-9):.2%}')
+
+
             # ===== Step5: 度序列加噪 =====
             dd_s = []
+            intra_degree_sum_before = 0
+            intra_degree_sum_after = 0
             for i in range(comm_n):
                 dd1 = mat0[np.ix_(mat1_pvs[i],mat1_pvs[i])]
-                dd1 = np.sum(dd1,1) 
-        
+                dd1 = np.sum(dd1,1)
+                intra_degree_sum_before += np.sum(dd1)
+
                 dd1 = (dd1 + laplace(0,dd_lam,len(dd1))).astype(int)
                 dd1 = FO_pp(dd1)
                 dd1[dd1<0] = 0
                 dd1[dd1>=len(dd1)] = len(dd1)-1
-                # 修正非法值
+                intra_degree_sum_after += np.sum(dd1)
                 dd1 = list(dd1)
                 dd_s.append(dd1)
 
+            # ===== DEBUG: 度序列统计 =====
+            # print(f'[DEBUG Step5] 噪声尺度dd_lam={dd_lam:.2f}')
+            # print(f'[DEBUG Step5] 社区内度总和: 加噪前={intra_degree_sum_before}, 加噪后={intra_degree_sum_after}, 损失率={1-intra_degree_sum_after/(intra_degree_sum_before+1e-9):.2%}')
+            # # 打印每个社区的度序列均值
+            # for ci in range(comm_n):
+            #     dd_arr = np.array(dd_s[ci])
+            #     print(f'  社区{ci}: 节点数={len(dd_arr)}, 度均值={np.mean(dd_arr):.2f}, 度中位数={np.median(dd_arr):.1f}, 零度比例={np.mean(dd_arr==0):.2%}')
 
             # ===== Step6: 图重建 =====
-            mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
+            # mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
+            # debug_intra_edges = 0
+            # debug_inter_edges = 0
 
-            # 建一个节点→社区的映射，用于debug检测
-            # node2comm = {}
-            # for ci in range(comm_n):
-            #     for nd in mat1_pvs[ci]:
-            #         node2comm[nd] = ci
+            # for i in range(comm_n):
+            #     pi = mat1_pvs[i]
+            #     dd_ind = mat1_pvs[i]
+            #     dd1 = dd_s[i]
+
+            #     intra_block = generate_intra_edge(dd1)
+            #     mat2[np.ix_(dd_ind,dd_ind)] = intra_block
+            #     debug_intra_edges += np.sum(np.triu(intra_block, 1))
+
+            #     for j in range(i,comm_n):
+            #         ev1 = ev_mat[i,j]
+            #         pj = mat1_pvs[j]
+
+            #         if ev1 > 0:
+            #             dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+            #             dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            #             prob_i = dd_i / dd_i.sum()
+            #             prob_j = dd_j / dd_j.sum()
+
+            #             c1 = np.random.choice(pi, ev1, p=prob_i)
+            #             c2 = np.random.choice(pj, ev1, p=prob_j)
+
+            #             for ind in range(ev1):
+            #                 mat2[c1[ind],c2[ind]] = 1
+            #                 mat2[c2[ind],c1[ind]] = 1
+            #             debug_inter_edges += ev1
+
+            # ===== DEBUG: 边数来源 =====
+            # print(f'[DEBUG Step6] 社区内生成边={debug_intra_edges}, 社区间生成边={debug_inter_edges}, 合计={debug_intra_edges+debug_inter_edges}')
+            # print(f'[DEBUG Step6] 原图总边数={mat0_edge}, 差距倍数={mat0_edge/(debug_intra_edges+debug_inter_edges+1e-9):.1f}x')
+
+
+            # convert_ratio: 0=全部社区间边(原版), 1=全部转社区内边
+            mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
+            convert_ratio = 1
+            oversample = 1.1  # 过采样倍数：补偿碰撞损失，1.0=不补偿，2.0=采样2倍
 
             for i in range(comm_n):
-                pi = mat1_pvs[i]
-                # 社区内部边
                 dd_ind = mat1_pvs[i]
                 dd1 = dd_s[i]
-                
                 mat2[np.ix_(dd_ind,dd_ind)] = generate_intra_edge(dd1)
-                    
-                # 社区之间边
-                for j in range(i+1,comm_n):
+                
+                for j in range(i+1, comm_n):
                     ev1 = ev_mat[i,j]
+                    if ev1 <= 0:
+                        continue
+                    
+                    pi = mat1_pvs[i]
                     pj = mat1_pvs[j]
-                    if ev1 > 0:
-                        c1 = np.random.choice(pi,ev1)
-                        c2 = np.random.choice(pj,ev1)
-                        for ind in range(ev1):
+                    
+                    n_convert = int(ev1 * convert_ratio)
+                    n_inter = ev1 - n_convert
+                    
+                    n_ri = n_convert // 2
+                    n_rj = n_convert - n_ri
+                    
+                    # 过采样补偿碰撞，但不超过社区最大可能边数
+                    if n_ri > 0:
+                        max_ei = len(pi) * (len(pi)-1) // 2
+                        sample_ri = min(int(n_ri * oversample), max_ei)
+                        c1 = np.random.choice(pi, sample_ri)
+                        c2 = np.random.choice(pi, sample_ri)
+                        for ind in range(sample_ri):
+                            mat2[c1[ind],c2[ind]] = 1
+                            mat2[c2[ind],c1[ind]] = 1
+                    
+                    if n_rj > 0:
+                        max_ej = len(pj) * (len(pj)-1) // 2
+                        sample_rj = min(int(n_rj * oversample), max_ej)
+                        c1 = np.random.choice(pj, sample_rj)
+                        c2 = np.random.choice(pj, sample_rj)
+                        for ind in range(sample_rj):
+                            mat2[c1[ind],c2[ind]] = 1
+                            mat2[c2[ind],c1[ind]] = 1
+                    
+                    if n_inter > 0:
+                        c1 = np.random.choice(pi, n_inter)
+                        c2 = np.random.choice(pj, n_inter)
+                        for ind in range(n_inter):
                             mat2[c1[ind],c2[ind]] = 1
                             mat2[c2[ind],c1[ind]] = 1
 
 
-                    # print(f"[DEBUG] i={i}, j={j}, pi={pi[:5]}, mat1_pvs[i]={mat1_pvs[i][:5]}, 相同={pi==mat1_pvs[i]}")
-                       # 检测 c1 实际属于哪些社区
-                        # c1_comms = set(node2comm[int(nd)] for nd in c1)
-                        # c2_comms = set(node2comm[int(nd)] for nd in c2)
 
-                        # print(f"[DEBUG] i={i}, j={j}, 应连:社区{i}↔社区{j}, ev1={ev1}")
-                        # print(f"  c1采样自pi, c1实际属于社区{c1_comms}, 应属于社区{i}")
-                        # print(f"  c2采样自pj, c2实际属于社区{c2_comms}, 应属于社区{j}")
-                        # if c1_comms == c2_comms:
-                        #     print(f"  ⚠️ c1和c2都属于社区{c1_comms}! {ev1}条边全变成内部边!")
-                        # elif i not in c1_comms:
-                        #     print(f"  ⚠️ c1应来自社区{i}, 实际来自社区{c1_comms}, 边连错!")
-                        # else:
-                        #     print(f"  ✓ 正确: 社区{i}↔社区{j}")
+
+
+
+    
+
+
+
+
+
+
+
 
 
             # 对称化邻接矩阵                
@@ -324,8 +398,11 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
 
             print('Nodes=%d,Edges=%d,nmi=%.4f,cc_rel=%.4f,deg_kl=%.4f,mod_rel=%.4f,evc_overlap=%.4f,evc_MAE=%.4f,diam_rel=%.4f' \
                 %(mat2_node,mat2_edge,nmi,cc_rel,deg_kl,mod_rel,evc_overlap,evc_MAE,diam_rel))
-
-     
+            # print('原图边数:', mat0_graph.number_of_edges())
+            # print('合成图边数:', mat2_graph.number_of_edges())
+            # print('原图平均度:', np.mean(np.sum(mat0, 0)))
+            # print('合成图平均度:', np.mean(np.sum(mat2, 0)))
+                
 
             data_col = [epsilon,exper,nmi,evc_overlap,evc_MAE,deg_kl, \
                 diam_rel,cc_rel,mod_rel]
@@ -394,8 +471,8 @@ if __name__ == '__main__':
     t = 1.0
 
     # run the function
-    # main_func(dataset_name=dataset_name,eps=eps,e1_r=0.3,e2_r=0.5,N=n1,t=t,exp_num=exp_num)
-    main_func(dataset_name='Chamelon', eps=eps, auto_alloc=True, exp_num=10)
+    main_func(dataset_name='Chamelon',eps=eps,e1_r=1/3,e2_r=1/3,N=n1,t=t,exp_num=5)
+    # main_func(dataset_name='Chamelon', eps=eps, auto_alloc=True, exp_num=10)
     # main_func(dataset_name=dataset_name,eps=[2],e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=1)
    
 
