@@ -337,9 +337,6 @@ def community_init_dp_neighbor_fixed(mat0, mat0_graph, epsilon, nr=None, t=1.0,
 
 
 
-
-
-
 # 把矩阵的上三角部分展平成一维数组，方便加噪声。
 def get_uptri_arr(mat_init,ind=0):
     a = len(mat_init)
@@ -832,154 +829,6 @@ def post_process_edge_swap(mat2, pvs, comm_n, n_iter_ratio=0.5):
     return mat2
 
 # 新加函数，图重建优化，无碰撞
-def step6_v3_full_fixed(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat, convert_ratio=0.4):
-    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
-
-    node_community = np.zeros(mat0_node, dtype=int)
-    node_target_degree = np.zeros(mat0_node, dtype=int)
-    for i in range(comm_n):
-        for li, ni in enumerate(mat1_pvs[i]):
-            node_community[ni] = i
-            node_target_degree[ni] = dd_s[i][li]
-
-    # ---- 阶段1: generate_intra_edge 只用 dd_s (不加 convert) ----
-    for i in range(comm_n):
-        nodes = mat1_pvs[i]
-        if len(nodes) == 0:
-            continue
-        dd1 = dd_s[i]
-        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd1)
-
-    # ---- 阶段2: convert 边 —— 无碰撞地往社区内加边 ----
-    # 和 Original 一样按 (i,j) 对处理, 但去重
-    for i in range(comm_n):
-        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
-        prob_i = dd_i / dd_i.sum()
-
-
-        for j in range(i + 1, comm_n):
-            ev1 = ev_mat[i, j]
-            if ev1 <= 0:
-                continue
-
-            pi = np.array(mat1_pvs[i])
-            pj = np.array(mat1_pvs[j])
-            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
-            prob_j = dd_j / dd_j.sum()
-
-            n_convert = int(ev1 * convert_ratio)
-            n_inter = ev1 - n_convert
-            n_ri = n_convert // 2
-            n_rj = n_convert - n_ri
-
-            # 社区 i 内部加 n_ri 条边 (无碰撞)
-            if n_ri > 0 and len(pi) > 1:
-                max_ei = len(pi) * (len(pi) - 1) // 2
-                actual_target = min(n_ri, max_ei)
-                n_sample = min(int(actual_target * 1.5) + 10, max_ei * 2)
-                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
-                c2_idx = np.random.choice(len(pi), n_sample, p=prob_i)
-                added = 0
-                for k in range(n_sample):
-                    if added >= actual_target:
-                        break
-                    a, b = pi[c1_idx[k]], pi[c2_idx[k]]
-                    if a != b and mat2[a, b] == 0:
-                        mat2[a, b] = 1
-                        mat2[b, a] = 1
-                        added += 1
-
-            # 社区 j 内部加 n_rj 条边 (无碰撞)
-            if n_rj > 0 and len(pj) > 1:
-                max_ej = len(pj) * (len(pj) - 1) // 2
-                actual_target = min(n_rj, max_ej)
-                n_sample = min(int(actual_target * 1.5) + 10, max_ej * 2)
-                c1_idx = np.random.choice(len(pj), n_sample, p=prob_j)
-                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
-                added = 0
-                for k in range(n_sample):
-                    if added >= actual_target:
-                        break
-                    a, b = pj[c1_idx[k]], pj[c2_idx[k]]
-                    if a != b and mat2[a, b] == 0:
-                        mat2[a, b] = 1
-                        mat2[b, a] = 1
-                        added += 1
-
-            # 社区间边 (无碰撞)
-            if n_inter > 0:
-                n_sample = min(int(n_inter * 1.3) + 5, len(pi) * len(pj))
-                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
-                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
-                added = 0
-                seen = set()
-                for k in range(n_sample):
-                    if added >= n_inter:
-                        break
-                    edge = (c1_idx[k], c2_idx[k])
-                    if edge not in seen:
-                        seen.add(edge)
-                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
-                        if mat2[ni, nj] == 0:
-                            mat2[ni, nj] = 1
-                            mat2[nj, ni] = 1
-                            added += 1
-
-    # ---- 阶段3: 软度修复 (阈值 30%) ----
-    actual_degree = np.sum(mat2, axis=0).astype(int)
-
-    for n in range(mat0_node):
-        target = max(node_target_degree[n], 1)
-        excess = actual_degree[n] - target
-        threshold = max(int(target * 0.3), 1)
-        if excess <= threshold:
-            continue
-
-        to_trim = excess - threshold
-        neighbors = np.where(mat2[n] > 0)[0]
-        inter_nb = [nb for nb in neighbors if node_community[nb] != node_community[n]]
-        intra_nb = [nb for nb in neighbors if node_community[nb] == node_community[n]]
-        to_remove = []
-        if len(inter_nb) > 0:
-            np.random.shuffle(inter_nb)
-            to_remove.extend(inter_nb[:min(to_trim, len(inter_nb))])
-        remaining = to_trim - len(to_remove)
-        if remaining > 0 and len(intra_nb) > 0:
-            np.random.shuffle(intra_nb)
-            to_remove.extend(intra_nb[:min(remaining, len(intra_nb))])
-        for nb in to_remove:
-            mat2[n, nb] = 0
-            mat2[nb, n] = 0
-            actual_degree[n] -= 1
-            actual_degree[nb] -= 1
-
-    for n in range(mat0_node):
-        target = max(node_target_degree[n], 1)
-        deficit = target - actual_degree[n]
-        threshold = max(int(target * 0.3), 1)
-        if deficit <= threshold:
-            continue
-
-        to_add = deficit - threshold
-        comm_id = node_community[n]
-        candidates = [c for c in mat1_pvs[comm_id] if c != n and mat2[n, c] == 0]
-        if len(candidates) == 0:
-            continue
-        weights = np.array([max(0.1, node_target_degree[c] - actual_degree[c]) for c in candidates])
-        weights = weights / weights.sum()
-        n_add = min(to_add, len(candidates))
-        chosen = np.random.choice(len(candidates), n_add, replace=False, p=weights)
-        for idx in chosen:
-            c = candidates[idx]
-            mat2[n, c] = 1
-            mat2[c, n] = 1
-            actual_degree[n] += 1
-            actual_degree[c] += 1
-
-    return mat2
-
-
-# 新加函数，图重建优化，无碰撞
 # intra_ratio (a): 社区间边总数 * a 条边分配到社区内部
 # inter_ratio (b): 社区间边总数 * b 条边保留为社区间边
 # 例: ev_mat[i,j]=100, intra_ratio=0.3, inter_ratio=0.8
@@ -1160,3 +1009,1057 @@ def step6_original(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat):
  
     return mat2
 
+
+def step6_v4(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+             intra_ratio=0.05, inter_ratio=0.1,
+             edge_supplement=True, verbose=False):
+    """
+    v4 = v3 (阶段 1-3) + 阶段 4 边数补全
+
+    阶段 4 思路:
+    - 计算目标总边数 (内: sum(dd_s[i])/2; 间: ev_mat 上三角和)
+    - 与当前边数差值即为 missing
+    - 按各社区"内部边数缺口"比例分配 missing
+    - 在每个社区内,用"残余度 (target_deg - actual_deg)"作为采样权重无碰撞加边
+    - 内部完全图饱和则停止,不强行外溢 (避免破坏 ev_mat 结构)
+
+    Parameters:
+    -----------
+    edge_supplement : bool
+        是否启用阶段 4. False 时行为与 v3 完全一致.
+    verbose : bool
+        打印缺口、补齐情况, 调参时建议打开.
+    """
+
+    # ===================================================================
+    # 阶段 1-3 (与 v3 完全一致)
+    # ===================================================================
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    node_community = np.zeros(mat0_node, dtype=int)
+    node_target_degree = np.zeros(mat0_node, dtype=int)
+    for i in range(comm_n):
+        for li, ni in enumerate(mat1_pvs[i]):
+            node_community[ni] = i
+            node_target_degree[ni] = dd_s[i][li]
+
+    # ---- 阶段 1: generate_intra_edge 只用 dd_s ----
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s[i])
+
+    # ---- 阶段 2: 根据 intra_ratio / inter_ratio 分配边 ----
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_intra = int(ev1 * intra_ratio)
+            n_ri = n_intra // 2
+            n_rj = n_intra - n_ri
+            n_inter = int(ev1 * inter_ratio)
+
+            # 社区 i 内部
+            if n_ri > 0 and len(pi) > 1:
+                max_ei = len(pi) * (len(pi) - 1) // 2
+                actual_target = min(n_ri, max_ei)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ei * 2)
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pi[c1_idx[k]], pi[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            # 社区 j 内部
+            if n_rj > 0 and len(pj) > 1:
+                max_ej = len(pj) * (len(pj) - 1) // 2
+                actual_target = min(n_rj, max_ej)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ej * 2)
+                c1_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pj[c1_idx[k]], pj[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            # 社区间
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.3) + 5, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
+
+    # ---- 阶段 3: 软度修复 (阈值 30%) ----
+    actual_degree = np.sum(mat2, axis=0).astype(int)
+
+    # 削边: 度数超出目标 30% 以上的节点
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        excess = actual_degree[n] - target
+        threshold = max(int(target * 0.3), 1)
+        if excess <= threshold:
+            continue
+
+        to_trim = excess - threshold
+        neighbors = np.where(mat2[n] > 0)[0]
+        inter_nb = [nb for nb in neighbors if node_community[nb] != node_community[n]]
+        intra_nb = [nb for nb in neighbors if node_community[nb] == node_community[n]]
+        to_remove = []
+        if len(inter_nb) > 0:
+            np.random.shuffle(inter_nb)
+            to_remove.extend(inter_nb[:min(to_trim, len(inter_nb))])
+        remaining = to_trim - len(to_remove)
+        if remaining > 0 and len(intra_nb) > 0:
+            np.random.shuffle(intra_nb)
+            to_remove.extend(intra_nb[:min(remaining, len(intra_nb))])
+        for nb in to_remove:
+            mat2[n, nb] = 0
+            mat2[nb, n] = 0
+            actual_degree[n] -= 1
+            actual_degree[nb] -= 1
+
+    # 补边: 度数低于目标 30% 以上的节点 (节点级)
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        deficit = target - actual_degree[n]
+        threshold = max(int(target * 0.3), 1)
+        if deficit <= threshold:
+            continue
+
+        to_add = deficit - threshold
+        comm_id = node_community[n]
+        candidates = [c for c in mat1_pvs[comm_id] if c != n and mat2[n, c] == 0]
+        if len(candidates) == 0:
+            continue
+        weights = np.array([max(0.1, node_target_degree[c] - actual_degree[c]) for c in candidates])
+        weights = weights / weights.sum()
+        n_add = min(to_add, len(candidates))
+        chosen = np.random.choice(len(candidates), n_add, replace=False, p=weights)
+        for idx in chosen:
+            c = candidates[idx]
+            mat2[n, c] = 1
+            mat2[c, n] = 1
+            actual_degree[n] += 1
+            actual_degree[c] += 1
+
+    # ===================================================================
+    # 阶段 4 (NEW): 全图级边数补全
+    # ===================================================================
+    if edge_supplement:
+        # 目标边数估算
+        target_intra_per_comm = np.array(
+            [int(sum(dd_s[i]) / 2) for i in range(comm_n)], dtype=int
+        )
+        target_intra_total = int(np.sum(target_intra_per_comm))
+        target_inter_total = int(np.sum(np.triu(ev_mat, 1)))
+        target_total = target_intra_total + target_inter_total
+
+        current_total = int(np.sum(mat2)) // 2
+        missing = target_total - current_total
+
+        if verbose:
+            print(f'[v4] 目标边数={target_total} (内={target_intra_total}, '
+                  f'间={target_inter_total}), 当前={current_total}, 缺失={missing}')
+
+        if missing > 0:
+            # 各社区当前内部边数 & 内部缺口
+            current_intra_per_comm = np.zeros(comm_n, dtype=int)
+            for i in range(comm_n):
+                nodes = mat1_pvs[i]
+                if len(nodes) > 0:
+                    current_intra_per_comm[i] = int(
+                        np.sum(mat2[np.ix_(nodes, nodes)])
+                    ) // 2
+
+            deficit_per_comm = np.maximum(
+                target_intra_per_comm - current_intra_per_comm, 0
+            )
+            total_deficit = int(np.sum(deficit_per_comm))
+
+            if total_deficit > 0:
+                # 按 deficit 比例分配 missing (上限是 total_deficit, 防止超补)
+                alloc_total = min(missing, total_deficit)
+                alloc = np.zeros(comm_n, dtype=int)
+                for i in range(comm_n):
+                    alloc[i] = int(alloc_total * deficit_per_comm[i] / total_deficit)
+                # 余数补给 deficit 最大的几个社区
+                remainder = alloc_total - int(np.sum(alloc))
+                if remainder > 0:
+                    top_k = np.argsort(deficit_per_comm)[::-1][:remainder]
+                    alloc[top_k] += 1
+
+                total_added = 0
+                # 在每个社区内部按"残余度"概率无碰撞加边
+                for i in range(comm_n):
+                    if alloc[i] <= 0 or len(mat1_pvs[i]) < 2:
+                        continue
+
+                    pi = np.array(mat1_pvs[i])
+                    actual_degs = np.sum(mat2[pi], axis=1).astype(int)
+                    target_degs = np.array(dd_s[i])
+                    # 残余度作权重: 度还不够的节点优先获得新边
+                    residual = np.maximum(target_degs - actual_degs, 0.1)
+                    prob_i = residual / residual.sum()
+
+                    # 完全图容量上限保护
+                    max_possible = len(pi) * (len(pi) - 1) // 2
+                    room = max_possible - current_intra_per_comm[i]
+                    n_to_add = min(int(alloc[i]), room)
+
+                    if n_to_add <= 0:
+                        continue
+
+                    added = 0
+                    attempts = 0
+                    max_attempts = n_to_add * 10 + 100
+                    while added < n_to_add and attempts < max_attempts:
+                        a_idx = np.random.choice(len(pi), p=prob_i)
+                        b_idx = np.random.choice(len(pi), p=prob_i)
+                        a, b = pi[a_idx], pi[b_idx]
+                        if a != b and mat2[a, b] == 0:
+                            mat2[a, b] = 1
+                            mat2[b, a] = 1
+                            added += 1
+                        attempts += 1
+
+                    total_added += added
+
+                if verbose:
+                    final_total = int(np.sum(mat2)) // 2
+                    print(f'[v4] 补全 +{total_added} 条, 最终边数={final_total} '
+                          f'(距目标 {target_total}: 差 {target_total - final_total})')
+            else:
+                if verbose:
+                    print('[v4] 各社区内部均已饱和, 跳过补全')
+
+    return mat2
+
+
+    import numpy as np
+
+
+
+def step6_v5(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+             intra_ratio=0.05, inter_ratio=0.1,
+             edge_supplement=True, verbose=False):
+    """
+    v5 = v4 阶段 1-3 不变 + 阶段 4 双轮边数补全
+
+    v4 阶段 4 的"饱和"逻辑:
+        alloc_total = min(missing, total_deficit)  # total_deficit 用完就停
+    导致 missing 远大于 total_deficit 时, 多余部分被丢弃, 最终总边数不足.
+
+    v5 改为双轮分配:
+      Round A: 按 dd_s 缺口分配 min(missing, total_deficit), 保护度分布 (同 v4)
+      Round B: 剩余 missing 按 comm_size^1.5 加权再分配, 突破软目标
+               只受完全图容量上限保护, 让总边数贴近真实
+    """
+
+    # ===================================================================
+    # 阶段 1-3 (与 v4 完全一致)
+    # ===================================================================
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    node_community = np.zeros(mat0_node, dtype=int)
+    node_target_degree = np.zeros(mat0_node, dtype=int)
+    for i in range(comm_n):
+        for li, ni in enumerate(mat1_pvs[i]):
+            node_community[ni] = i
+            node_target_degree[ni] = dd_s[i][li]
+
+    # ---- 阶段 1: generate_intra_edge ----
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s[i])
+
+    # ---- 阶段 2: 按 ratio 分配边 ----
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_intra = int(ev1 * intra_ratio)
+            n_ri = n_intra // 2
+            n_rj = n_intra - n_ri
+            n_inter = int(ev1 * inter_ratio)
+
+            if n_ri > 0 and len(pi) > 1:
+                max_ei = len(pi) * (len(pi) - 1) // 2
+                actual_target = min(n_ri, max_ei)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ei * 2)
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pi[c1_idx[k]], pi[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_rj > 0 and len(pj) > 1:
+                max_ej = len(pj) * (len(pj) - 1) // 2
+                actual_target = min(n_rj, max_ej)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ej * 2)
+                c1_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pj[c1_idx[k]], pj[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.3) + 5, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
+
+    # ---- 阶段 3: 软度修复 ----
+    actual_degree = np.sum(mat2, axis=0).astype(int)
+
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        excess = actual_degree[n] - target
+        threshold = max(int(target * 0.3), 1)
+        if excess <= threshold:
+            continue
+        to_trim = excess - threshold
+        neighbors = np.where(mat2[n] > 0)[0]
+        inter_nb = [nb for nb in neighbors if node_community[nb] != node_community[n]]
+        intra_nb = [nb for nb in neighbors if node_community[nb] == node_community[n]]
+        to_remove = []
+        if len(inter_nb) > 0:
+            np.random.shuffle(inter_nb)
+            to_remove.extend(inter_nb[:min(to_trim, len(inter_nb))])
+        remaining = to_trim - len(to_remove)
+        if remaining > 0 and len(intra_nb) > 0:
+            np.random.shuffle(intra_nb)
+            to_remove.extend(intra_nb[:min(remaining, len(intra_nb))])
+        for nb in to_remove:
+            mat2[n, nb] = 0
+            mat2[nb, n] = 0
+            actual_degree[n] -= 1
+            actual_degree[nb] -= 1
+
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        deficit = target - actual_degree[n]
+        threshold = max(int(target * 0.3), 1)
+        if deficit <= threshold:
+            continue
+        to_add = deficit - threshold
+        comm_id = node_community[n]
+        candidates = [c for c in mat1_pvs[comm_id] if c != n and mat2[n, c] == 0]
+        if len(candidates) == 0:
+            continue
+        weights = np.array([max(0.1, node_target_degree[c] - actual_degree[c]) for c in candidates])
+        weights = weights / weights.sum()
+        n_add = min(to_add, len(candidates))
+        chosen = np.random.choice(len(candidates), n_add, replace=False, p=weights)
+        for idx in chosen:
+            c = candidates[idx]
+            mat2[n, c] = 1
+            mat2[c, n] = 1
+            actual_degree[n] += 1
+            actual_degree[c] += 1
+
+    # ===================================================================
+    # 阶段 4 (v5 NEW): 双轮边数补全
+    # ===================================================================
+    if edge_supplement:
+        target_intra_per_comm = np.array(
+            [int(sum(dd_s[i]) / 2) for i in range(comm_n)], dtype=int
+        )
+        target_intra_total = int(np.sum(target_intra_per_comm))
+        target_inter_total = int(np.sum(np.triu(ev_mat, 1)))
+        target_total = target_intra_total + target_inter_total
+
+        current_total = int(np.sum(mat2)) // 2
+        missing = target_total - current_total
+
+        if verbose:
+            print(f'[v5] 目标={target_total} (内={target_intra_total}, '
+                  f'间={target_inter_total}), 当前={current_total}, 缺失={missing}')
+
+        if missing > 0:
+            # 各社区当前内部边数 & 完全图容量
+            current_intra = np.zeros(comm_n, dtype=int)
+            room = np.zeros(comm_n, dtype=int)
+            for i in range(comm_n):
+                nodes = mat1_pvs[i]
+                if len(nodes) < 2:
+                    continue
+                current_intra[i] = int(np.sum(mat2[np.ix_(nodes, nodes)])) // 2
+                max_p = len(nodes) * (len(nodes) - 1) // 2
+                room[i] = max(max_p - current_intra[i], 0)
+
+            deficit_per_comm = np.maximum(target_intra_per_comm - current_intra, 0)
+            total_deficit = int(np.sum(deficit_per_comm))
+
+            alloc = np.zeros(comm_n, dtype=int)
+
+            # ----- Round A: 按 dd_s 缺口分配 (软目标内, 保度分布) -----
+            r1_quota = min(missing, total_deficit)
+            if r1_quota > 0 and total_deficit > 0:
+                for i in range(comm_n):
+                    alloc[i] = int(r1_quota * deficit_per_comm[i] / total_deficit)
+                rem = r1_quota - int(np.sum(alloc))
+                if rem > 0:
+                    top = np.argsort(deficit_per_comm)[::-1][:rem]
+                    alloc[top] += 1
+
+            # ----- Round B: 突破软目标, 按社区大小再分配剩余 missing -----
+            r2_quota = missing - int(np.sum(alloc))
+            if r2_quota > 0:
+                # 只在还有容量的社区上分
+                tmp_room = room - alloc
+                avail = tmp_room > 0
+                if avail.any():
+                    sizes = np.array([len(mat1_pvs[i]) for i in range(comm_n)], dtype=float)
+                    weights = (sizes ** 1.5) * avail.astype(float)
+                    if weights.sum() > 0:
+                        weights = weights / weights.sum()
+                        b_alloc = np.zeros(comm_n, dtype=int)
+                        for i in range(comm_n):
+                            b_alloc[i] = int(r2_quota * weights[i])
+                        rem = r2_quota - int(np.sum(b_alloc))
+                        if rem > 0:
+                            order = np.argsort(weights)[::-1][:rem]
+                            b_alloc[order] += 1
+                        alloc = alloc + b_alloc
+
+            # ----- 用完全图容量做最终硬上限保护 -----
+            alloc = np.minimum(alloc, room)
+
+            # ----- 在每个社区按残余度概率无碰撞加边 -----
+            total_added = 0
+            for i in range(comm_n):
+                if alloc[i] <= 0 or len(mat1_pvs[i]) < 2:
+                    continue
+
+                pi = np.array(mat1_pvs[i])
+                actual_degs = np.sum(mat2[pi], axis=1).astype(int)
+                target_degs = np.array(dd_s[i])
+                # 残余度作权重: 度不够的优先, 度够的也给 0.1 兜底
+                residual = np.maximum(target_degs - actual_degs, 0.1)
+                prob_i = residual / residual.sum()
+
+                n_to_add = int(alloc[i])
+                added = 0
+                attempts = 0
+                max_attempts = n_to_add * 10 + 100
+                while added < n_to_add and attempts < max_attempts:
+                    a_idx = np.random.choice(len(pi), p=prob_i)
+                    b_idx = np.random.choice(len(pi), p=prob_i)
+                    a, b = pi[a_idx], pi[b_idx]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+                    attempts += 1
+                total_added += added
+
+            if verbose:
+                final_total = int(np.sum(mat2)) // 2
+                r1_actual = min(missing, total_deficit)
+                r2_actual = max(0, missing - total_deficit)
+                print(f'[v5] 补全 +{total_added} (Round A 配额 {r1_actual}, '
+                      f'Round B 配额 {r2_actual}), 最终边数={final_total} '
+                      f'(距目标: 差 {target_total - final_total})')
+
+    return mat2
+
+
+
+
+def step6_v6(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+             intra_ratio=0.05, inter_ratio=0.1,
+             edge_supplement=True, fix_isolated=True, verbose=False):
+    """
+    v6 = v4 (阶段 1-4) + 阶段 5 孤立节点强制连边
+
+    阶段 5 设计动机:
+    v4 阶段 3 的软度修复因 threshold = max(int(target*0.3), 1) >= 1,
+    导致 target=1 且 actual=0 的节点 (deficit=1 == threshold) 被跳过.
+    阶段 5 直接定位 mat2 中所有度=0 的节点, 在其所属社区内强制连一条边,
+    候选邻居的概率按 dd_s 目标度数加权.
+    """
+
+    # ===================================================================
+    # 阶段 1-3 (与 v4 完全一致)
+    # ===================================================================
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    node_community = np.zeros(mat0_node, dtype=int)
+    node_target_degree = np.zeros(mat0_node, dtype=int)
+    for i in range(comm_n):
+        for li, ni in enumerate(mat1_pvs[i]):
+            node_community[ni] = i
+            node_target_degree[ni] = dd_s[i][li]
+
+    # ---- 阶段 1: generate_intra_edge ----
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s[i])
+
+    # ---- 阶段 2: 按 ratio 分配边 ----
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_intra = int(ev1 * intra_ratio)
+            n_ri = n_intra // 2
+            n_rj = n_intra - n_ri
+            n_inter = int(ev1 * inter_ratio)
+
+            if n_ri > 0 and len(pi) > 1:
+                max_ei = len(pi) * (len(pi) - 1) // 2
+                actual_target = min(n_ri, max_ei)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ei * 2)
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pi[c1_idx[k]], pi[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_rj > 0 and len(pj) > 1:
+                max_ej = len(pj) * (len(pj) - 1) // 2
+                actual_target = min(n_rj, max_ej)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ej * 2)
+                c1_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pj[c1_idx[k]], pj[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.3) + 5, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
+
+    # ---- 阶段 3: 软度修复 ----
+    actual_degree = np.sum(mat2, axis=0).astype(int)
+
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        excess = actual_degree[n] - target
+        threshold = max(int(target * 0.3), 1)
+        if excess <= threshold:
+            continue
+        to_trim = excess - threshold
+        neighbors = np.where(mat2[n] > 0)[0]
+        inter_nb = [nb for nb in neighbors if node_community[nb] != node_community[n]]
+        intra_nb = [nb for nb in neighbors if node_community[nb] == node_community[n]]
+        to_remove = []
+        if len(inter_nb) > 0:
+            np.random.shuffle(inter_nb)
+            to_remove.extend(inter_nb[:min(to_trim, len(inter_nb))])
+        remaining = to_trim - len(to_remove)
+        if remaining > 0 and len(intra_nb) > 0:
+            np.random.shuffle(intra_nb)
+            to_remove.extend(intra_nb[:min(remaining, len(intra_nb))])
+        for nb in to_remove:
+            mat2[n, nb] = 0
+            mat2[nb, n] = 0
+            actual_degree[n] -= 1
+            actual_degree[nb] -= 1
+
+    for n in range(mat0_node):
+        target = max(node_target_degree[n], 1)
+        deficit = target - actual_degree[n]
+        threshold = max(int(target * 0.3), 1)
+        if deficit <= threshold:
+            continue
+        to_add = deficit - threshold
+        comm_id = node_community[n]
+        candidates = [c for c in mat1_pvs[comm_id] if c != n and mat2[n, c] == 0]
+        if len(candidates) == 0:
+            continue
+        weights = np.array([max(0.1, node_target_degree[c] - actual_degree[c]) for c in candidates])
+        weights = weights / weights.sum()
+        n_add = min(to_add, len(candidates))
+        chosen = np.random.choice(len(candidates), n_add, replace=False, p=weights)
+        for idx in chosen:
+            c = candidates[idx]
+            mat2[n, c] = 1
+            mat2[c, n] = 1
+            actual_degree[n] += 1
+            actual_degree[c] += 1
+
+    # ===================================================================
+    # 阶段 4 (与 v4 一致): 全图级缺口补全 (按 dd_s 软目标内)
+    # ===================================================================
+    if edge_supplement:
+        target_intra_per_comm = np.array(
+            [int(sum(dd_s[i]) / 2) for i in range(comm_n)], dtype=int
+        )
+        target_intra_total = int(np.sum(target_intra_per_comm))
+        target_inter_total = int(np.sum(np.triu(ev_mat, 1)))
+        target_total = target_intra_total + target_inter_total
+
+        current_total = int(np.sum(mat2)) // 2
+        missing = target_total - current_total
+
+        if verbose:
+            print(f'[v6 阶段4] 目标={target_total} (内={target_intra_total}, '
+                  f'间={target_inter_total}), 当前={current_total}, 缺失={missing}')
+
+        if missing > 0:
+            current_intra_per_comm = np.zeros(comm_n, dtype=int)
+            for i in range(comm_n):
+                nodes = mat1_pvs[i]
+                if len(nodes) > 0:
+                    current_intra_per_comm[i] = int(
+                        np.sum(mat2[np.ix_(nodes, nodes)])
+                    ) // 2
+
+            deficit_per_comm = np.maximum(
+                target_intra_per_comm - current_intra_per_comm, 0
+            )
+            total_deficit = int(np.sum(deficit_per_comm))
+
+            if total_deficit > 0:
+                alloc_total = min(missing, total_deficit)
+                alloc = np.zeros(comm_n, dtype=int)
+                for i in range(comm_n):
+                    alloc[i] = int(alloc_total * deficit_per_comm[i] / total_deficit)
+                remainder = alloc_total - int(np.sum(alloc))
+                if remainder > 0:
+                    top_k = np.argsort(deficit_per_comm)[::-1][:remainder]
+                    alloc[top_k] += 1
+
+                total_added = 0
+                for i in range(comm_n):
+                    if alloc[i] <= 0 or len(mat1_pvs[i]) < 2:
+                        continue
+
+                    pi = np.array(mat1_pvs[i])
+                    actual_degs = np.sum(mat2[pi], axis=1).astype(int)
+                    target_degs = np.array(dd_s[i])
+                    residual = np.maximum(target_degs - actual_degs, 0.1)
+                    prob_i = residual / residual.sum()
+
+                    max_possible = len(pi) * (len(pi) - 1) // 2
+                    room = max_possible - current_intra_per_comm[i]
+                    n_to_add = min(int(alloc[i]), room)
+
+                    if n_to_add <= 0:
+                        continue
+
+                    added = 0
+                    attempts = 0
+                    max_attempts = n_to_add * 10 + 100
+                    while added < n_to_add and attempts < max_attempts:
+                        a_idx = np.random.choice(len(pi), p=prob_i)
+                        b_idx = np.random.choice(len(pi), p=prob_i)
+                        a, b = pi[a_idx], pi[b_idx]
+                        if a != b and mat2[a, b] == 0:
+                            mat2[a, b] = 1
+                            mat2[b, a] = 1
+                            added += 1
+                        attempts += 1
+                    total_added += added
+
+                if verbose:
+                    print(f'[v6 阶段4] 补 +{total_added}, 当前边数={int(np.sum(mat2))//2}')
+
+    # ===================================================================
+    # 阶段 5 (v6 NEW): 孤立节点强制连边
+    # ===================================================================
+    if fix_isolated:
+        actual_deg = np.sum(mat2, axis=0)
+        isolated = np.where(actual_deg == 0)[0]
+
+        added = 0
+        skipped = 0
+        for n in isolated:
+            comm_id = node_community[n]
+            comm_nodes = mat1_pvs[comm_id]
+
+            # 候选: 同社区内、非自己、且当前未连接的节点
+            candidates = [c for c in comm_nodes if c != n and mat2[n, c] == 0]
+            if len(candidates) == 0:
+                # 社区只有 n 一个节点, 或社区里所有人都已和 n 相连
+                skipped += 1
+                continue
+
+            # 权重: 按候选节点的目标度数 dd_s (高度节点更可能被选)
+            weights = np.array(
+                [max(node_target_degree[c], 0.1) for c in candidates],
+                dtype=float
+            )
+            weights = weights / weights.sum()
+
+            idx = np.random.choice(len(candidates), p=weights)
+            c = candidates[idx]
+            mat2[n, c] = 1
+            mat2[c, n] = 1
+            added += 1
+
+        if verbose:
+            final_total = int(np.sum(mat2)) // 2
+            print(f'[v6 阶段5] 发现 {len(isolated)} 个孤立节点, '
+                  f'连边 +{added} (跳过 {skipped}), 最终边数={final_total}')
+
+    return mat2
+
+def post_process_global_refill(mat2, target_edges, max_trials_factor=3):
+    """
+    全图随机加边补足总边数。
+    
+    mat2          : 当前合成邻接矩阵 (对称，0/1)
+    target_edges  : 目标总边数（通常用噪声 ev_mat 的对角线 + 上三角之和，或原图边数估计）
+    max_trials_factor : 最多采样次数 = need * factor，防止图太稠密时死循环
+    
+    返回：补完边的 mat2
+    """
+    n = mat2.shape[0]
+    current_edges = int(np.sum(mat2) / 2)
+    need = target_edges - current_edges
+    if need <= 0:
+        return mat2
+    
+    max_trials = need * max_trials_factor
+    added = 0
+    trials = 0
+    
+    # 批量采样比 for 循环快很多
+    batch_size = max(need * 2, 1000)
+    while added < need and trials < max_trials:
+        u_arr = np.random.randint(0, n, batch_size)
+        v_arr = np.random.randint(0, n, batch_size)
+        for u, v in zip(u_arr, v_arr):
+            trials += 1
+            if added >= need or trials >= max_trials:
+                break
+            if u == v:
+                continue
+            if mat2[u, v] == 1:
+                continue
+            mat2[u, v] = 1
+            mat2[v, u] = 1
+            added += 1
+    
+    return mat2
+
+def post_process_double_edge_swap_v2(mat2, pvs, comm_n,
+                                      n_iter_ratio=0.3,
+                                      cross_clean_ratio=0.5,
+                                      compensate=True,
+                                      verbose=False):
+    """
+    严格保度数的边交换后处理 (改进版).
+
+    阶段 1: 社区内 double-edge swap, 严格保度数
+    阶段 2: 跨社区虚假桥梁清理 + 度数补偿
+        - 删除 (u, v) 跨社区边后, 在 u 的社区内加一条 u-? 的边,
+          在 v 的社区内加一条 v-? 的边, 实现 u 和 v 度数不变
+        - 副作用: 总边数 +1 (删 1 加 2)
+    
+    Parameters
+    ----------
+    mat2 : np.ndarray
+        合成图邻接矩阵
+    pvs : list
+        社区节点列表
+    comm_n : int
+        社区数
+    n_iter_ratio : float
+        阶段 1 swap 次数比例
+    cross_clean_ratio : float
+        阶段 2 跨社区候选边删除比例
+    compensate : bool
+        阶段 2 是否做度数补偿. False 时退化为简化版
+    verbose : bool
+        是否打印调试信息
+    """
+    mat2 = mat2.copy().astype(np.int8)
+    n = mat2.shape[0]
+
+    # ===================================================================
+    # 节点 -> 社区 索引 (用于 O(1) 查询)
+    # ===================================================================
+    node_community = np.full(n, -1, dtype=int)
+    for ci in range(comm_n):
+        for node in pvs[ci]:
+            node_community[node] = ci
+
+    # ===================================================================
+    # 阶段 1: 社区内 double-edge swap (严格保度数)
+    # ===================================================================
+    total_swaps = 0
+    total_attempts = 0
+
+    for ci in range(comm_n):
+        nodes = np.array(pvs[ci])
+        if len(nodes) < 4:
+            continue
+
+        sub = mat2[np.ix_(nodes, nodes)]
+        rows, cols = np.where(np.triu(sub, 1) > 0)
+        intra_edges = list(zip(rows.tolist(), cols.tolist()))
+        n_edges = len(intra_edges)
+
+        if n_edges < 2:
+            continue
+
+        n_iter = max(1, int(n_edges * n_iter_ratio))
+
+        for _ in range(n_iter):
+            total_attempts += 1
+
+            edge_idx = np.random.randint(len(intra_edges))
+            u, v = intra_edges[edge_idx]
+
+            u_neighbors = set(np.where(sub[u] > 0)[0])
+            v_neighbors = set(np.where(sub[v] > 0)[0])
+            if len(u_neighbors & v_neighbors) > 0:
+                continue  # 不是孤立边
+
+            u_non_neighbors = set(range(len(nodes))) - u_neighbors - {u, v}
+            if not u_non_neighbors:
+                continue
+
+            best_w, best_score = None, 0
+            for w_cand in u_non_neighbors:
+                w_cand_neighbors = set(np.where(sub[w_cand] > 0)[0])
+                score = len(u_neighbors & w_cand_neighbors)
+                if score > best_score:
+                    best_score = score
+                    best_w = w_cand
+
+            if best_w is None or best_score == 0:
+                continue
+            w = best_w
+
+            # 找配对边 (x, w)
+            w_neighbors_list = list(np.where(sub[w] > 0)[0])
+            np.random.shuffle(w_neighbors_list)
+            x = None
+            for x_cand in w_neighbors_list:
+                if x_cand in (u, v, w):
+                    continue
+                if sub[x_cand, v] == 1:
+                    continue
+                x = x_cand
+                break
+            if x is None:
+                continue
+
+            # 执行 swap
+            sub[u, v] = sub[v, u] = 0
+            sub[x, w] = sub[w, x] = 0
+            sub[u, w] = sub[w, u] = 1
+            sub[x, v] = sub[v, x] = 1
+
+            u_g, v_g = nodes[u], nodes[v]
+            w_g, x_g = nodes[w], nodes[x]
+            mat2[u_g, v_g] = mat2[v_g, u_g] = 0
+            mat2[x_g, w_g] = mat2[w_g, x_g] = 0
+            mat2[u_g, w_g] = mat2[w_g, u_g] = 1
+            mat2[x_g, v_g] = mat2[v_g, x_g] = 1
+
+            new_uw = (u, w) if u < w else (w, u)
+            intra_edges[edge_idx] = new_uw
+            old_xw = (x, w) if x < w else (w, x)
+            new_xv = (x, v) if x < v else (v, x)
+            try:
+                idx_xw = intra_edges.index(old_xw)
+                intra_edges[idx_xw] = new_xv
+            except ValueError:
+                rows, cols = np.where(np.triu(sub, 1) > 0)
+                intra_edges = list(zip(rows.tolist(), cols.tolist()))
+
+            total_swaps += 1
+
+    if verbose:
+        print(f'[阶段1] 尝试={total_attempts}, 成功={total_swaps} '
+              f'({total_swaps/max(total_attempts,1):.1%})')
+
+    # ===================================================================
+    # 阶段 2: 跨社区清理 + 度数补偿
+    # ===================================================================
+    m_total = np.sum(mat2) / 2
+    if m_total == 0:
+        return mat2
+
+    degree = np.sum(mat2, axis=1)
+    total_removed = 0
+    total_compensated = 0
+
+    for ci in range(comm_n):
+        for cj in range(ci + 1, comm_n):
+            pi = pvs[ci]
+            pj = pvs[cj]
+
+            cross_edges = []
+            for u in pi:
+                for v in pj:
+                    if mat2[u, v] == 1:
+                        cross_edges.append((u, v))
+
+            if not cross_edges:
+                continue
+
+            # 候选: 期望 < 1 的边
+            remove_candidates = []
+            for (u, v) in cross_edges:
+                expected = (degree[u] * degree[v]) / (2 * m_total)
+                if expected > 1.0:
+                    continue
+                remove_candidates.append((u, v))
+
+            if not remove_candidates:
+                continue
+
+            n_remove = int(len(remove_candidates) * cross_clean_ratio)
+            n_remove = min(n_remove, len(cross_edges) - 1)
+            n_remove = max(n_remove, 0)
+            if n_remove == 0:
+                continue
+
+            chosen = np.random.choice(
+                len(remove_candidates), n_remove, replace=False
+            )
+            for idx in chosen:
+                u, v = remove_candidates[idx]
+                mat2[u, v] = mat2[v, u] = 0
+                total_removed += 1
+
+                if not compensate:
+                    continue
+
+                # 度数补偿: 给 u 在自己社区内加一条边, v 同理
+                # 选择策略: 优先连接当前度数较低的同社区节点 (维持度分布)
+                u_comm = node_community[u]
+                v_comm = node_community[v]
+
+                for src, src_comm in [(u, u_comm), (v, v_comm)]:
+                    same_comm_nodes = pvs[src_comm]
+                    candidates_intra = [
+                        c for c in same_comm_nodes
+                        if c != src and mat2[src, c] == 0
+                    ]
+                    if not candidates_intra:
+                        continue
+                    # 按"当前度数较低"做权重 (反向, 度数低的概率高)
+                    src_degs = np.array(
+                        [max(1, int(np.sum(mat2[c]))) for c in candidates_intra],
+                        dtype=float
+                    )
+                    inv_weights = 1.0 / src_degs
+                    inv_weights = inv_weights / inv_weights.sum()
+                    chosen_idx = np.random.choice(
+                        len(candidates_intra), p=inv_weights
+                    )
+                    target = candidates_intra[chosen_idx]
+                    mat2[src, target] = mat2[target, src] = 1
+                    total_compensated += 1
+
+    if verbose:
+        print(f'[阶段2] 删除跨社区边={total_removed}, '
+              f'补偿社区内边={total_compensated}')
+        print(f'[最终] 总边数={int(np.sum(mat2))//2}')
+
+    return mat2

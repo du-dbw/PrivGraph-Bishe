@@ -1,0 +1,61 @@
+// {
+//     // LaTeX编译器配置
+//    "latex-workshop.latex.tools": [
+//     {
+//         "name": "xelatex",
+//         "command": "xelatex",
+//         "args": [
+//             "-synctex=1",
+//             "-interaction=nonstopmode",
+//             "-file-line-error",
+//             "-output-directory=%OUTDIR%",
+//             "%DOC%"
+//         ]
+//     },
+//     {
+//         "name": "biber",
+//         "command": "biber",
+//         "args": [
+//             "--output-directory=%OUTDIR%",
+//             "%DOCFILE%"
+//         ]
+//     }
+//     ],
+//     // 编译链配置（zjuthesis 使用 biblatex+biber）
+//     "latex-workshop.latex.recipes": [
+//         {
+//             "name": "XeLaTeX -> Biber -> XeLaTeX*2",
+//             "tools": [
+//                 "xelatex",
+//                 "biber",
+//                 "xelatex",
+//                 "xelatex"
+//             ]
+//         },
+//         {
+//             "name": "XeLaTeX",
+//             "tools": [
+//                 "xelatex"
+//             ]
+//         }
+//     ],
+//     // 保存时自动编译
+//     "latex-workshop.latex.autoBuild.run": "onSave",
+//     // 内置PDF预览
+//     "latex-workshop.view.pdf.viewer": "tab",
+//     // 编译后清理临时文件
+//     "latex-workshop.latex.clean.fileTypes": [
+//         "*.aux",
+//         "*.bbl",
+//         "*.blg",
+//         "*.idx",
+//         "*.ind",
+//         "*.lof",
+//         "*.lot",
+//         "*.out",
+//         "*.toc",
+//         "*.log",
+//         "*.run.xml",
+//         "*.synctex.gz"
+//     ]
+// }

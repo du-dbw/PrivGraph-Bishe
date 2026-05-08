@@ -1,0 +1,18 @@
+\clearpage{}
+\begin{center}
+    \bfseries \zihao{3} 摘~要
+\end{center}
+
+图数据广泛存在于社交网络、协作网络等真实场景中，其连接关系往往蕴含用户隐私，直接发布存在隐私泄露风险。差分隐私为图数据安全发布提供了严格的数学保证，其中 PrivGraph 通过``社区划分—信息抽取—图重建''三阶段框架在边差分隐私下取得了较好的隐私与可用性平衡，是该方向的代表性方法。然而其图重建阶段对跨社区边采用未利用噪声度序列的均匀随机采样，并与噪声社区划分形成误差叠加，使合成图在社区结构相关指标上存在系统性偏差。针对该阶段，本文提出两项互补的后处理优化：图重建模块将跨社区采样改为基于噪声度序列的度加权采样，主动缩减跨社区边规模并将节省的预算回流至社区内部，辅以软度修复维持度分布一致性；合成图后处理模块对社区内``孤立边''进行三角化重排，并基于配置零模型清理稀疏跨社区边。两个模块均仅访问已发布的噪声中间结果或合成图本身，符合后处理性质，不消耗额外隐私预算，整体算法严格满足 $\varepsilon$-边差分隐私。在 Chameleon、Facebook、CA-HepPh 等公开数据集上的实验表明，本文方法在 NMI、模块度等指标上相对原始 PrivGraph 取得稳定改善，并在不同隐私预算下保持较好鲁棒性。
+
+\textbf{关键词：}差分隐私；图数据发布；图重建；社区检测；后处理
+
+
+\clearpage{}
+\begin{center}
+    \bfseries \zihao{3} Abstract
+\end{center}
+
+\par Graph data is widely present in social and collaboration networks, where the connectivity often encodes sensitive user information, and direct release may lead to privacy leakage. Differential privacy provides rigorous guarantees for safe graph publication, and PrivGraph, through its three-stage framework of community partition, information extraction, and graph reconstruction, achieves a reasonable privacy-utility trade-off under edge differential privacy and is a representative method in this direction. However, its reconstruction stage samples cross-community edges uniformly at random without exploiting the noisy degree sequence, and the resulting error compounds with that of the noisy community partition, causing systematic bias on community-structure-related metrics. Targeting this stage, this thesis proposes two complementary post-processing optimizations: a reconstruction module that replaces uniform cross-community sampling with degree-weighted sampling, actively scales down inter-community edges and redirects the saved budget into communities, with a soft degree repair maintaining degree distribution consistency; and a post-processing module that performs triangle-aware swaps on isolated intra-community edges and removes sparse cross-community edges identified by the configuration null model. Both modules access only DP-released outputs or the synthesized graph itself, conform to the post-processing property and consume no additional privacy budget, so the overall algorithm strictly satisfies $\varepsilon$-edge differential privacy. Experiments on public datasets including Chameleon, Facebook and CA-HepPh show that the proposed method achieves stable improvements over PrivGraph on metrics such as NMI and modularity, and remains robust across different privacy budgets.
+
+\textbf{Keywords:} Differential Privacy; Graph Data Publication; Graph Reconstruction; Community Detection; Post-processing

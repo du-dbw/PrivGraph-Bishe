@@ -1,397 +1,386 @@
 """
-批量测试不同 dataset × oversample 的脚本（固定 convert_ratio=0.9）。
-用法：直接 python run_oversample.py
+run_overnight.py — 一键跑完毕业论文所有实验。
 
-测试矩阵：
-  - datasets:    CA-HepPh, Chamelon, Enron, Facebook, mytest
-  - oversample:  0.8, 0.9, 1.0, 1.1, 1.2
-  - convert_ratio: 固定 0.9
+特性
+----
+- 每个 (config, exper) 完成后立刻 append 到 CSV，崩溃后重跑会自动跳过已完成项。
+- 三组实验各自独立 CSV，可单独跑：--only main / multi / hp
+- 每个 trial 都在 try/except 里，单点失败不会拖垮整批。
+- 实时打印 ETA，便于估计何时跑完。
+
+用法
+----
+python run_overnight.py                       # 全部跑（推荐）
+python run_overnight.py --only main           # 只跑 Chameleon 主对比
+python run_overnight.py --only multi          # 只跑多数据集验证
+python run_overnight.py --only hp             # 只跑超参扫描
+python run_overnight.py --only multi --datasets Facebook CA-HepPh
+                                              # 多数据集跳过 Enron
+python run_overnight.py --reps 5              # 把每组的重复次数从 10 降到 5
+
+跑完后：所有结果在 ./result/*.csv，直接读 csv 填表。
 """
 
-import community
-import networkx as nx
-import time
+import os, time, argparse, traceback
 import numpy as np
 import pandas as pd
-
+import networkx as nx
+import community
 from numpy.random import laplace
 from sklearn import metrics
 
-from utils import *
+from utils import *  # comm, community_init, generate_intra_edge, FO_pp, cal_diam,
+                     # cal_rel, cal_kl, cal_overlap, cal_MAE, get_mat, get_uptri_arr,
+                     # get_upmat, step6_v3_full_fixed, post_process_edge_swap
 
-import os
+
+# ===================== 全局配置 =====================
+RESULT_DIR = './result'
+DATA_DIR   = './data'
+
+EPS_LIST  = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
+N_REPS    = 10
+N_INIT    = 20
+T_RES     = 1.0
+E1_R      = 1/3
+E2_R      = 1/3
+
+# Ours-Full 默认超参
+INTRA_RATIO = 0.05
+INTER_RATIO = 0.10
+SWAP_RATIO  = 0.30
 
 
-def main_func(dataset_name='Chamelon', eps=[0.5,1,1.5,2,2.5,3,3.5],
-              e1_r=1/3, e2_r=1/3, N=20, t=1.0, exp_num=10,
-              save_csv=False, auto_alloc=False,
-              convert_ratio=0.9, oversample=1.0):
+# ===================== 原始 PrivGraph 重建 =====================
+def step6_original(N, comm_n, pvs, dd_s, ev_mat):
+    """PrivGraph baseline: CL intra + uniform inter."""
+    mat2 = np.zeros([N, N], dtype=np.int8)
+    for i in range(comm_n):
+        nodes = pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s[i])
+        pi = np.array(pvs[i])
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+            pj = np.array(pvs[j])
+            c1 = np.random.choice(pi, ev1)
+            c2 = np.random.choice(pj, ev1)
+            for k in range(ev1):
+                mat2[c1[k], c2[k]] = 1
+                mat2[c2[k], c1[k]] = 1
+    return mat2
 
-    t_begin = time.time()
-    data_path = './data/' + dataset_name + '.txt'
-    mat0, mid = get_mat(data_path)
 
-    cols = ['eps','exper','nmi','evc_overlap','evc_MAE','deg_kl',
-            'diam_rel','cc_rel','mod_rel']
-    all_data = pd.DataFrame(None, columns=cols)
+def symmetrize(mat2):
+    mat2 = mat2 + np.transpose(mat2)
+    mat2 = np.triu(mat2, 1)
+    mat2 = mat2 + np.transpose(mat2)
+    mat2[mat2 > 0] = 1
+    return mat2
 
-    # ===== 原始图构建 =====
-    mat0_graph = nx.from_numpy_array(mat0, create_using=nx.Graph)
-    mat0_edge = mat0_graph.number_of_edges()
-    mat0_node = mat0_graph.number_of_nodes()
-    print('Dataset:%s  convert_ratio=%.2f  oversample=%.2f' % (dataset_name, convert_ratio, oversample))
-    print('Node number:%d' % mat0_node)
-    print('Edge number:%d' % mat0_edge)
 
-    # ===== 原始图统计 =====
-    mat0_par = community.best_partition(mat0_graph)
-    mat0_degree = np.sum(mat0, 0)
-    mat0_deg_dist = np.bincount(np.int64(mat0_degree))
-    mat0_evc = nx.eigenvector_centrality(mat0_graph, max_iter=10000)
-    mat0_evc_a = dict(sorted(mat0_evc.items(), key=lambda x: x[1], reverse=True))
-    mat0_evc_ak = list(mat0_evc_a.keys())
-    mat0_evc_val = np.array(list(mat0_evc_a.values()))
-    evc_kn = np.int64(0.01 * mat0_node)
-    mat0_diam = cal_diam(mat0)
-    mat0_cc = nx.transitivity(mat0_graph)
-    mat0_mod = community.modularity(mat0_par, mat0_graph)
-
-    all_deg_kl = []
-    all_mod_rel = []
-    all_nmi_arr = []
-    all_evc_overlap = []
-    all_evc_MAE = []
-    all_cc_rel = []
-    all_diam_rel = []
-
-    for ei in range(len(eps)):
-        epsilon = eps[ei]
-        ti = time.time()
-
-        if auto_alloc:
-            n = mat0_node
-            d = 2 * mat0_edge / mat0_node
-            _e3_r = np.clip(4.0 / (d * epsilon), 0.05, 0.20)
-            _e1_r = 0.368 + 0.363 / epsilon - 0.033 * np.log(n)
-            _e2_r = 1.0 - _e1_r - _e3_r
-            _e1_r = np.clip(_e1_r, 0.05, 0.50)
-            _e2_r = np.clip(_e2_r, 0.15, 0.85)
-            _e3_r = np.clip(_e3_r, 0.05, 0.20)
-            total = _e1_r + _e2_r + _e3_r
-            _e1_r, _e2_r, _e3_r = _e1_r/total, _e2_r/total, _e3_r/total
-            total = _e1_r + _e2_r + _e3_r
-            _e1_r, _e2_r, _e3_r = _e1_r/total, _e2_r/total, _e3_r/total
-            print(f'[AutoAlloc] eps={epsilon}, e1_r={_e1_r:.3f}, e2_r={_e2_r:.3f}, e3_r={_e3_r:.3f}')
-        else:
-            _e1_r = e1_r
-            _e2_r = e2_r
-            _e3_r = 1 - e1_r - e2_r
-
-        e1 = _e1_r * epsilon
-        e2 = _e2_r * epsilon
-        e3 = _e3_r * epsilon
-        ed = e3
-        ev = e3
-        ev_lambda = 1/ed
-        dd_lam = 2/ev
-
-        nmi_arr = np.zeros([exp_num])
-        deg_kl_arr = np.zeros([exp_num])
-        mod_rel_arr = np.zeros([exp_num])
-        cc_rel_arr = np.zeros([exp_num])
-        diam_rel_arr = np.zeros([exp_num])
-        evc_overlap_arr = np.zeros([exp_num])
-        evc_MAE_arr = np.zeros([exp_num])
-
-        for exper in range(exp_num):
-            print('-----------[%s] epsilon=%.1f, exper=%d/%d, cr=%.2f, os=%.2f-------------'
-                  % (dataset_name, epsilon, exper+1, exp_num, convert_ratio, oversample))
-
-            t1 = time.time()
-
-            # Step1: 社区初始化
-            mat1_pvarr1 = community_init(mat0, mat0_graph, epsilon=e1, nr=N, t=t)
-
-            if auto_alloc:
-                K = max(mat1_pvarr1) + 1
-                comm_sizes = [np.sum(mat1_pvarr1 == ci) for ci in range(K)]
-                avg_comm_size = np.mean(comm_sizes)
-                d = 2 * mat0_edge / mat0_node
-                estimated_intra_deg = d * (avg_comm_size / mat0_node)
-                SNR = estimated_intra_deg / (2.0 / e3) if e3 > 0 else 0
-                e2_f = np.clip(1.891 - 0.528/epsilon - 0.087*np.log(n) - 0.001*K - 0.234*SNR, 0.05, 0.85)
-                e3_f = np.clip(0.10, 0.05, 0.85)
-                remaining = 1.0 - _e1_r
-                _e2_r_new = remaining * e2_f / (e2_f + e3_f)
-                _e3_r_new = remaining - _e2_r_new
-                e2 = _e2_r_new * epsilon
-                e3 = _e3_r_new * epsilon
-                ev_lambda = 1/e3
-                dd_lam = 2/e3
-
-            # Step2: 社区调整
-            part1 = {}
-            for i in range(len(mat1_pvarr1)):
-                part1[i] = mat1_pvarr1[i]
-
-            mat1_par1 = comm.best_partition(mat0_graph, part1, epsilon_EM=e2)
-            mat1_pvarr = np.array(list(mat1_par1.values()))
-
-            # Step3: 社区节点提取
-            mat1_pvs = []
-            for i in range(max(mat1_pvarr)+1):
-                pv1 = np.where(mat1_pvarr == i)[0]
-                mat1_pvs.append(list(pv1))
-
-            comm_n = max(mat1_pvarr) + 1
-            ev_mat = np.zeros([comm_n, comm_n], dtype=np.int64)
-
-            # Step4: 社区间边统计
-            for i in range(comm_n):
-                pi = mat1_pvs[i]
-                ev_mat[i, i] = np.sum(mat0[np.ix_(pi, pi)])
-                for j in range(i+1, comm_n):
-                    pj = mat1_pvs[j]
-                    ev_mat[i, j] = int(np.sum(mat0[np.ix_(pi, pj)]))
-                    ev_mat[j, i] = ev_mat[i, j]
-
-            ga = get_uptri_arr(ev_mat, ind=1)
-            ga_noise = ga + laplace(0, ev_lambda, len(ga))
-            ga_noise_pp = FO_pp(ga_noise)
-            ev_mat = get_upmat(ga_noise_pp, comm_n, ind=1)
-
-            # Step5: 度序列加噪
-            dd_s = []
-            for i in range(comm_n):
-                dd1 = mat0[np.ix_(mat1_pvs[i], mat1_pvs[i])]
-                dd1 = np.sum(dd1, 1)
-                dd1 = (dd1 + laplace(0, dd_lam, len(dd1))).astype(int)
-                dd1 = FO_pp(dd1)
-                dd1[dd1 < 0] = 0
-                dd1[dd1 >= len(dd1)] = len(dd1) - 1
-                dd_s.append(list(dd1))
-
-            # ===== Step6: 图重建（参数化 convert_ratio + oversample）=====
-            mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
-
-            for i in range(comm_n):
-                dd_ind = mat1_pvs[i]
-                dd1 = dd_s[i]
-                mat2[np.ix_(dd_ind, dd_ind)] = generate_intra_edge(dd1)
-
-                dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
-                prob_i = dd_i / dd_i.sum()
-
-                for j in range(i+1, comm_n):
-                    ev1 = ev_mat[i, j]
-                    if ev1 <= 0:
-                        continue
-
-                    pi = mat1_pvs[i]
-                    pj = mat1_pvs[j]
-
-                    dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
-                    prob_j = dd_j / dd_j.sum()
-
-                    n_convert = int(ev1 * convert_ratio)
-                    n_inter = ev1 - n_convert
-
-                    n_ri = n_convert // 2
-                    n_rj = n_convert - n_ri
-
-                    if n_ri > 0:
-                        max_ei = len(pi) * (len(pi)-1) // 2
-                        sample_ri = min(int(n_ri * oversample), max_ei)
-                        c1 = np.random.choice(pi, sample_ri, p=prob_i)
-                        c2 = np.random.choice(pi, sample_ri, p=prob_i)
-                        for ind in range(sample_ri):
-                            mat2[c1[ind], c2[ind]] = 1
-                            mat2[c2[ind], c1[ind]] = 1
-
-                    if n_rj > 0:
-                        max_ej = len(pj) * (len(pj)-1) // 2
-                        sample_rj = min(int(n_rj * oversample), max_ej)
-                        c1 = np.random.choice(pj, sample_rj, p=prob_j)
-                        c2 = np.random.choice(pj, sample_rj, p=prob_j)
-                        for ind in range(sample_rj):
-                            mat2[c1[ind], c2[ind]] = 1
-                            mat2[c2[ind], c1[ind]] = 1
-
-                    if n_inter > 0:
-                        c1 = np.random.choice(pi, n_inter, p=prob_i)
-                        c2 = np.random.choice(pj, n_inter, p=prob_j)
-                        for ind in range(n_inter):
-                            mat2[c1[ind], c2[ind]] = 1
-                            mat2[c2[ind], c1[ind]] = 1
-
-            # 对称化
-            mat2 = mat2 + np.transpose(mat2)
-            mat2 = np.triu(mat2, 1)
-            mat2 = mat2 + np.transpose(mat2)
-            mat2[mat2 > 0] = 1
-
-            mat2_graph = nx.from_numpy_array(mat2, create_using=nx.Graph)
-
-            # Step7: 计算指标
-            mat2_edge = mat2_graph.number_of_edges()
-            mat2_node = mat2_graph.number_of_nodes()
-
-            mat2_par = community.best_partition(mat2_graph)
-            mat2_mod = community.modularity(mat2_par, mat2_graph)
-            mat2_cc = nx.transitivity(mat2_graph)
-
-            mat2_degree = np.sum(mat2, 0)
-            mat2_deg_dist = np.bincount(np.int64(mat2_degree))
-
-            mat2_evc = nx.eigenvector_centrality(mat2_graph, max_iter=10000)
-            mat2_evc_a = dict(sorted(mat2_evc.items(), key=lambda x: x[1], reverse=True))
-            mat2_evc_ak = list(mat2_evc_a.keys())
-            mat2_evc_val = np.array(list(mat2_evc_a.values()))
-
-            mat2_diam = cal_diam(mat2)
-
-            cc_rel = cal_rel(mat0_cc, mat2_cc)
-            deg_kl = cal_kl(mat0_deg_dist, mat2_deg_dist)
-            mod_rel = cal_rel(mat0_mod, mat2_mod)
-
-            labels_true = list(mat0_par.values())
-            labels_pred = list(mat2_par.values())
-            nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
-
-            evc_overlap = cal_overlap(mat0_evc_ak, mat2_evc_ak, np.int64(0.01*mat0_node))
-            evc_MAE = cal_MAE(mat0_evc_val, mat2_evc_val, k=evc_kn)
-            diam_rel = cal_rel(mat0_diam, mat2_diam)
-
-            nmi_arr[exper] = nmi
-            cc_rel_arr[exper] = cc_rel
-            deg_kl_arr[exper] = deg_kl
-            mod_rel_arr[exper] = mod_rel
-            evc_overlap_arr[exper] = evc_overlap
-            evc_MAE_arr[exper] = evc_MAE
-            diam_rel_arr[exper] = diam_rel
-
-            print('Nodes=%d,Edges=%d,nmi=%.4f,cc_rel=%.4f,deg_kl=%.4f,mod_rel=%.4f,evc_overlap=%.4f,evc_MAE=%.4f,diam_rel=%.4f'
-                  % (mat2_node, mat2_edge, nmi, cc_rel, deg_kl, mod_rel, evc_overlap, evc_MAE, diam_rel))
-
-            data_col = [epsilon, exper, nmi, evc_overlap, evc_MAE, deg_kl,
-                        diam_rel, cc_rel, mod_rel]
-            col_len = len(data_col)
-            data_col = np.array(data_col).reshape(1, col_len)
-            data1 = pd.DataFrame(data_col, columns=cols)
-            all_data = pd.concat([all_data, data1], ignore_index=True)
-
-        all_nmi_arr.append(np.mean(nmi_arr))
-        all_cc_rel.append(np.mean(cc_rel_arr))
-        all_deg_kl.append(np.mean(deg_kl_arr))
-        all_mod_rel.append(np.mean(mod_rel_arr))
-        all_evc_overlap.append(np.mean(evc_overlap_arr))
-        all_evc_MAE.append(np.mean(evc_MAE_arr))
-        all_diam_rel.append(np.mean(diam_rel_arr))
-
-        print('[%s] eps_index=%d/%d Done.%.2fs\n' % (dataset_name, ei+1, len(eps), time.time()-ti))
-
-    res_path = './result'
-    if not os.path.exists(res_path):
-        os.mkdir(res_path)
-
-    save_name = res_path + '/' + '%s_%d_%.1f_%.2f_%.2f_%d_cr%.1f_os%.1f.csv' \
-                % (dataset_name, N, t, e1_r, e2_r, exp_num, convert_ratio, oversample)
-
-    if save_csv:
-        all_data.to_csv(save_name, index=False, sep=',')
-
-    print('========================================')
-    print('dataset:', dataset_name, '  convert_ratio:', convert_ratio, '  oversample:', oversample)
-    print('eps=', eps)
-    print('all_nmi_arr=', all_nmi_arr)
-    print('all_evc_overlap=', all_evc_overlap)
-    print('all_evc_MAE=', all_evc_MAE)
-    print('all_deg_kl=', all_deg_kl)
-    print('all_diam_rel=', all_diam_rel)
-    print('all_cc_rel=', all_cc_rel)
-    print('all_mod_rel=', all_mod_rel)
-    print('All time:%.2fs' % (time.time()-t_begin))
-
+# ===================== 原图参考量预计算 =====================
+def precompute_reference(mat0):
+    G   = nx.from_numpy_array(mat0, create_using=nx.Graph)
+    par = community.best_partition(G)
+    deg = np.sum(mat0, 0)
+    deg_dist = np.bincount(np.int64(deg))
+    evc = nx.eigenvector_centrality(G, max_iter=10000)
+    evc_a = dict(sorted(evc.items(), key=lambda x: x[1], reverse=True))
     return {
-        'dataset': dataset_name,
-        'convert_ratio': convert_ratio,
-        'oversample': oversample,
-        'eps': eps,
-        'nmi': all_nmi_arr,
-        'evc_overlap': all_evc_overlap,
-        'evc_MAE': all_evc_MAE,
-        'deg_kl': all_deg_kl,
-        'diam_rel': all_diam_rel,
-        'cc_rel': all_cc_rel,
-        'mod_rel': all_mod_rel,
+        'G': G, 'par': par, 'deg_dist': deg_dist,
+        'evc_ak': list(evc_a.keys()),
+        'evc_val': np.array(list(evc_a.values())),
+        'diam': cal_diam(mat0),
+        'cc': nx.transitivity(G),
+        'mod': community.modularity(par, G),
     }
 
 
-if __name__ == '__main__':
+# ===================== 单个 trial =====================
+def run_trial(mat0, n, ref, epsilon, method,
+              intra_ratio=INTRA_RATIO, inter_ratio=INTER_RATIO, swap_ratio=SWAP_RATIO,
+              e1_r=E1_R, e2_r=E2_R, N=N_INIT, t=T_RES):
+    """method ∈ {'PrivGraph','Ours-R','Ours-P','Ours-Full'}"""
+    e1 = e1_r * epsilon
+    e2 = e2_r * epsilon
+    e3 = (1 - e1_r - e2_r) * epsilon
+    ev_lambda = 1 / e3
+    dd_lam    = 2 / e3
+    G = ref['G']
 
-    # ==================== 配置区 ====================
-    datasets        = ['Facebook']
-    oversample_list = [1.3,1.4,1.5,1.6]
-    convert_ratio   = 0.9       # 固定
-    eps             = [0.5, 1, 1.5, 2, 2.5, 3, 3.5]
-    exp_num         = 10        # 每组实验重复次数，按需调整
-    # ================================================
+    # --- 社区初始化 ---
+    mat1_pvarr1 = community_init(mat0, G, epsilon=e1, nr=N, t=t)
+    part1 = {i: mat1_pvarr1[i] for i in range(len(mat1_pvarr1))}
 
-    all_results = []
-    total_runs = len(datasets) * len(oversample_list)
-    run_idx = 0
+    # --- 社区调整 ---
+    mat1_par1 = comm.best_partition(G, part1, epsilon_EM=e2)
+    mat1_pvarr = np.array(list(mat1_par1.values()))
+    comm_n = max(mat1_pvarr) + 1
+    mat1_pvs = [list(np.where(mat1_pvarr == i)[0]) for i in range(comm_n)]
 
+    # --- 边向量 + 拉普拉斯噪声 + NormSub ---
+    ev_mat = np.zeros([comm_n, comm_n], dtype=np.int64)
+    for i in range(comm_n):
+        pi = mat1_pvs[i]
+        ev_mat[i, i] = np.sum(mat0[np.ix_(pi, pi)])
+        for j in range(i + 1, comm_n):
+            pj = mat1_pvs[j]
+            ev_mat[i, j] = int(np.sum(mat0[np.ix_(pi, pj)]))
+            ev_mat[j, i] = ev_mat[i, j]
+    ga = get_uptri_arr(ev_mat, ind=1)
+    ga_noise = ga + laplace(0, ev_lambda, len(ga))
+    ev_mat = get_upmat(FO_pp(ga_noise), comm_n, ind=1)
+
+    # --- 度序列 + 拉普拉斯噪声 + NormSub ---
+    dd_s = []
+    for i in range(comm_n):
+        dd1 = mat0[np.ix_(mat1_pvs[i], mat1_pvs[i])]
+        dd1 = np.sum(dd1, 1)
+        dd1 = (dd1 + laplace(0, dd_lam, len(dd1))).astype(int)
+        dd1 = FO_pp(dd1)
+        dd1[dd1 < 0] = 0
+        dd1[dd1 >= len(dd1)] = len(dd1) - 1
+        dd_s.append(list(dd1))
+
+    # --- 图重建 ---
+    if method in ('PrivGraph', 'Ours-P'):
+        mat2 = step6_original(n, comm_n, mat1_pvs, dd_s, ev_mat)
+    elif method in ('Ours-R', 'Ours-Full'):
+        mat2 = step6_v3_full_fixed(n, comm_n, mat1_pvs, dd_s, ev_mat,
+                                   intra_ratio=intra_ratio, inter_ratio=inter_ratio)
+    else:
+        raise ValueError(f"unknown method: {method}")
+
+    mat2 = symmetrize(mat2)
+
+    # --- 后处理（可选） ---
+    if method in ('Ours-P', 'Ours-Full'):
+        mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=swap_ratio)
+
+    # --- 评估 ---
+    G2 = nx.from_numpy_array(mat2, create_using=nx.Graph)
+    par2 = community.best_partition(G2)
+    deg2 = np.sum(mat2, 0)
+    deg_dist2 = np.bincount(np.int64(deg2))
+    evc2 = nx.eigenvector_centrality(G2, max_iter=10000)
+    evc2_a = dict(sorted(evc2.items(), key=lambda x: x[1], reverse=True))
+
+    evc_kn = np.int64(0.01 * n)
+    return {
+        'nmi':         metrics.normalized_mutual_info_score(
+                            list(ref['par'].values()), list(par2.values())),
+        'evc_overlap': cal_overlap(ref['evc_ak'], list(evc2_a.keys()), evc_kn),
+        'evc_MAE':     cal_MAE(ref['evc_val'],
+                               np.array(list(evc2_a.values())), k=evc_kn),
+        'deg_kl':      cal_kl(ref['deg_dist'], deg_dist2),
+        'diam_rel':    cal_rel(ref['diam'], cal_diam(mat2)),
+        'cc_rel':      cal_rel(ref['cc'],   nx.transitivity(G2)),
+        'mod_rel':     cal_rel(ref['mod'],  community.modularity(par2, G2)),
+        'mat2_edges':  G2.number_of_edges(),
+    }
+
+
+# ===================== Checkpoint 工具 =====================
+def load_csv(path):
+    if os.path.exists(path):
+        try:
+            return pd.read_csv(path)
+        except Exception:
+            print(f"  ! warn: {path} 损坏，将重建")
+    return pd.DataFrame()
+
+
+def is_done(df, key):
+    if df.empty: return False
+    mask = np.ones(len(df), dtype=bool)
+    for k, v in key.items():
+        col = df[k]
+        if isinstance(v, float):
+            mask &= np.isclose(col.astype(float), v)
+        else:
+            mask &= (col == v)
+    return mask.any()
+
+
+def append_row(path, row):
+    df_row = pd.DataFrame([row])
+    df_row.to_csv(path,
+                  mode='a' if os.path.exists(path) else 'w',
+                  header=not os.path.exists(path),
+                  index=False)
+
+
+# ===================== 进度条 =====================
+class Progress:
+    def __init__(self, total, label):
+        self.total, self.label = total, label
+        self.done = self.skipped = 0
+        self.t0 = time.time()
+
+    def step(self, dt, skipped=False, extra=''):
+        self.done += 1
+        if skipped: self.skipped += 1
+        ran = self.done - self.skipped
+        if ran > 0:
+            elapsed = time.time() - self.t0
+            rate = elapsed / ran
+            eta_min = (self.total - self.done) * rate / 60
+            print(f"  [{self.label}] {self.done}/{self.total}  "
+                  f"this={dt:5.1f}s  ETA≈{eta_min:6.1f}min  "
+                  f"(skip={self.skipped}) {extra}", flush=True)
+        else:
+            print(f"  [{self.label}] {self.done}/{self.total}  (skipped) {extra}", flush=True)
+
+
+# ===================== 数据加载 =====================
+def load_dataset(name):
+    print(f">> Loading {name}.txt ...", flush=True)
+    mat0, _ = get_mat(os.path.join(DATA_DIR, name + '.txt'))
+    n = mat0.shape[0]
+    e = int(np.sum(mat0) / 2)
+    print(f"   nodes={n}, edges={e}", flush=True)
+    print(f">> Pre-computing reference metrics on {name} ...", flush=True)
+    ref = precompute_reference(mat0)
+    return mat0, n, ref
+
+
+# ===================== Group 1: Chameleon 主对比 =====================
+def run_main_comparison(reps):
+    csv_path = os.path.join(RESULT_DIR, 'main_chameleon.csv')
+    methods = ['PrivGraph', 'Ours-R', 'Ours-P', 'Ours-Full']
+    mat0, n, ref = load_dataset('Chamelon')
+    df = load_csv(csv_path)
+    prog = Progress(len(methods) * len(EPS_LIST) * reps, 'main-Chameleon')
+
+    for method in methods:
+        for eps in EPS_LIST:
+            for exper in range(reps):
+                key = {'method': method, 'eps': eps, 'exper': exper}
+                t0 = time.time()
+                if is_done(df, key):
+                    prog.step(0.0, skipped=True); continue
+                try:
+                    m = run_trial(mat0, n, ref, eps, method)
+                    row = {**key, **m}
+                    append_row(csv_path, row)
+                    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+                    extra = f"nmi={m['nmi']:.3f}"
+                except Exception as ex:
+                    print(f"  !! 失败 {key} -> {ex}"); traceback.print_exc()
+                    extra = 'FAILED'
+                prog.step(time.time() - t0, extra=extra)
+
+
+# ===================== Group 2: 多数据集验证 =====================
+def run_multi_dataset(datasets, reps):
+    methods = ['PrivGraph', 'Ours-Full']
     for ds in datasets:
-        for os_val in oversample_list:
-            run_idx += 1
-            print('\n' + '#'*70)
-            print(f'#  [{run_idx}/{total_runs}]  dataset={ds}  oversample={os_val}  (cr={convert_ratio})')
-            print('#'*70 + '\n')
+        csv_path = os.path.join(RESULT_DIR, f'multi_{ds}.csv')
+        try:
+            mat0, n, ref = load_dataset(ds)
+        except Exception as ex:
+            print(f"!! 跳过 {ds}: {ex}"); continue
+        df = load_csv(csv_path)
+        prog = Progress(len(methods) * len(EPS_LIST) * reps, f'multi-{ds}')
+        for method in methods:
+            for eps in EPS_LIST:
+                for exper in range(reps):
+                    key = {'method': method, 'eps': eps, 'exper': exper}
+                    t0 = time.time()
+                    if is_done(df, key):
+                        prog.step(0.0, skipped=True); continue
+                    try:
+                        m = run_trial(mat0, n, ref, eps, method)
+                        row = {**key, **m}
+                        append_row(csv_path, row)
+                        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+                        extra = f"nmi={m['nmi']:.3f}"
+                    except Exception as ex:
+                        print(f"  !! 失败 {key} -> {ex}"); traceback.print_exc()
+                        extra = 'FAILED'
+                    prog.step(time.time() - t0, extra=extra)
+        # 释放此数据集占用的大矩阵内存
+        del mat0, ref
 
+
+# ===================== Group 3: 超参扫描（Chameleon, eps=2.0） =====================
+def _hp_sweep(name, sweep_values, hp_key, eps, mat0, n, ref, reps):
+    csv_path = os.path.join(RESULT_DIR, f'hp_{name}.csv')
+    df = load_csv(csv_path)
+    prog = Progress(len(sweep_values) * reps, f'hp-{name}')
+    for v in sweep_values:
+        for exper in range(reps):
+            key = {hp_key: v, 'exper': exper}
+            t0 = time.time()
+            if is_done(df, key):
+                prog.step(0.0, skipped=True); continue
+            kw = {'intra_ratio': INTRA_RATIO,
+                  'inter_ratio': INTER_RATIO,
+                  'swap_ratio':  SWAP_RATIO}
+            kw[hp_key] = v
             try:
-                result = main_func(
-                    dataset_name=ds,
-                    eps=eps,
-                    e1_r=1/3,
-                    e2_r=1/3,
-                    N=20,
-                    t=1.0,
-                    exp_num=exp_num,
-                    save_csv=True,
-                    convert_ratio=convert_ratio,
-                    oversample=os_val,
-                )
-                all_results.append(result)
-            except Exception as e:
-                print(f'[ERROR] dataset={ds}, oversample={os_val} 失败: {e}')
-                import traceback
-                traceback.print_exc()
-                continue
+                m = run_trial(mat0, n, ref, eps, 'Ours-Full', **kw)
+                row = {**key, **m}
+                append_row(csv_path, row)
+                df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+                extra = f"nmi={m['nmi']:.3f}"
+            except Exception as ex:
+                print(f"  !! 失败 {key} -> {ex}"); traceback.print_exc()
+                extra = 'FAILED'
+            prog.step(time.time() - t0, extra=extra)
 
-    # ===== 汇总对比表 =====
-    print('\n\n' + '='*90)
-    print(f'全部汇总对比 (convert_ratio={convert_ratio} 固定, 各指标为所有 epsilon 的均值)')
-    print('='*90)
 
-    summary_rows = []
-    for r in all_results:
-        summary_rows.append({
-            'dataset':         r['dataset'],
-            'oversample':      r['oversample'],
-            'avg_nmi':         np.mean(r['nmi']),
-            'avg_evc_overlap': np.mean(r['evc_overlap']),
-            'avg_evc_MAE':     np.mean(r['evc_MAE']),
-            'avg_deg_kl':      np.mean(r['deg_kl']),
-            'avg_diam_rel':    np.mean(r['diam_rel']),
-            'avg_cc_rel':      np.mean(r['cc_rel']),
-            'avg_mod_rel':     np.mean(r['mod_rel']),
-        })
+def run_hyperparam(reps, eps=2.0):
+    mat0, n, ref = load_dataset('Chamelon')
+    _hp_sweep('inter', [0.05, 0.10, 0.15, 0.20, 0.30], 'inter_ratio', eps, mat0, n, ref, reps)
+    _hp_sweep('intra', [0.00, 0.05, 0.10, 0.15],       'intra_ratio', eps, mat0, n, ref, reps)
+    _hp_sweep('swap',  [0.0, 0.1, 0.3, 0.5, 0.7],      'swap_ratio',  eps, mat0, n, ref, reps)
 
-    summary_df = pd.DataFrame(summary_rows)
-    print(summary_df.to_string(index=False))
 
-    res_path = './result'
-    if not os.path.exists(res_path):
-        os.mkdir(res_path)
-    summary_df.to_csv(res_path + '/oversample_summary_ALL.csv', index=False)
-    print('\n汇总已保存到 ./result/oversample_summary_ALL.csv')
+# ===================== 跑完后的小结 =====================
+def print_summary():
+    print("\n" + "=" * 60)
+    print("结果文件汇总（行数 = 已完成 trial 数）")
+    print("=" * 60)
+    for f in sorted(os.listdir(RESULT_DIR)):
+        if f.endswith('.csv'):
+            n = len(pd.read_csv(os.path.join(RESULT_DIR, f)))
+            print(f"  {f:40s} {n} rows")
+
+
+# ===================== 入口 =====================
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--only', choices=['main', 'multi', 'hp'], default=None)
+    parser.add_argument('--reps', type=int, default=N_REPS)
+    parser.add_argument('--datasets', nargs='+',
+                        default=['Facebook', 'CA-HepPh', 'Enron'])
+    args = parser.parse_args()
+
+    os.makedirs(RESULT_DIR, exist_ok=True)
+    t_begin = time.time()
+    print("=" * 60)
+    print(f"Overnight runner started at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"reps={args.reps}, only={args.only}, datasets={args.datasets}")
+    print("=" * 60, flush=True)
+
+    if args.only in (None, 'main'):
+        print("\n##### Group 1: Chameleon 主对比 (4 methods × 7 eps × reps) #####")
+        run_main_comparison(reps=args.reps)
+    if args.only in (None, 'hp'):
+        print("\n##### Group 2: 超参扫描 (Chameleon, eps=2.0) #####")
+        run_hyperparam(reps=args.reps)
+    if args.only in (None, 'multi'):
+        print("\n##### Group 3: 多数据集验证 #####")
+        run_multi_dataset(datasets=args.datasets, reps=args.reps)
+
+    print_summary()
+    print(f"\n>>> All done in {(time.time()-t_begin)/60:.1f} min")
+
+
+if __name__ == '__main__':
+    main()

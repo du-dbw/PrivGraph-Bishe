@@ -80,9 +80,10 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             _e2_r = 1.0 - _e1_r - _e3_r
 
             # clip + 归一化
-            _e1_r = np.clip(_e1_r, 0.05, 0.50)   # ← 关键: 限制 e1 上限为 0.50
-            _e2_r = np.clip(_e2_r, 0.15, 0.85)
-            _e3_r = np.clip(_e3_r, 0.05, 0.20)
+            _e1_r = np.clip(_e1_r, 0.05, 0.35)   # ← 关键: 限制 e1 上限为 0.35
+            _e2_r = np.clip(_e2_r, 0.15, 0.65)
+            _e3_floor = np.clip(0.20 - 0.025 * epsilon, 0.10, 0.20)
+            _e3_r = np.clip(_e3_r, _e3_floor, 0.25)
             total = _e1_r + _e2_r + _e3_r
             _e1_r, _e2_r, _e3_r = _e1_r/total, _e2_r/total, _e3_r/total
             total = _e1_r + _e2_r + _e3_r
@@ -132,10 +133,14 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
                 SNR = estimated_intra_deg / (2.0 / e3) if e3 > 0 else 0
 
                 e2_f = np.clip(1.891 - 0.528/epsilon - 0.087*np.log(n) - 0.001*K - 0.234*SNR, 0.05, 0.85)
-                e3_f = np.clip(0.10, 0.05, 0.85)
+                e3_f = np.clip(0.15, 0.05, 0.85)
                 remaining = 1.0 - _e1_r
                 _e2_r_new = remaining * e2_f / (e2_f + e3_f)
                 _e3_r_new = remaining - _e2_r_new
+
+                # 保底: 第二阶段不能把 e3 压得比第一阶段更低
+                _e3_r_new = max(_e3_r_new, _e3_r)
+                _e2_r_new = remaining - _e3_r_new
 
                 e2 = _e2_r_new * epsilon
                 e3 = _e3_r_new * epsilon
@@ -221,7 +226,7 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             # mat2 = step6_original(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat)
 
             # 社区内加 50%，社区间保留 100%（总边数放大到 150%）
-            mat2 = step6_v3_full_fixed(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat, intra_ratio=0.4, inter_ratio=0.2)
+            mat2 = step6_v3_full_fixed(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat, intra_ratio=0.05, inter_ratio=0.1)
 
             # 对称化邻接矩阵                
             mat2 = mat2 + np.transpose(mat2)
@@ -238,7 +243,7 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             # ===== [新增] Step 6.5: 后处理剪枝 =====
             # 感觉第二个更好，但是差不太多
             # mat2 = post_process_prune(mat2, mat1_pvs, dd_s, ev_mat, comm_n)
-            # mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=0.5)
+            mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=0.5)
 
             # ===== Step7: 计算指标 =====
             mat2_edge = mat2_graph.number_of_edges()
@@ -371,7 +376,7 @@ if __name__ == '__main__':
     t = 1.0
 
     # run the function
-    main_func(dataset_name='Chamelon',eps=eps,e1_r=1/3,e2_r=1/3,N=n1,t=t,exp_num=5)
+    main_func(dataset_name='Chamelon',eps=eps,e1_r=0.2,e2_r=0.6,N=n1,t=t,exp_num=10)
     # main_func(dataset_name='Chamelon', eps=eps, auto_alloc=True, exp_num=10)
     # main_func(dataset_name=dataset_name,eps=[2],e1_r=e1_r,e2_r=e2_r,N=n1,t=t,exp_num=1)
    
