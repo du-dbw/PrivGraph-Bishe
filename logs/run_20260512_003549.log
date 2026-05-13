@@ -1,0 +1,68 @@
+实验启动 @ 2026-05-12 00:35:49
+日志:   ./logs\run_20260512_003549.log
+结果:   ./results/
+  - 原对比: ./results\main_comparison.csv
+  - v2 对比: ./results\main_comparison_v2.csv
+  - 超参:    ./results\hp_inter_ratio.csv
+缓存:   ./cache/
+请求并行数: 3
+主对比 methods: ['ours_v2']
+ours_v2 超参: scale_safety_factor=4.0
+
+==============================================================================
+  Job 1: 主对比实验（methods=['ours_v2']）
+==============================================================================
+目标任务总数: 70
+已完成（含其他方法）: main_csv=560, v2_csv=94
+本次剩余: 70
+请求 worker 数: 3（实际会按数据集规模动态降级）
+
+>>> 数据集 Enron: 节点=33696, 任务=70, worker=3
+[错误] Enron/ours_v2/ε=0.5/rep=2 ir=0.1:
+Unable to allocate 4.23 GiB for an array with shape (567693360,) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 407, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 353, in run_one_rep
+    iu = np.triu_indices_from(mat2, k=1)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1208, in triu_indices_from
+    return triu_indices(arr.shape[-2], k=k, m=arr.shape[-1])
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1139, in triu_indices
+    return tuple(broadcast_to(inds, tri_.shape)[tri_]
+                 for inds in indices(tri_.shape, sparse=True))
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1139, in <genexpr>
+    return tuple(broadcast_to(inds, tri_.shape)[tri_]
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 4.23 GiB for an array with shape (567693360,) and data type int64
+
+[错误] Enron/ours_v2/ε=0.5/rep=1 ir=0.1:
+Unable to allocate 1.06 GiB for an array with shape (33696, 33696) and data type bool
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 407, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 353, in run_one_rep
+    iu = np.triu_indices_from(mat2, k=1)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1208, in triu_indices_from
+    return triu_indices(arr.shape[-2], k=k, m=arr.shape[-1])
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1137, in triu_indices
+    tri_ = ~tri(n, m, k=k - 1, dtype=bool)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 1.06 GiB for an array with shape (33696, 33696) and data type bool
+
+[错误] Enron/ours_v2/ε=0.5/rep=0 ir=0.1:
+Unable to allocate 4.23 GiB for an array with shape (567693360,) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 407, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\run_experiments.py", line 353, in run_one_rep
+    iu = np.triu_indices_from(mat2, k=1)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1208, in triu_indices_from
+    return triu_indices(arr.shape[-2], k=k, m=arr.shape[-1])
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1139, in triu_indices
+    return tuple(broadcast_to(inds, tri_.shape)[tri_]
+                 for inds in indices(tri_.shape, sparse=True))
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\numpy\lib\_twodim_base_impl.py", line 1139, in <genexpr>
+    return tuple(broadcast_to(inds, tri_.shape)[tri_]
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 4.23 GiB for an array with shape (567693360,) and data type int64
+

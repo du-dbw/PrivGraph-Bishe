@@ -1,0 +1,217 @@
+实验启动 @ 2026-05-11 21:54:21
+日志:   ./logs\run_20260511_215421.log
+结果:   ./results/
+缓存:   ./cache/
+请求并行数: 19（小图保持，大图按 WORKER_CAP_BY_SIZE 降级）
+
+==============================================================================
+  Job 1: 主对比实验（PrivGraph vs Ours）
+==============================================================================
+已完成: 441/560
+剩余:   119
+请求 worker 数: 19（实际会按数据集规模动态降级）
+
+>>> 数据集 Enron: 节点=33696, 任务=119, worker=3
+[   1/119] Enron      privgraph ε=1.5 rep=3  | NMI=0.0134 mod_rel=0.4554 deg_kl=2.067 | t=439.6s ETA=14.48h
+[   2/119] Enron      privgraph ε=1.5 rep=1  | NMI=0.0140 mod_rel=0.4515 deg_kl=1.590 | t=454.1s ETA=7.41h
+[   3/119] Enron      privgraph ε=1.5 rep=2  | NMI=0.0133 mod_rel=0.4515 deg_kl=1.827 | t=457.1s ETA=4.93h
+[   4/119] Enron      privgraph ε=1.5 rep=4  | NMI=0.0131 mod_rel=0.4707 deg_kl=2.497 | t=273.7s ETA=5.71h
+[   5/119] Enron      privgraph ε=1.5 rep=6  | NMI=0.0143 mod_rel=0.4441 deg_kl=1.724 | t=424.3s ETA=5.59h
+[   6/119] Enron      privgraph ε=1.5 rep=5  | NMI=0.0123 mod_rel=0.4752 deg_kl=2.257 | t=430.2s ETA=4.64h
+[   7/119] Enron      privgraph ε=1.5 rep=7  | NMI=0.0140 mod_rel=0.4272 deg_kl=1.483 | t=204.3s ETA=4.09h
+[   8/119] Enron      privgraph ε=1.5 rep=8  | NMI=0.0139 mod_rel=0.4523 deg_kl=1.858 | t=471.1s ETA=5.22h
+[   9/119] Enron      privgraph ε=1.5 rep=9  | NMI=0.0143 mod_rel=0.4262 deg_kl=1.391 | t=475.4s ETA=4.62h
+[  10/119] Enron      privgraph ε=2.0 rep=0  | NMI=0.0168 mod_rel=0.4060 deg_kl=1.078 | t=460.4s ETA=4.18h
+[  11/119] Enron      privgraph ε=2.0 rep=1  | NMI=0.0149 mod_rel=0.4343 deg_kl=1.173 | t=318.5s ETA=4.56h
+[  12/119] Enron      privgraph ε=2.0 rep=2  | NMI=0.0173 mod_rel=0.4158 deg_kl=1.109 | t=340.6s ETA=4.22h
+[  13/119] Enron      privgraph ε=2.0 rep=3  | NMI=0.0163 mod_rel=0.4133 deg_kl=1.127 | t=359.7s ETA=3.94h
+[  14/119] Enron      privgraph ε=2.0 rep=4  | NMI=0.0147 mod_rel=0.4405 deg_kl=1.404 | t=195.8s ETA=3.89h
+[  15/119] Enron      privgraph ε=2.0 rep=5  | NMI=0.0142 mod_rel=0.4577 deg_kl=1.449 | t=196.3s ETA=3.66h
+[  16/119] Enron      privgraph ε=2.0 rep=6  | NMI=0.0162 mod_rel=0.4264 deg_kl=1.125 | t=189.4s ETA=3.45h
+[  17/119] Enron      privgraph ε=2.0 rep=7  | NMI=0.0157 mod_rel=0.4237 deg_kl=1.350 | t=166.0s ETA=3.39h
+[  18/119] Enron      privgraph ε=2.0 rep=8  | NMI=0.0142 mod_rel=0.4403 deg_kl=1.389 | t=168.2s ETA=3.22h
+[  19/119] Enron      privgraph ε=2.0 rep=9  | NMI=0.0163 mod_rel=0.4290 deg_kl=1.285 | t=162.5s ETA=3.06h
+[  20/119] Enron      privgraph ε=2.5 rep=0  | NMI=0.0186 mod_rel=0.3999 deg_kl=0.941 | t=168.0s ETA=3.03h
+[  21/119] Enron      privgraph ε=2.5 rep=1  | NMI=0.0193 mod_rel=0.3826 deg_kl=1.023 | t=157.1s ETA=2.88h
+[  22/119] Enron      privgraph ε=2.5 rep=2  | NMI=0.0163 mod_rel=0.4018 deg_kl=1.086 | t=168.1s ETA=2.77h
+[  23/119] Enron      privgraph ε=2.5 rep=3  | NMI=0.0201 mod_rel=0.4034 deg_kl=0.873 | t=217.2s ETA=2.81h
+[  24/119] Enron      privgraph ε=2.5 rep=4  | NMI=0.0203 mod_rel=0.4044 deg_kl=1.034 | t=280.0s ETA=2.75h
+[  25/119] Enron      privgraph ε=2.5 rep=5  | NMI=0.0147 mod_rel=0.4200 deg_kl=1.215 | t=275.9s ETA=2.65h
+[  26/119] Enron      privgraph ε=2.5 rep=6  | NMI=0.0168 mod_rel=0.4265 deg_kl=1.100 | t=174.9s ETA=2.58h
+[  27/119] Enron      privgraph ε=2.5 rep=7  | NMI=0.0199 mod_rel=0.3952 deg_kl=0.877 | t=247.5s ETA=2.60h
+[  28/119] Enron      privgraph ε=2.5 rep=9  | NMI=0.0200 mod_rel=0.3798 deg_kl=1.028 | t=301.8s ETA=2.61h
+[  29/119] Enron      privgraph ε=2.5 rep=8  | NMI=0.0187 mod_rel=0.4049 deg_kl=1.016 | t=371.7s ETA=2.51h
+[  30/119] Enron      privgraph ε=3.0 rep=0  | NMI=0.0238 mod_rel=0.4112 deg_kl=0.723 | t=180.4s ETA=2.42h
+[  31/119] Enron      privgraph ε=3.0 rep=1  | NMI=0.0233 mod_rel=0.3962 deg_kl=0.737 | t=317.0s ETA=2.53h
+[  32/119] Enron      privgraph ε=3.0 rep=2  | NMI=0.0201 mod_rel=0.3991 deg_kl=0.806 | t=335.2s ETA=2.45h
+[  33/119] Enron      privgraph ε=3.0 rep=3  | NMI=0.0210 mod_rel=0.3835 deg_kl=0.866 | t=335.8s ETA=2.37h
+[  34/119] Enron      privgraph ε=3.0 rep=4  | NMI=0.0211 mod_rel=0.4129 deg_kl=0.811 | t=156.0s ETA=2.34h
+[  35/119] Enron      privgraph ε=3.0 rep=5  | NMI=0.0201 mod_rel=0.3863 deg_kl=0.925 | t=162.0s ETA=2.27h
+[  36/119] Enron      privgraph ε=3.0 rep=6  | NMI=0.0214 mod_rel=0.4061 deg_kl=0.787 | t=175.8s ETA=2.21h
+[  37/119] Enron      privgraph ε=3.0 rep=7  | NMI=0.0202 mod_rel=0.4147 deg_kl=0.826 | t=171.1s ETA=2.18h
+[  38/119] Enron      privgraph ε=3.0 rep=8  | NMI=0.0226 mod_rel=0.4191 deg_kl=0.705 | t=172.3s ETA=2.12h
+[  39/119] Enron      privgraph ε=3.0 rep=9  | NMI=0.0213 mod_rel=0.4152 deg_kl=0.720 | t=163.1s ETA=2.05h
+[  40/119] Enron      privgraph ε=3.5 rep=0  | NMI=0.0240 mod_rel=0.3226 deg_kl=0.926 | t=148.4s ETA=2.02h
+[  41/119] Enron      privgraph ε=3.5 rep=1  | NMI=0.0234 mod_rel=0.3825 deg_kl=0.673 | t=165.2s ETA=1.98h
+[  42/119] Enron      privgraph ε=3.5 rep=2  | NMI=0.0213 mod_rel=0.3455 deg_kl=0.923 | t=153.0s ETA=1.91h
+[  43/119] Enron      privgraph ε=3.5 rep=3  | NMI=0.0264 mod_rel=0.4092 deg_kl=0.531 | t=173.9s ETA=1.90h
+[  44/119] Enron      privgraph ε=3.5 rep=4  | NMI=0.0261 mod_rel=0.3824 deg_kl=0.628 | t=236.5s ETA=1.88h
+[  45/119] Enron      privgraph ε=3.5 rep=5  | NMI=0.0235 mod_rel=0.4013 deg_kl=0.683 | t=246.6s ETA=1.83h
+[  46/119] Enron      privgraph ε=3.5 rep=6  | NMI=0.0197 mod_rel=0.3590 deg_kl=0.855 | t=170.3s ETA=1.78h
+[  47/119] Enron      privgraph ε=3.5 rep=7  | NMI=0.0235 mod_rel=0.4064 deg_kl=0.819 | t=157.7s ETA=1.76h
+[  48/119] Enron      privgraph ε=3.5 rep=8  | NMI=0.0240 mod_rel=0.3752 deg_kl=0.648 | t=164.9s ETA=1.71h
+[  49/119] Enron      privgraph ε=3.5 rep=9  | NMI=0.0186 mod_rel=0.3842 deg_kl=0.948 | t=163.5s ETA=1.67h
+[  50/119] Enron      ours      ε=0.5 rep=0  | NMI=0.3268 mod_rel=0.4639 deg_kl=2.105 | t=119.5s ETA=1.63h
+[  51/119] Enron      ours      ε=0.5 rep=1  | NMI=0.3255 mod_rel=0.4647 deg_kl=1.915 | t=123.8s ETA=1.59h
+[  52/119] Enron      ours      ε=0.5 rep=2  | NMI=0.3316 mod_rel=0.4725 deg_kl=2.153 | t=127.9s ETA=1.55h
+[  53/119] Enron      ours      ε=0.5 rep=3  | NMI=0.3265 mod_rel=0.4549 deg_kl=1.864 | t=128.3s ETA=1.52h
+[  54/119] Enron      ours      ε=0.5 rep=4  | NMI=0.3297 mod_rel=0.4680 deg_kl=2.028 | t=128.1s ETA=1.48h
+[  55/119] Enron      ours      ε=0.5 rep=5  | NMI=0.3279 mod_rel=0.4667 deg_kl=2.967 | t=128.7s ETA=1.44h
+[  56/119] Enron      ours      ε=0.5 rep=6  | NMI=0.3301 mod_rel=0.4359 deg_kl=1.954 | t=140.2s ETA=1.41h
+[  57/119] Enron      ours      ε=0.5 rep=7  | NMI=0.3279 mod_rel=0.4608 deg_kl=1.971 | t=190.9s ETA=1.39h
+[  58/119] Enron      ours      ε=0.5 rep=8  | NMI=0.3320 mod_rel=0.4686 deg_kl=1.927 | t=177.1s ETA=1.35h
+[  59/119] Enron      ours      ε=0.5 rep=9  | NMI=0.3305 mod_rel=0.4468 deg_kl=1.929 | t=142.8s ETA=1.32h
+[  60/119] Enron      ours      ε=1.0 rep=0  | NMI=0.3283 mod_rel=0.4791 deg_kl=1.849 | t=198.2s ETA=1.31h
+[  61/119] Enron      ours      ε=1.0 rep=1  | NMI=0.3242 mod_rel=0.4939 deg_kl=1.811 | t=299.5s ETA=1.30h
+[  62/119] Enron      ours      ε=1.0 rep=2  | NMI=0.3244 mod_rel=0.4948 deg_kl=1.810 | t=320.1s ETA=1.27h
+[  63/119] Enron      ours      ε=1.0 rep=3  | NMI=0.3269 mod_rel=0.4896 deg_kl=1.780 | t=202.0s ETA=1.24h
+[  64/119] Enron      ours      ε=1.0 rep=4  | NMI=0.3251 mod_rel=0.4945 deg_kl=1.852 | t=139.3s ETA=1.21h
+[  65/119] Enron      ours      ε=1.0 rep=5  | NMI=0.3251 mod_rel=0.4949 deg_kl=1.883 | t=140.0s ETA=1.18h
+[  66/119] Enron      ours      ε=1.0 rep=6  | NMI=0.3250 mod_rel=0.5025 deg_kl=1.852 | t=141.5s ETA=1.15h
+[  67/119] Enron      ours      ε=1.0 rep=7  | NMI=0.3235 mod_rel=0.5015 deg_kl=1.883 | t=141.4s ETA=1.12h
+[  68/119] Enron      ours      ε=1.0 rep=8  | NMI=0.3243 mod_rel=0.5005 deg_kl=1.780 | t=142.3s ETA=1.10h
+[  69/119] Enron      ours      ε=1.0 rep=9  | NMI=0.3237 mod_rel=0.5017 deg_kl=1.863 | t=137.8s ETA=1.07h
+[  70/119] Enron      ours      ε=1.5 rep=0  | NMI=0.3467 mod_rel=0.3190 deg_kl=1.541 | t=146.5s ETA=1.04h
+[  71/119] Enron      ours      ε=1.5 rep=1  | NMI=0.3471 mod_rel=0.2915 deg_kl=1.571 | t=138.2s ETA=1.02h
+[  72/119] Enron      ours      ε=1.5 rep=2  | NMI=0.3453 mod_rel=0.3184 deg_kl=1.555 | t=136.4s ETA=59.1min
+[  73/119] Enron      ours      ε=1.5 rep=3  | NMI=0.3448 mod_rel=0.3256 deg_kl=1.576 | t=134.8s ETA=57.7min
+[  74/119] Enron      ours      ε=1.5 rep=4  | NMI=0.3317 mod_rel=0.4126 deg_kl=1.555 | t=187.8s ETA=56.7min
+[  75/119] Enron      ours      ε=1.5 rep=5  | NMI=0.3455 mod_rel=0.3233 deg_kl=1.510 | t=180.6s ETA=54.9min
+[  76/119] Enron      ours      ε=1.5 rep=6  | NMI=0.3432 mod_rel=0.3395 deg_kl=1.498 | t=154.1s ETA=53.2min
+[  77/119] Enron      ours      ε=1.5 rep=7  | NMI=0.3419 mod_rel=0.3013 deg_kl=1.465 | t=207.4s ETA=52.8min
+[  78/119] Enron      ours      ε=1.5 rep=8  | NMI=0.3341 mod_rel=0.4253 deg_kl=1.517 | t=292.5s ETA=51.7min
+[  79/119] Enron      ours      ε=1.5 rep=9  | NMI=0.3217 mod_rel=0.4943 deg_kl=1.632 | t=287.2s ETA=50.1min
+[  80/119] Enron      ours      ε=2.0 rep=0  | NMI=0.3276 mod_rel=0.4418 deg_kl=1.409 | t=158.1s ETA=48.4min
+[  81/119] Enron      ours      ε=2.0 rep=1  | NMI=0.3462 mod_rel=0.2576 deg_kl=1.437 | t=139.8s ETA=47.2min
+[  82/119] Enron      ours      ε=2.0 rep=2  | NMI=0.3396 mod_rel=0.3504 deg_kl=1.426 | t=190.1s ETA=46.1min
+[  83/119] Enron      ours      ε=2.0 rep=3  | NMI=0.3305 mod_rel=0.4077 deg_kl=1.411 | t=191.8s ETA=44.5min
+[  84/119] Enron      ours      ε=2.0 rep=4  | NMI=0.3518 mod_rel=0.1943 deg_kl=1.478 | t=156.8s ETA=43.1min
+[  85/119] Enron      ours      ε=2.0 rep=5  | NMI=0.3436 mod_rel=0.2857 deg_kl=1.408 | t=138.4s ETA=41.7min
+[  86/119] Enron      ours      ε=2.0 rep=6  | NMI=0.3455 mod_rel=0.2608 deg_kl=1.471 | t=142.3s ETA=40.3min
+[  87/119] Enron      ours      ε=2.0 rep=7  | NMI=0.3235 mod_rel=0.4675 deg_kl=1.437 | t=143.5s ETA=38.9min
+[  88/119] Enron      ours      ε=2.0 rep=8  | NMI=0.3462 mod_rel=0.2518 deg_kl=1.459 | t=129.8s ETA=37.5min
+[  89/119] Enron      ours      ε=2.0 rep=9  | NMI=0.3509 mod_rel=0.1755 deg_kl=1.500 | t=137.3s ETA=36.1min
+[  90/119] Enron      ours      ε=2.5 rep=0  | NMI=0.3475 mod_rel=0.1110 deg_kl=1.220 | t=139.4s ETA=34.8min
+[  91/119] Enron      ours      ε=2.5 rep=1  | NMI=0.3307 mod_rel=0.3970 deg_kl=1.328 | t=138.0s ETA=33.5min
+[  92/119] Enron      ours      ε=2.5 rep=2  | NMI=0.3273 mod_rel=0.4316 deg_kl=1.286 | t=137.3s ETA=32.1min
+[  93/119] Enron      ours      ε=2.5 rep=3  | NMI=0.3482 mod_rel=0.1929 deg_kl=1.426 | t=135.8s ETA=30.8min
+[  94/119] Enron      ours      ε=2.5 rep=4  | NMI=0.3401 mod_rel=0.3348 deg_kl=1.309 | t=132.5s ETA=29.5min
+[  95/119] Enron      ours      ε=2.5 rep=5  | NMI=0.3425 mod_rel=0.2762 deg_kl=1.242 | t=135.5s ETA=28.2min
+[  96/119] Enron      ours      ε=2.5 rep=6  | NMI=0.3469 mod_rel=0.2525 deg_kl=1.302 | t=132.0s ETA=27.0min
+[  97/119] Enron      ours      ε=2.5 rep=7  | NMI=0.3387 mod_rel=0.3250 deg_kl=1.280 | t=130.9s ETA=25.7min
+[  98/119] Enron      ours      ε=2.5 rep=8  | NMI=0.3404 mod_rel=0.3058 deg_kl=1.353 | t=131.8s ETA=24.4min
+[  99/119] Enron      ours      ε=2.5 rep=9  | NMI=0.3471 mod_rel=0.2247 deg_kl=1.229 | t=137.3s ETA=23.2min
+[ 100/119] Enron      ours      ε=3.0 rep=0  | NMI=0.3423 mod_rel=0.1896 deg_kl=1.207 | t=137.0s ETA=21.9min
+[ 101/119] Enron      ours      ε=3.0 rep=1  | NMI=0.3495 mod_rel=0.1957 deg_kl=1.264 | t=136.1s ETA=20.7min
+[ 102/119] Enron      ours      ε=3.0 rep=2  | NMI=0.3621 mod_rel=0.0904 deg_kl=1.358 | t=135.3s ETA=19.5min
+[ 103/119] Enron      ours      ε=3.0 rep=3  | NMI=0.3470 mod_rel=0.1734 deg_kl=1.281 | t=136.6s ETA=18.3min
+[ 104/119] Enron      ours      ε=3.0 rep=4  | NMI=0.3585 mod_rel=0.0039 deg_kl=1.369 | t=148.2s ETA=17.1min
+[ 105/119] Enron      ours      ε=3.0 rep=5  | NMI=0.3509 mod_rel=0.1014 deg_kl=1.240 | t=160.6s ETA=16.0min
+[ 106/119] Enron      ours      ε=3.0 rep=6  | NMI=0.3471 mod_rel=0.1653 deg_kl=1.261 | t=157.9s ETA=14.8min
+[ 107/119] Enron      ours      ε=3.0 rep=7  | NMI=0.3590 mod_rel=0.0151 deg_kl=1.416 | t=139.5s ETA=13.6min
+[ 108/119] Enron      ours      ε=3.0 rep=8  | NMI=0.3513 mod_rel=0.0420 deg_kl=1.259 | t=135.5s ETA=12.4min
+[ 109/119] Enron      ours      ε=3.0 rep=9  | NMI=0.3470 mod_rel=0.1578 deg_kl=1.225 | t=137.8s ETA=11.3min
+[ 110/119] Enron      ours      ε=3.5 rep=0  | NMI=0.3440 mod_rel=0.1978 deg_kl=1.130 | t=141.3s ETA=10.1min
+[ 111/119] Enron      ours      ε=3.5 rep=1  | NMI=0.3446 mod_rel=0.2131 deg_kl=1.082 | t=136.9s ETA=9.0min
+[ 112/119] Enron      ours      ε=3.5 rep=2  | NMI=0.3594 mod_rel=0.0978 deg_kl=1.295 | t=136.8s ETA=7.8min
+[ 113/119] Enron      ours      ε=3.5 rep=3  | NMI=0.3475 mod_rel=0.0205 deg_kl=1.118 | t=137.5s ETA=6.7min
+[ 114/119] Enron      ours      ε=3.5 rep=4  | NMI=0.3494 mod_rel=0.0937 deg_kl=1.220 | t=140.1s ETA=5.6min
+[ 115/119] Enron      ours      ε=3.5 rep=5  | NMI=0.3491 mod_rel=0.0849 deg_kl=1.200 | t=150.7s ETA=4.4min
+[ 116/119] Enron      ours      ε=3.5 rep=6  | NMI=0.3522 mod_rel=0.0149 deg_kl=1.175 | t=149.4s ETA=3.3min
+[ 117/119] Enron      ours      ε=3.5 rep=7  | NMI=0.3508 mod_rel=0.0209 deg_kl=1.214 | t=135.9s ETA=2.2min
+[ 118/119] Enron      ours      ε=3.5 rep=8  | NMI=0.3479 mod_rel=0.0485 deg_kl=1.219 | t=126.7s ETA=1.1min
+[ 119/119] Enron      ours      ε=3.5 rep=9  | NMI=0.3576 mod_rel=0.0820 deg_kl=1.271 | t=119.7s ETA=0s
+
+[main] 完成。总耗时: 2.17h
+
+==============================================================================
+  Job 2: 超参敏感性扫描（inter_ratio）
+==============================================================================
+已完成: 150/150
+剩余:   0
+  [跳过] 全部已完成
+
+全部任务完成。总耗时: 2.17h
+
+==============================================================================
+  实验结果汇总（按均值聚合）
+==============================================================================
+
+Job 1 主对比 - 560 行：
+                               nmi  mod_rel   deg_kl  cc_rel  diam_rel   n
+dataset  method    epsilon                                                
+CA-HepPh ours      0.5      0.3543   0.2306   2.1805  0.1728    0.0538  10
+                   1.0      0.3770   0.0936   1.7619  0.0784    0.1000  10
+                   1.5      0.3862   0.0836   1.4247  0.3839    0.2385  10
+                   2.0      0.3886   0.1780   1.1364  0.4984    0.3923  10
+                   2.5      0.3856   0.1632   1.0488  0.4495    0.4154  10
+                   3.0      0.3746   0.1610   1.0340  0.4135    0.4231  10
+                   3.5      0.3642   0.1881   0.9338  0.3379    0.4308  10
+         privgraph 0.5      0.0384   0.6025  13.5152  0.8987    0.6077  10
+                   1.0      0.0510   0.4452   5.6489  0.3629    0.5462  10
+                   1.5      0.0601   0.3966   1.6888  0.5204    0.4615  10
+                   2.0      0.0708   0.3661   1.0466  0.5796    0.4231  10
+                   2.5      0.0747   0.3124   0.7895  0.5605    0.3692  10
+                   3.0      0.0800   0.2728   0.7173  0.4962    0.3538  10
+                   3.5      0.0852   0.2904   0.5461  0.4635    0.2923  10
+Chamelon ours      0.5      0.2713   0.0270   2.8537  0.6827    0.2545  10
+                   1.0      0.2940   0.0676   1.5505  0.4654    0.3636  10
+                   1.5      0.3047   0.1128   1.4044  0.2871    0.4000  10
+                   2.0      0.3174   0.1226   1.2847  0.2342    0.4091  10
+                   2.5      0.3174   0.1596   1.2798  0.1213    0.4091  10
+                   3.0      0.3295   0.1568   1.2430  0.1047    0.4545  10
+                   3.5      0.3253   0.1983   1.2745  0.0605    0.4364  10
+         privgraph 0.5      0.0159   0.6531  13.7590  0.8354    0.6364  10
+                   1.0      0.0929   0.4834   7.4956  0.2136    0.6091  10
+                   1.5      0.1580   0.4094   2.5011  0.1157    0.5364  10
+                   2.0      0.1829   0.3526   1.7904  0.0690    0.5182  10
+                   2.5      0.2059   0.2962   1.2718  0.0572    0.4727  10
+                   3.0      0.2295   0.3131   1.0535  0.0852    0.4364  10
+                   3.5      0.2351   0.2601   0.9923  0.0631    0.4182  10
+Enron    ours      0.5      0.3288   0.4603   2.0813  5.8681    0.5231  10
+                   1.0      0.3250   0.4953   1.8364  5.1486    0.3231  10
+                   1.5      0.3402   0.3551   1.5420  3.0597    0.1231  10
+                   2.0      0.3405   0.3093   1.4436  2.6673    0.1000  10
+                   2.5      0.3409   0.2852   1.2974  1.8247    0.0462  10
+                   3.0      0.3515   0.1135   1.2880  1.2586    0.0692  10
+                   3.5      0.3502   0.0874   1.1925  0.8035    0.1385  10
+         privgraph 0.5      0.0130   0.4998   3.3784  0.6934    0.3846  10
+                   1.0      0.0130   0.4868   3.2679  0.8761    0.3846  10
+                   1.5      0.0137   0.4502   1.8376  0.5444    0.3769  10
+                   2.0      0.0157   0.4287   1.2490  0.2958    0.3385  10
+                   2.5      0.0185   0.4019   1.0194  0.2075    0.3000  10
+                   3.0      0.0215   0.4044   0.7906  0.2468    0.2846  10
+                   3.5      0.0231   0.3768   0.7633  0.1840    0.2846  10
+Facebook ours      0.5      0.2427   0.0792   1.5184  0.0323    0.0500  10
+                   1.0      0.2708   0.1703   0.7104  0.1330    0.1750  10
+                   1.5      0.2669   0.2204   0.5488  0.2882    0.2000  10
+                   2.0      0.2699   0.2596   0.4313  0.3364    0.2375  10
+                   2.5      0.2955   0.2037   0.4314  0.3738    0.2375  10
+                   3.0      0.2880   0.2599   0.4238  0.4663    0.2500  10
+                   3.5      0.2886   0.2665   0.3695  0.4784    0.2250  10
+         privgraph 0.5      0.0138   0.7564  14.5230  0.9261    0.5000  10
+                   1.0      0.1360   0.5390   6.3686  0.5476    0.5000  10
+                   1.5      0.1713   0.4430   2.9204  0.5043    0.4875  10
+                   2.0      0.1764   0.4463   1.6622  0.6182    0.3750  10
+                   2.5      0.1892   0.4162   1.0568  0.6091    0.3750  10
+                   3.0      0.1860   0.4113   0.8067  0.5531    0.3625  10
+                   3.5      0.1995   0.3802   0.4966  0.5963    0.3250  10
+
+Job 2 inter_ratio 敏感性 - 150 行：
+                nmi  nmi_std  mod_rel  deg_kl  cc_rel   n
+inter_ratio                                              
+0.05         0.3359   0.0164   0.0716  1.3501  0.2621  30
+0.10         0.3191   0.0229   0.1019  1.2838  0.1804  30
+0.15         0.3033   0.0223   0.1306  1.3184  0.1598  30
+0.20         0.2963   0.0281   0.1856  1.3355  0.1114  30
+0.30         0.2999   0.0360   0.1883  1.2500  0.0594  30

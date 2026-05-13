@@ -132,6 +132,13 @@
 
 \par 其中 $C$ 表示某个社区，$\Sigma_{\mathrm{in}}(C)$ 是社区 $C$ 内部所有边权重之和的两倍，$\Sigma_{\mathrm{tot}}(C)$ 是与社区 $C$ 内节点关联的所有边权重之和，$m$ 是图中所有边权重之和。模块度越大，说明社区划分越显著。
 
+\par 在此基础上，引入分辨率参数 $t$ 后，模块度的扩展形式为：
+\begin{equation}
+    \label{equ:modularity-resolution}
+    Q^{*} = \sum_{C} \left[ \frac{\Sigma_{\mathrm{in}}(C)}{2m} t - \left( \frac{\Sigma_{\mathrm{tot}}(C)}{2m} \right)^2 \right]
+\end{equation}
+
+\par 其中 $t$ 为分辨率参数，其他参数的含义与公式~\ref{equ:modularity} 一致。当 $t = 0$ 时，每个节点为一个独立社区；当 $t = 1$ 时，优化目标与传统模块度优化一致；随着 $t$ 的增大，社区数量通常会减少。
 \par Louvain 算法是基于模块度优化的贪心层次聚类方法，由 Blondel 等人于 2008 年提出，因其算法简单、效果优良、扩展性好而被广泛使用。算法分为两个阶段反复迭代：
 
 \par \textbf{阶段一（局部移动）：}对图中每个节点，计算将其移到每个邻居所在社区时的模块度增益，将该节点移动到使模块度增益最大的社区。如果不存在正增益，则保持不动。这一阶段反复扫描所有节点直至模块度收敛于局部最大值。
@@ -142,7 +149,7 @@
 
 \subsection{PrivGraph 算法}
 
-\par PrivGraph 是袁权等人在 USENIX Security 2023 上提出的差分隐私图发布方法，
+\par PrivGraph 是Yuan等人在 USENIX Security 2023 上提出的差分隐私图发布方法，
 是本文工作的直接基础。PrivGraph 的核心思想是利用图的社区结构作为信息抽取与噪声注入的中间粒度：
 社区内部边稠密、社区间边稀疏，这一区分使得在不同粒度上分别处理两类边成为可能。PrivGraph 
 的整体流程分为三个阶段：社区划分、信息抽取、图重建。
@@ -219,35 +226,46 @@
 该实现以噪声社区划分 $\mathbb{C}_F$、噪声度序列 $\hat{d}$、噪声边向量 $\hat{v}$ 为输入，
 输出一张合成图的邻接矩阵 \texttt{mat2}。
 
-\par 代码 \ref{code:step6-original} 中，\texttt{ev\_mat} 即正文中的 $\hat{v}$，\texttt{dd\_s} 即正文中的 $\hat{d}$，\texttt{pvs} 由 $\mathbb{C}_F$ 派生。
+\par 算法~\ref{algo:step6-original} 给出了 PrivGraph 原始图重建过程的形式化描述。
+其中输入为已发布的噪声社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$、
+噪声度序列 $\hat{d}$ 与噪声边向量 $\hat{v}$，
+$\hat{d}_i$ 表示 $\hat{d}$ 在社区 $C_i$ 上的子序列，
+$\hat{v}_{ij}$ 表示矩阵 $\hat{v}$ 中对应社区对 $(C_i, C_j)$ 的元素；
+输出为合成图 $G_s$，初始化为节点数与原图相同的空图 $G_N$。
+重建过程通过逐社区生成子图 $s_i$ 与 $s_{ij}$ 并合并入 $G_s$ 来逐步构造合成图。
 
-\begin{lstlisting}[%
-    language={Python},
-    caption={PrivGraph 原始图重建（Step 6）},
-    label={code:step6-original}
-]
-def step6_original(N, comm_n, pvs, dd_s, ev_mat):
-    mat2 = zeros(N, N)
-    for i in range(comm_n):
-        # Phase 1: 社区内部边（Chung-Lu 模型）
-        nodes = pvs[i]
-        mat2[nodes, nodes] = generate_intra_edge(dd_s[i])
-        # Phase 2: 跨社区边（均匀随机）
-        for j in range(i+1, comm_n):
-            if ev_mat[i, j] > 0:
-                c1 = random.choice(pvs[i], ev_mat[i, j])
-                c2 = random.choice(pvs[j], ev_mat[i, j])
-                for k in range(ev_mat[i, j]):
-                    mat2[c1[k], c2[k]] = 1
-                    mat2[c2[k], c1[k]] = 1
-    return mat2
-\end{lstlisting}
+\begin{breakablealgorithm}
+    \caption{PrivGraph 原始图重建（Step 6）}
+    \label{algo:step6-original}
+    \begin{algorithmic}[1]
+        \REQUIRE 空图 $G_N$，社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$，
+                 噪声度序列 $\hat{d}$，噪声边矩阵 $\hat{v}$
+        \ENSURE 合成图 $G_s$
+        \STATE 初始化 $G_s \gets G_N$
+        \STATE \textbf{阶段 1：社区内部边生成}
+        \FOR{$C_i \in \mathbb{C}_F$}
+            \STATE 基于 $\hat{d}_i$ 生成 $C_i$ 内部子图 $s_i$ \quad // Chung-Lu 模型
+            \STATE $G_s \gets G_s \cup s_i$
+        \ENDFOR
+        \STATE \textbf{阶段 2：跨社区边生成}
+        \FOR{$C_i, C_j \in \mathbb{C}_F,\ i < j$}
+            \STATE 在 $C_i \times C_j$ 上均匀随机采样 $\hat{v}_{ij}$ 条边构成 $s_{ij}$
+            \STATE $G_s \gets G_s \cup s_{ij}$
+        \ENDFOR
+        \RETURN $G_s$
+    \end{algorithmic}
+\end{breakablealgorithm}
 
-\par 观察该实现可以发现，原始图重建在两类边的处理上采用了两种不同的策略：
-社区内部边通过 \texttt{generate\_intra\_edge} 函数依据噪声度序列 $\hat{d}$ 进行有偏采样
-（基于 Chung-Lu 模型），保留了节点度数的偏好性；而跨社区边则采用均匀随机采样，
-使用 \texttt{random.choice(pvs[i], ev\_mat[i, j])} 从社区 $i$ 中等概率抽取$\hat{v}(C_i, C_j)$个节点，
-再在社区 $j$ 中等概率抽取$\hat{v}(C_i, C_j)$个节点，逐对连接。整个过程未引入任何度信息。
+\par 阶段 1 对每个社区 $C_i$，基于 Chung-Lu 模型~\cite{chung_connected_2002}
+按噪声度序列 $\hat{d}_i$ 生成社区内部子图 $s_i$：每对节点 $(u, v) \in C_i \times C_i$
+以概率 $\min(1, \hat{d}_u \hat{d}_v / (2 m_i))$ 独立连边，
+其中 $m_i = \frac{1}{2}\sum_{p \in C_i} \hat{d}_p$。
+阶段 2 对每对社区 $(C_i, C_j)$，从 $C_i$ 与 $C_j$ 中分别均匀独立采样
+$\hat{v}_{ij}$ 个节点，逐对连接构成跨社区子图 $s_{ij}$。
+
+\par 观察该算法可以发现，原始重建在两类边的处理上采用了两种不同的策略：
+社区内部边基于 $\hat{d}$ 进行有偏采样，保留了节点度数的偏好性；
+而跨社区边则采用均匀随机采样，整个过程未引入任何度信息。
 
 \subsection{局限性分析}
 
@@ -295,58 +313,48 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 \par 基于这一观察，本文将在下一章中提出一种``以适度牺牲跨社区边的统计还原度、
 换取社区结构稳定性''的改进策略，以避免噪声桥梁对下游社区检测的过度干扰。
 
-\subsubsection{合成图缺乏局部三角结构与紧致社区结构}
+\subsubsection{合成图局部三角结构的固有局限}
 
-\par PrivGraph 在生成社区内部边时基于 Chung-Lu 模型，仅利用了节点度数信息，
-并未显式建模``邻居之间的关联''。这就导致合成图中虽然每个节点的度数与目标 $\hat{d}$ 基本一致，
-但边的位置是按度概率随机分布的，缺乏真实图所特有的传递性。形式化地说，
-真实社交网络中``朋友的朋友也是朋友''这一现象使得节点的聚类系数普遍较高，
-而 Chung-Lu 类的随机图模型理论上聚类系数趋于 $0$，这是由模型本身决定的偏差，
-不会因隐私预算增大而自然消失。
+\par 除上述两个问题外，PrivGraph 在生成社区内部边时基于 Chung-Lu 模型，
+仅利用了节点度数信息，并未显式建模"邻居之间的关联"。
+这就导致合成图中虽然每个节点的度数与目标 $\hat{d}$ 基本一致，
+但边的位置是按度概率随机分布的，缺乏真实图所特有的传递性。
+形式化地说，真实社交网络中"朋友的朋友也是朋友"这一现象使得节点的
+聚类系数普遍较高，而 Chung-Lu 类的随机图模型理论上聚类系数趋于 $0$，
+这是由模型本身决定的偏差。
 
-\par 与此同时，合成图的社区结构也存在系统性偏差。由于跨社区边数完全由噪声 $\hat{v}$ 决定，
-而该数值在低预算下噪声较大，合成图中跨社区边比例往往偏高。
-同时这些跨社区边均匀分布在每对社区之间，
-使得社区与社区之间的``边界''在合成图中显得模糊，整体模块度低于原图。
-换言之，PrivGraph 在三个相关指标上同时存在结构性偏差：聚类系数偏低、模块度偏低、
-跨社区边相对过多。这三者并非孤立，而是同一根因（跨社区边过多与局部传递性缺失）的不同表现。
+\par 这一问题与跨社区边过多的问题相互耦合：
+跨社区边均匀分布在每对社区之间，使得社区与社区之间的"边界"在合成图中
+显得模糊，整体模块度低于原图，进一步削弱了合成图的局部传递性表现。
+不过需要指出的是，三角结构的根本性修复需要超出 Chung-Lu 框架的额外建模手段，
+本文在第~\ref{subsec:exploratory} 节中讨论了一种基于零模型的跨社区边清理
+后处理尝试，但实验表明其在多数指标上未能带来稳定增益，
+因此本文将这一问题作为一个开放方向，
+而将主要优化精力集中于跨社区边处理这一更为关键的瓶颈环节。
 
 \subsubsection{局限性的总体影响}
-
-\par 综合上述三个小节的分析，PrivGraph 图重建阶段的局限性可以归结为\autoref{tab:limitations}所示的三类问题，它们分别影响合成图的不同方面。
-
-\begin{table}[ht]
-    \caption{\label{tab:limitations}PrivGraph 图重建阶段的局限性总结}
-    \centering
-    \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
-        \hline
-        \textbf{问题} & \textbf{成因} & \textbf{主要影响指标} \\ \hline
-        跨社区均匀采样 & 未利用噪声度序列 $\hat{d}$ & EVC、Degree KL \\ \hline
-        跨社区边过度影响下游检测 & 噪声社区划分与噪声边向量 $\hat{v}$ 的双层误差叠加 & NMI、Modularity \\ \hline
-        局部/全局结构偏差 & Chung-Lu 模型缺乏传递性 & CC \\ \hline
-    \end{tabularx}
-\end{table}
 
 \par 三类问题之间并不是孤立的，而是存在协同放大关系。跨社区均匀采样使得跨社区边
 在节点上均匀分布，未能反映原图中跨社区连接的度异质性；
 这种偏差又被原图重建过程中已存在的双层噪声（噪声社区划分与噪声边向量 $\hat{v}$）
-所固化，最终在 NMI、模块度和聚类系数等多个指标上同时表现出系统性偏差。
-因此，本文的优化方案需要从两个互补的角度同时入手——
-重建过程本身的精细化以及合成图层面的后处理修补——
-以构成一个相对完整的优化体系。下一章将详细介绍本文提出的两个优化模块。
+所固化，最终在 NMI、模块度等指标上同时表现出系统性偏差。
+其中，跨社区边的处理同时关联前两个问题——
+既涉及度信息利用，又直接影响下游社区检测——
+是图重建阶段最为关键的瓶颈环节。本文据此将优化重点集中于跨社区边的处理，
+通过单一但针对性较强的图重建模块同时缓解前两类问题；
+对于第三类局部三角结构偏差，本文将其作为一个开放方向，
+相关的探索性尝试见第~\ref{subsec:exploratory} 节。
 
 \clearpage
 
-\section{跨社区边处理的优化与合成图后处理}
+\section{跨社区边处理的图重建优化}
 
-\par 本章详细介绍针对第三章所识别的局限性所提出的优化方法。
-\autoref{subsec:design-overview}介绍整体设计思路与总体框架；
-\autoref{subsec:reconstruct}介绍图重建模块的优化，
+\par 本章详细介绍针对第三章所识别的局限性所提出的图重建优化方法。
+\autoref{subsec:design-overview}介绍整体设计思路；
+\autoref{subsec:reconstruct}介绍图重建模块的具体设计，
 针对原 PrivGraph 在跨社区边均匀采样过程中度信息利用不足、
 以及与噪声社区划分耦合放大的问题进行重新设计；
-\autoref{subsec:postprocess}介绍合成图层面的后处理优化，
-作用于已合成的图，对其拓扑结构进行进一步修正；
-\autoref{subsec:analysis}给出整体伪代码、隐私性证明与复杂度分析。
+\autoref{subsec:analysis}给出隐私性证明与复杂度分析。
 
 \subsection{设计思路与总体框架}
 \label{subsec:design-overview}
@@ -354,7 +362,7 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 \par 本文优化的总体设计遵循以下三条思路：
 
 \begin{enumerate}
-    \item \textbf{后处理性质的利用}\cite{dwork_algorithmic_2014}\textbf{。}
+    \item \textbf{后处理性质的利用}\cite{dwork_algorithmic_2014}\textbf{：}
     所有优化均仅作用于差分隐私的后处理阶段，
     即只能访问已经被噪声扰动过的中间结果（$\mathbb{C}_F$、$\hat{d}$、$\hat{v}$）
     以及已经合成的图本身，不再访问任何原始数据。
@@ -363,46 +371,34 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
     结果仍满足 $\varepsilon$-DP。这一性质保证本文优化算法的隐私性与原始 PrivGraph 
     完全一致，因此无需重新进行隐私预算分析。
     
-    \item \textbf{与原算法的模块化兼容性。}本文优化与原始 PrivGraph 在结构上保持一致，
+    \item \textbf{与原算法的模块化兼容性：}本文优化与原始 PrivGraph 在结构上保持一致，
     仍然以``社区内部边 + 跨社区边''为主要划分，
-    每个新增模块均以独立函数封装并提供显式开关。
-    这种设计使本文方法可作为原算法的``可替换组件''集成到已有 PrivGraph 实现中，
-    并便于通过消融实验对各模块的贡献进行独立验证。
+    新增的图重建模块以独立函数封装并提供显式开关，
+    便于作为原算法的``可替换组件''集成到已有 PrivGraph 实现中。
     
-    \item \textbf{以瓶颈环节为优化对象。}\autoref{chap:limitation} 的局限性分析表明，
+    \item \textbf{以瓶颈环节为优化对象：}\autoref{chap:limitation} 的局限性分析表明，
     PrivGraph 图重建阶段中跨社区边的处理是合成图可用性的主要瓶颈，
     对 NMI、模块度等多项指标存在系统性影响。
     本文据此将优化重点放在跨社区边的处理上，
-    构成 \autoref{subsec:reconstruct} 节所述的图重建模块的优化；
-    \autoref{subsec:postprocess} 节所述的合成图后处理则进一步从邻域级结构修补的角度
-    对合成图进行修正。两项改进作用对象不重叠，
-    其各自及组合下的效果将在第五章的消融实验中得到验证。
+    构成 \autoref{subsec:reconstruct} 节所述的图重建模块。
 \end{enumerate}
 
-\par 基于上述原则，本文从两个层面对原有图重建过程进行改进。
-
-\par \textbf{图重建模块的优化：}针对原 Step 6 中跨社区边的生成策略进行改造。
+\par 基于上述原则，本文针对图重建阶段的跨社区边处理进行了重新设计：
 原算法以噪声边向量 $\hat{v}$ 为预算上限、对每对社区独立执行均匀采样，
 既未利用 $\hat{d}$ 中蕴含的度信息，也未对采样规模与噪声社区划分之间的
-耦合误差加以控制。本文在该模块中引入三项相互配合的改动：
+耦合误差加以控制。本文在该模块中引入两项相互配合的改动：
 将跨社区采样从均匀切换为基于 $\hat{d}$ 的度加权有偏采样，
 使噪声度序列在跨社区方向上同样得到利用；
 按比例 \texttt{inter\_ratio} 主动缩减每对社区之间生成的跨社区边数，
-削弱噪声社区划分与噪声 $\hat{v}$ 两层误差对合成图社区结构的叠加影响；
-将节省下来的部分边预算按比例 \texttt{intra\_ratio} 回流至两个社区的内部，
-并辅以一项软度修复机制对显著偏离目标度的节点进行轻量化增删，
-以维持节点度分布的整体一致性。
+削弱噪声社区划分与噪声 $\hat{v}$ 两层误差对合成图社区结构的叠加影响。
+此外，为补偿因跨社区边缩减而引起的总边数下降，
+本文在 Chung-Lu 采样之前根据每个社区节省的跨社区边数
+对噪声度序列 $\hat{d}$ 进行等比例放大，
+使 Chung-Lu 模型在社区内部自然多生成相应数量的边，
+从而在保持度分布形状不变的前提下维持节点度分布的整体一致性。
 
-\par \textbf{合成图的后处理：}作用于图重建完成后的合成结果，进一步对其拓扑结构进行修正。
-该模块包含两步：第一步在每个社区内部检测``两端无公共邻居''的孤立边，
-通过将其替换为可参与三角形结构的边以提升合成图的局部传递性，
-弥补 Chung-Lu 模型在三角结构建模上的固有缺陷；
-第二步基于配置零模型识别期望连接数小于 $1$ 的稀疏跨社区边，
-按比例对该类边进行清理，以削弱噪声引入的虚假桥梁对合成图社区结构的扰动。
-
-\par 两项改进分别作用于图生成阶段与生成后阶段，
-作用对象与作用机制不重叠，可在不同组合下单独使用或叠加使用。
-\hyperref[chap:experiment]{第五章}将通过消融实验对其各自及组合下的效果进行系统评估。
+\par 第五章将通过实验对该模块的效果进行系统评估。
+该章末尾还独立讨论本文在 PrivGraph 其他阶段进行的若干探索性尝试。
 
 \subsection{图重建模块的优化}
 \label{subsec:reconstruct}
@@ -428,345 +424,155 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 将原 PrivGraph 中均匀的跨社区采样替换为基于 $\hat{d}$ 的度加权有偏采样，
 使噪声度序列在跨社区方向上同样得到利用；
 以 \texttt{inter\_ratio} 主动缩减每对社区之间的跨社区边规模，
-将原本投入跨社区的边预算按 \texttt{intra\_ratio} 部分回流至两个社区内部，
 削弱``噪声社区划分 $\times$ 噪声 $\hat{v}$''的双层误差叠加效应；
-最后通过一项软度修复机制，
-对实际度数显著偏离目标度的节点进行局部的边增删，
-使合成图整体度分布更接近 $\hat{d}$。
-第五章的消融实验将进一步验证：
-单独启用该模块即可获得本文方法在 NMI、Modularity 等指标上的主要增益。
+同时，在 Chung-Lu 采样之前根据每个社区因跨社区缩减而节省的边数
+对 $\hat{d}$ 进行等比例放大，使 Chung-Lu 模型在社区内部自然补偿
+因跨社区边减少而损失的总边数，在保持度分布形状不变的前提下
+维持节点度分布的整体一致性。
+\par 第五章的主对比实验将进一步验证：本模块在 NMI、Modularity 等指标上
+能够稳定改善合成图的可用性。
 
 \subsubsection{算法流程}
 
-\par 图重建模块的整体过程分为三个阶段。第一阶段沿用原 PrivGraph
-的社区内部边生成；第二阶段是本文重点改动的``跨社区边预算重分配'',
-将原均匀采样替换为度加权采样并主动缩减跨社区边规模、
-将节省的预算按比例回流至社区内部；第三阶段对节点度数偏离过大的情形
-进行软修复。
+\par 图重建模块的整体过程分为三个阶段。第一阶段根据跨社区边的缩减量
+对噪声度序列进行等比例放大；第二阶段使用放大后的度序列进行 Chung-Lu 社区内部边生成；
+第三阶段对跨社区边进行度加权缩减采样。
 
 \begin{enumerate}
-    \item \textbf{社区内部初始边生成：}沿用原 PrivGraph 流程，
-    对每个社区 $i$ 基于噪声度序列生成社区内部边的初始矩阵 $M_i^{\mathrm{intra}}$，
-    置入合成邻接矩阵 \texttt{mat2} 的相应块。
+    \item \textbf{度序列放大（边预算补偿）：}对每个社区 $C_i$，
+    计算其因跨社区缩减而节省的边数。具体地，社区 $C_i$ 与所有其他社区之间
+    原本需要生成的跨社区边数为 $\sum_{j \neq i} \hat{v}(C_i, C_j)$，
+    按 \texttt{inter\_ratio} 缩减后节省的边数为
+    $\mathrm{extra}_i = \sum_{j \neq i} \hat{v}(C_i, C_j) \cdot (1 - \texttt{inter\_ratio}) / 2$
+    （除以 $2$ 是因为每对社区的节省量在两个社区之间均分）。
+    由于 Chung-Lu 模型生成的期望边数约为 $\sum_{p \in C_i} \hat{d}_p / 2$，
+    要使社区内多生成 $\mathrm{extra}_i$ 条边，需要将度序列之和增大 $2 \cdot \mathrm{extra}_i$。
+    因此对 $C_i$ 中每个节点的度数按统一的放大系数
+    \begin{equation}
+        \label{equ:scale-factor}
+        \mathrm{scale}_i = 1 + \frac{2 \cdot \mathrm{extra}_i}{\sum_{p \in C_i} \hat{d}_p}
+    \end{equation}
+    进行等比例放大，并将放大后的度数截断至 $[0,\, |C_i| - 1]$ 以保持合法性。
+    该操作保持了度分布的形状不变，仅整体提升了边的生成量。
 
-    \item \textbf{跨社区边预算的重分配：}对每对社区 $(i, j)$，
-    以 $\hat{v}(C_i, C_j)$ 为基准重新分配边预算，
-    将原算法用于跨社区的均匀采样替换为以下三类按度加权的有偏采样
-    （共用从 $\hat{d}_i, \hat{d}_j$ 归一化得到的概率向量 
-    $\pi_i, \pi_j$，
-    所有采样均通过碰撞检测避免重复边）：
-    \begin{itemize}
-        \item \emph{社区 $i$ 内部追加}：按 \texttt{intra\_ratio} 计算
-        总补充边数 
-        $n_{\mathrm{intra}} = \lfloor \hat{v}(C_i, C_j) \cdot 
-        \texttt{intra\_ratio} \rfloor$，将其在两个社区之间均匀切分为
-        $n_{r_i} = \lfloor n_{\mathrm{intra}}/2 \rfloor$ 与
-        $n_{r_j} = n_{\mathrm{intra}} - n_{r_i}$。
-        在 $C_i$ 内部按 $\pi_i$ 独立采样节点对，
-        跳过自环与已存在边，直至成功填入 $n_{r_i}$ 条新边。
-        \item \emph{社区 $j$ 内部追加}：在 $C_j$ 内按 $\pi_j$
-        同样方式填入 $n_{r_j}$ 条新边。
-        \item \emph{跨社区缩减采样}：按 \texttt{inter\_ratio} 计算
-        保留的跨社区边数 
-        $n_{\mathrm{inter}} = \lfloor \hat{v}(C_i, C_j) \cdot 
-        \texttt{inter\_ratio} \rfloor$。
-        在 $C_i \times C_j$ 上按 $(\pi_i, \pi_j)$
-        独立采样节点对，避免重复并跳过已存在边，
-        直至成功填入 $n_{\mathrm{inter}}$ 条边。
-    \end{itemize}
+    \item \textbf{社区内部边生成：}对每个社区 $C_i$，
+    基于放大后的度序列 $\hat{d}_i^{\mathrm{scaled}}$ 调用 Chung-Lu 采样
+    生成社区内部边，置入合成邻接矩阵 \texttt{mat2} 的相应块。
+    由于度序列已经包含了边预算补偿，Chung-Lu 模型在社区内部自然多生成
+    与跨社区缩减量相当的边数，无需额外的随机补边操作。
+
+    \item \textbf{跨社区度加权缩减采样：}对每对社区 $(i, j)$，
+    按 \texttt{inter\_ratio} 计算保留的跨社区边数 
+    $n_{\mathrm{inter}} = \lfloor \hat{v}(C_i, C_j) \cdot \texttt{inter\_ratio} \rfloor$。
+    从 $\hat{d}_i$、$\hat{d}_j$ 归一化得到概率向量 $\pi_i$、$\pi_j$，
+    在 $C_i \times C_j$ 上按 $(\pi_i, \pi_j)$ 独立采样节点对，
+    通过碰撞检测避免重复边与已存在边，
+    直至成功填入 $n_{\mathrm{inter}}$ 条边。
     与原算法直接采样 $\hat{v}(C_i, C_j)$ 条均匀跨社区边相比，
     这一步在两方面对原流程进行了改造：
     一是将跨社区采样从均匀切换为度加权，
     使 $\hat{d}$ 在跨社区方向上同样得到利用；
     二是按 \texttt{inter\_ratio} 主动缩减跨社区边规模，
-    并将节省的边预算按 \texttt{intra\_ratio} 回流至两个社区内部，
     以缓解噪声社区划分与噪声 $\hat{v}$ 双层误差的叠加扰动。
-
-    \item \textbf{软度修复：}经过前两阶段生成的合成图在节点度数上
-    仍可能与目标度序列 $\hat{d}$ 存在偏离，
-    本文对偏离幅度超过阈值 $30\%$ 的节点执行如下修复：
-    \begin{itemize}
-        \item \emph{削边}：对实际度数超出目标 $30\%$ 以上的节点，
-        按``先删跨社区边、再删社区内边''的优先级随机删除部分关联边，
-        将其度数压回至目标的 $130\%$ 以内；
-        \item \emph{补边}：对实际度数低于目标 $30\%$ 以上的节点，
-        仅在其所属社区内部，
-        按``候选邻居的剩余度缺口''加权补充边，
-        将其度数提升至目标的 $70\%$ 以上。
-    \end{itemize}
-    阈值 $30\%$ 是为了避免因 Chung-Lu 与有偏采样固有的随机涨落而
-    过度修剪原本合理的边；削边时优先选择跨社区方向的邻居，
-    则在修复度分布的同时同向地继续削弱跨社区边均匀分布的问题。
 \end{enumerate}
 
-\par 其中 \texttt{inter\_ratio} 是该模块最核心的超参，
-直接决定跨社区边追加的力度；\texttt{intra\_ratio} 是配套的较小超参，
-用以维持节点度分布的整体一致性。
-本文取 $\texttt{inter\_ratio} = 0.10$、$\texttt{intra\_ratio} = 0.05$，
+\par 其中 \texttt{inter\_ratio} 是该模块唯一的核心超参，
+直接决定跨社区边的保留比例，同时也间接决定了度序列放大的幅度。
+本文取 $\texttt{inter\_ratio} = 0.10$，
 即每对社区之间仅保留约 $\hat{v}(C_i, C_j) \cdot 10\%$ 条度加权采样的跨社区边，
-另按 $\hat{v}(C_i, C_j) \cdot 5\%$ 的比例追加度加权采样的社区内部边（在两个社区间均分）。
-这两个值是经过对 Chameleon 数据集的初步调优后确定的：
-\texttt{inter\_ratio} 较大意味着对跨社区边的修复力度较大；
-\texttt{intra\_ratio} 取较小是因为社区内部本来就由 Chung-Lu 采样保留了度信息，
-无需太大补偿。两者按 $2{:}1$ 的比例搭配能够在多个指标上取得稳定的改善
-而不引入明显的过密化副作用。
+其余 $90\%$ 的边预算通过度序列放大回流至社区内部的 Chung-Lu 采样。
+该值是经过对 Chameleon 数据集的初步调优后确定的，
+在多个指标上取得稳定的改善而不引入明显的过密化副作用。
 
-\subsubsection{伪代码}
+\par 综合上述三个阶段，本文图重建优化模块的完整流程如算法~\ref{algo:reconstruct} 所示。
 
-\begin{lstlisting}[%
-    language={Python},
-    caption={图重建模块优化的伪代码},
-    label={code:reconstruct}
-]
-def reconstruct_graph_new(N, comm_n, pvs, dd_s, ev_mat,
-                          intra_ratio=0.05, inter_ratio=0.10):
-    mat2 = zeros(N, N)
-    # Step 1：社区内基础边（沿用原 PrivGraph 的 Chung-Lu 采样）
-    for i in range(comm_n):
-        mat2[pvs[i], pvs[i]] = generate_intra_edge(dd_s[i])
-
-    # Step 2：跨社区边预算重分配（按对处理，全部度加权）
-    for i in range(comm_n):
-        prob_i = normalize(dd_s[i])           # pi_i proportional to d_hat_i
-        for j in range(i+1, comm_n):
-            if ev_mat[i, j] <= 0: continue
-            prob_j = normalize(dd_s[j])
-
-            # (a) 社区内部度加权追加：共 ev_mat[i, j] * intra_ratio 条，i、j 各半
-            n_intra = int(ev_mat[i, j] * intra_ratio)
-            sample_intra_dw(mat2, pvs[i], prob_i, n_intra // 2)
-            sample_intra_dw(mat2, pvs[j], prob_j, n_intra - n_intra // 2)
-
-            # (b) 跨社区度加权缩减采样：仅保留 ev_mat[i, j] * inter_ratio 条
-            n_inter = int(ev_mat[i, j] * inter_ratio)
-            sample_inter_dw(mat2, pvs[i], pvs[j], prob_i, prob_j, n_inter)
-
-    # Step 3：软度修复（阈值 ±30%）
-    soft_degree_repair(mat2, dd_s, pvs, threshold=0.30)
-    return symmetrize(mat2)
-\end{lstlisting}
+\begin{breakablealgorithm}
+    \caption{图重建模块优化}
+    \label{algo:reconstruct}
+    \begin{algorithmic}[1]
+        \REQUIRE 空图 $G_N$，社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$，
+                 噪声度序列 $\hat{d}$，噪声边矩阵 $\hat{v}$，
+                 跨社区保留比例 $\eta$（即 \texttt{inter\_ratio}）
+        \ENSURE 合成图 $G_s$
+        \STATE 初始化 $G_s \gets G_N$
+        \STATE \textbf{阶段 0：度序列放大（边预算补偿）}
+        \FOR{$C_i \in \mathbb{C}_F$}
+            \STATE $\mathrm{extra}_i \gets \frac{1}{2}(1 - \eta) \sum_{j \neq i} \hat{v}_{ij}$
+            \STATE 按公式~(\ref{equ:scale-factor}) 计算放大系数 $\mathrm{scale}_i$
+            \STATE $\hat{d}_i^{\mathrm{scaled}} \gets \mathrm{scale}_i \cdot \hat{d}_i$ 
+                   \quad // 截断至 $[0,\, |C_i| - 1]$
+        \ENDFOR
+        \STATE \textbf{阶段 1：社区内部边生成}
+        \FOR{$C_i \in \mathbb{C}_F$}
+            \STATE 基于 $\hat{d}_i^{\mathrm{scaled}}$ 生成 $C_i$ 内部子图 $s_i$
+                   \quad // Chung-Lu 模型
+            \STATE $G_s \gets G_s \cup s_i$
+        \ENDFOR
+        \STATE \textbf{阶段 2：跨社区度加权缩减采样}
+        \FOR{$C_i, C_j \in \mathbb{C}_F,\ i < j$}
+            \STATE $n_{ij} \gets \lfloor \eta \cdot \hat{v}_{ij} \rfloor$
+            \STATE 按概率 $(\pi_i, \pi_j) \propto (\hat{d}_i, \hat{d}_j)$ 在 $C_i \times C_j$ 
+                   上采样 $n_{ij}$ 条边构成 $s_{ij}$
+            \STATE $G_s \gets G_s \cup s_{ij}$
+        \ENDFOR
+        \RETURN $G_s$
+    \end{algorithmic}
+\end{breakablealgorithm}
 
 \par 该模块不改变原算法的整体框架，
 可以理解为对原 Step 6 在跨社区边处理上的针对性改造。
 该模块通过开关变量与原始 PrivGraph 解耦实现：
-消融实验中关闭该模块即等价于调用原始 \texttt{step6\_original}。
-
-\subsection{合成图的后处理优化}
-\label{subsec:postprocess}
-
-\subsubsection{设计动机}
-
-\par 图重建模块在边数层面对生成阶段进行了改造，
-但 Chung-Lu 类生成机制本身仍对边的``位置''存在结构性偏差：
-节点之间的局部传递性较弱，使合成图的聚类系数偏低；
-跨社区方向上仍存在一些零散的稀疏边，对模块度形成无谓的负贡献。
-这两类偏差不属于边数层面的问题，而是边在节点之间分布的问题，
-图重建模块本身无法直接修复。
-
-\par 后处理模块作为图重建模块的补充，针对上述结构偏差进行修正：
-通过对边的位置重排对合成图进行调整。
-整个模块作用于已合成的邻接矩阵 \texttt{mat2} 与已发布的社区划分 \texttt{mat1\_pvs}，
-不访问任何原始数据。第五章的消融实验将显示，
-该模块在聚类系数和模块度等指标上能够提供进一步改善，
-与图重建模块的优化形成互补。
-
-\subsubsection{第一步：社区内孤立边重排}
-
-\par 对每个社区 $C_i$，先取出其子图 $\mathrm{sub} = \texttt{mat2}[C_i, C_i]$ 
-和该子图的边列表 \texttt{intra\_edges}。设交换次数比例为 \texttt{swap\_ratio}，
-则该社区上尝试的交换次数为 
-$n_{\mathrm{iter}} = \max(1, \lfloor |\texttt{intra\_edges}| \cdot \texttt{swap\_ratio} \rfloor)$。
-每次交换的具体步骤如下：
-
-\begin{enumerate}
-    \item 从 \texttt{intra\_edges} 中随机抽取一条边 $(u, v)$。
-    
-    \item 在子图中分别取出 $u$ 和 $v$ 的邻居集合 $N(u)$、$N(v)$，计算 $|N(u) \cap N(v)|$。
-    
-    \item 若该交集非空，说明 $(u, v)$ 已经处于至少一个三角形中，对聚类系数的边际贡献已经存在，跳过本次交换。
-    
-    \item 若该交集为空，则 $(u, v)$ 是``孤立边''。在 $u$ 的非邻居集合中（即 $V(C_i) \setminus (N(u) \cup \{u\})$）查找 $w$，使得 $|N(u) \cap N(w)|$ 最大；该数量等于添加 $(u, w)$ 后新增的三角形数。如果 $w$ 存在且 $|N(u) \cap N(w)| > 0$，则执行交换：删除 $(u, v)$，添加 $(u, w)$。删边和加边在 \texttt{mat2} 与社区子图 $\mathrm{sub}$ 上同步进行，并更新本社区的 \texttt{intra\_edges}。
-\end{enumerate}
-
-\par 该交换的度变化为：$u$ 的度数不变（删一加一），$v$ 的度数减 $1$，$w$ 的度数加 $1$。
-这意味着每次交换会在度序列上引入轻微扰动。
-为控制累积扰动，本文取 $\texttt{swap\_ratio} = 0.3$ 作为默认值，
-即每个社区平均尝试本社区边数 $30\%$ 次交换。
-\autoref{subsec:exp-hyper} 的敏感性扫描显示，
-\texttt{swap\_ratio} 在 $[0.0, 0.7]$ 范围内对核心指标的影响均在小区间波动，
-不同指标的最优点分散在不同取值上，没有形成单调趋势；
-$0.3$ 作为该波动区间内偏中间的值，
-能够在保证后处理产生足够交换次数的同时避免高比例下度序列累积扰动的风险。
-
-\subsubsection{第二步：跨社区稀疏边清理}
-
-\par 完成第一步的社区内部修复后，对所有跨社区边按``配置零模型期望连接数''进行清理。
-其依据是模块度公式中的 $k_u \cdot k_v / (2m)$ 一项——
-它在配置零模型（保持度序列、随机连边）下衡量节点 $u$ 和 $v$ 之间的期望连接数。
-若该值远小于 $1$，则该边在零模型下并非预期出现；
-当合成图中确实存在此类端点跨社区的边时，
-其对模块度的负向贡献便缺乏配置零模型层面的依据。
-第二步针对此类跨社区边进行删除：
-
-\begin{enumerate}
-    \item 计算 $m = (\sum \texttt{mat2}) / 2$ 和度向量 $\texttt{degree}[i] = \sum_j \texttt{mat2}[i, j]$。
-    
-    \item 对每对社区 $(C_i, C_j)$，$i < j$，遍历所有 $(u, v)$ 满足 $u \in C_i$、$v \in C_j$ 且 $\texttt{mat2}[u, v] = 1$，构成跨社区边集 \texttt{cross\_edges}。
-    
-    \item 对每条跨社区边 $(u, v)$ 计算 $\mathrm{expected} = \texttt{degree}[u] \cdot \texttt{degree}[v] / (2m)$。若 $\mathrm{expected} > 1$，则保留（说明这两个高度数节点之间出现一条边在度分布意义下是合理的）；否则将其加入候选删除列表 \texttt{remove\_list}。
-    
-    \item 从 \texttt{remove\_list} 中随机选取最多 $\lfloor |\texttt{cross\_edges}| / 2 \rfloor$ 条进行删除（每对社区独立地以 $1/2$ 为上限），即将 $\texttt{mat2}[u, v]$ 和 $\texttt{mat2}[v, u]$ 同时置 $0$。$1/2$ 的上限作为``安全阀''，避免删除过多导致连通性受损。
-\end{enumerate}
-
-\par 直观而言：第一步在社区内部补充了原本应该出现的三角结构，
-第二步在社区之间删除了本不应出现的稀疏边。
-两步共同作用使合成图更接近真实图典型的社区内连通密集、社区间连接稀疏的拓扑特征，
-模块度也相应得到改善。
-
-\subsubsection{伪代码}
-
-\begin{lstlisting}[%
-    language={Python},
-    caption={合成图后处理优化的伪代码},
-    label={code:postprocess}
-]
-def post_process_edge_swap(mat2, pvs, comm_n, swap_ratio=0.3):
-    # 第一步：社区内孤立边重排
-    for ci in range(comm_n):
-        nodes = pvs[ci]
-        sub = mat2[nodes, nodes]
-        intra_edges = upper_triangle_edges(sub)
-        n_iter = max(1, int(len(intra_edges) * swap_ratio))
-        for _ in range(n_iter):
-            u, v = random.choice(intra_edges)
-            if |N(u) & N(v)| > 0: continue   # 非孤立边，跳过
-            best_w = argmax over w not in N(u)+{u} of |N(u) & N(w)|
-            if best_w is None or |N(u) & N(best_w)| == 0: continue
-            # 交换：删 (u,v)，加 (u,best_w)
-            mat2[u, v] = mat2[v, u] = 0
-            mat2[u, best_w] = mat2[best_w, u] = 1
-            update intra_edges, sub
-    # 第二步：跨社区稀疏边清理
-    m = sum(mat2) / 2
-    degree = rowSum(mat2)
-    for (ci, cj) in pairs(comm_n):
-        cross_edges = {(u,v) | u in pvs[ci], v in pvs[cj], mat2[u,v]=1}
-        remove_list = []
-        for (u, v) in cross_edges:
-            expected = degree[u] * degree[v] / (2 * m)
-            if expected <= 1: remove_list.append((u, v))
-        n_remove = min(len(remove_list), len(cross_edges) // 2)
-        chosen = random.sample(remove_list, n_remove)
-        for (u, v) in chosen: mat2[u, v] = mat2[v, u] = 0
-    return mat2
-\end{lstlisting}
-
-\subsubsection{关键参数说明}
-
-后处理模块的关键超参数有两个：
-\texttt{swap\_ratio}（每社区交换次数比例）和跨社区删除上限比例（默认 $1/2$）。
-本文在 Chameleon 数据集上对 $\texttt{swap\_ratio} \in \{0.0, 0.1, 0.3, 0.5, 0.7\}$ 进行了网格扫描，
-详见\autoref{subsec:exp-hyper}。结果显示各核心指标的最优点分散在该范围的不同取值上、
-未呈现单调趋势，差异也相对有限；本文采用 $0.3$ 作为默认配置，
-是综合考虑后处理强度与度序列累积扰动两方面的折中。
-跨社区删除上限固定为 $1/2$，作为防止过度删除导致连通性受损的安全阀。
+关闭该模块即等价于调用原始 \texttt{step6\_original}，
+便于后续实验对比。
 
 \subsection{整体流程、隐私性与复杂度}
 \label{subsec:analysis}
 
-\subsubsection{整体流程}
-
-\par 结合两个模块的优化，本文方法的整体流程如\autoref{code:overall}所示。
-
-\begin{lstlisting}[%
-    language={Python},
-    caption={本文优化方法的整体流程},
-    label={code:overall}
-]
-Input:  社区划分 C_F, 噪声度序列 d_hat, 噪声边向量 v_hat
-Param:  intra_ratio=0.05, inter_ratio=0.10, swap_ratio=0.3
-Output: 合成邻接矩阵 mat2
-
-1. 由 C_F 派生 mat1_pvs 和 comm_n
-2. # 图重建模块优化
-3. mat2 = reconstruct_graph_new(N, comm_n, mat1_pvs, dd_s, ev_mat,
-                                 intra_ratio, inter_ratio)
-4. mat2 = symmetrize(mat2)        # 对称化为 0/1 矩阵
-5. # 合成图后处理优化
-6. mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, swap_ratio)
-7. return mat2
-\end{lstlisting}
-
-\par 整个流程作为 PrivGraph 主流程的``图重建阶段''被调用，
-前置阶段（社区划分、信息抽取）保持原 PrivGraph 实现不变。
-两个模块在工程上各自封装为独立的函数，
-可通过开关分别启用或关闭，便于消融实验。
-
 \subsubsection{隐私性分析}
-
 \par \textbf{命题 4.1}：如果 PrivGraph 的社区划分阶段
 （消耗 $\varepsilon_1 + \varepsilon_2$ 隐私预算）和信息抽取阶段
 （消耗 $\varepsilon_3$ 隐私预算）满足 
 $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私，
-则将其图重建阶段替换为本文两个优化模块的组合后，
+则将其图重建阶段替换为本文优化模块后，
 整个流程仍然满足 $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 
 \par \textbf{证明}：根据差分隐私的后处理性质，
 对任何 $\varepsilon$-DP 算法的输出做不依赖原始数据的处理，
-结果仍满足 $\varepsilon$-DP。下面分别验证两个模块均为纯后处理。
+结果仍满足 $\varepsilon$-DP。下面验证图重建模块为纯后处理。
 
 \par 图重建模块的输入为 
-$(N, \texttt{comm\_n}, \texttt{mat1\_pvs}, \texttt{dd\_s}, \texttt{ev\_mat}, \texttt{intra\_ratio}, \texttt{inter\_ratio})$。
-其中 $N$ 是节点数（公开常数）；
-\texttt{comm\_n}、\texttt{mat1\_pvs} 派生自 $\mathbb{C}_F$
-（已经满足 $(\varepsilon_1 + \varepsilon_2)$-DP）；
-\texttt{dd\_s} 即 $\hat{d}$、\texttt{ev\_mat} 即 $\hat{v}$ 均已满足 $\varepsilon_3$-DP；
-\texttt{intra\_ratio} 与 \texttt{inter\_ratio} 是公开超参。
-整个 \texttt{reconstruct\_graph\_new} 在执行过程中未访问原图 $G$，
-因此该模块是纯后处理。
+$(\mathbb{C}_F, \hat{d}, \hat{v}, \eta)$。
+其中社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$ 已满足 $(\varepsilon_1 + \varepsilon_2)$-DP；
+噪声度序列 $\hat{d}$ 与噪声边向量 $\hat{v}$ 均已满足 $\varepsilon_3$-DP；
+跨社区保留比例 $\eta$ 是公开超参；
+节点数 $N = |\bigcup_i C_i|$、社区数 $K = |\mathbb{C}_F|$ 均由 $\mathbb{C}_F$ 派生（公开常数）。
+模块内部派生的放大度序列 $\hat{d}^{\mathrm{scaled}}$ 仅由 $\hat{d}$、$\hat{v}$ 与 $\eta$ 计算得到，
+整个重建过程在执行中未访问原图 $G$，因此该模块属于纯后处理。
 
-\par 合成图后处理模块的输入为 $(\texttt{mat2}, \texttt{mat1\_pvs}, \texttt{comm\_n}, \texttt{swap\_ratio})$。
-\texttt{mat2} 是图重建模块的输出，因此是 $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-DP 的；
-\texttt{mat1\_pvs} 与 \texttt{comm\_n} 同上；\texttt{swap\_ratio} 是公开超参。
-该模块在执行过程中所有派生量
-（如 $\mathrm{sub} = \texttt{mat2}[C_i, C_i]$、\texttt{cross\_edges}、
-$\texttt{degree}[u] = \sum_j \texttt{mat2}[u, j]$、$m = \sum \texttt{mat2} / 2$、
-$\mathrm{expected} = \texttt{degree}[u] \cdot \texttt{degree}[v] / (2m)$）
-都仅由 \texttt{mat2} 与 \texttt{mat1\_pvs} 计算得到，未访问原图 $G$，
-因此该模块亦为纯后处理。
-
-\par 根据后处理性质的复合，整个图重建阶段
-（图重建模块 $\to$ 对称化 $\to$ 合成图后处理模块）
-的输出仍然满足 $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
+\par 根据后处理性质，本文图重建模块的输出仍满足
+$(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 结合前置阶段，整体算法满足 $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私，
 与原始 PrivGraph 完全一致。证毕。
 
 \subsubsection{复杂度分析}
 
 \par \textbf{时间复杂度}方面：
-图重建模块的主体仍由 \texttt{generate\_intra\_edge} 与跨社区采样构成，
-其中跨社区采样虽从均匀采样切换为度加权采样，但单次代价不变
-故该部分与原 PrivGraph 同阶；额外的两步补充边操作的代价为 
-$O(\texttt{intra\_ratio} \cdot |E_{\mathrm{intra}}| + \texttt{inter\_ratio} \cdot |E_{\mathrm{inter}}|)$，
-是原成本的常数倍，因此该模块整体时间复杂度仍为 $O(N^2)$，与原算法相同。
-合成图后处理模块的第一步对每个社区做最多 $\texttt{swap\_ratio} \cdot |E(C_i)|$ 次交换，
-每次交换的``找最优 $w$''在最坏情况下为 $O(|C_i|^2)$，
-所以总代价为 $O(\texttt{swap\_ratio} \cdot \sum_i |E(C_i)| \cdot |C_i|^2)$；
-但在实际运行中由于多数社区较小，该量级远小于理论上界。
-第二步对每对社区遍历跨社区边，总代价为 
-$O(|E_{\mathrm{inter}}| + \texttt{comm\_n}^2)$。
-两步合计仍可由 $O(N^2)$ 主导。
+图重建模块新增的度序列放大操作对每个社区遍历一次度序列，代价为 $O(N)$，
+可以忽略；Chung-Lu 采样与跨社区采样的主体部分中，
+跨社区采样虽从均匀采样切换为度加权采样，但单次代价不变，
+且采样总量由 $\eta$ 缩减，
+因此该模块整体时间复杂度仍为 $O(N^2)$，与原算法相同。
 
 \par \textbf{空间复杂度}方面：
-图重建模块不引入额外存储，仅在 \texttt{mat2} 上原地操作；
-合成图后处理模块在每个社区上临时取出 $\mathrm{sub}$ 子矩阵
-（$O(|C_i|^2)$），但同一时刻只有一个社区被处理，
-整体峰值仍为 $O(|C_{\max}|^2) = O(N^2)$ 量级，与原算法同阶。
+原 PrivGraph 论文给出的理论空间复杂度为 $O(m + N)$，
+但其官方实现采用稠密邻接矩阵存储合成图，实际空间为 $O(N^2)$。
+本文沿用相同的稠密存储方式以保持实现的可比性。
+图重建模块不引入额外存储，仅在合成图邻接矩阵 $A$ 上原地操作，
+整体峰值仍为 $O(N^2)$，与原算法实现同阶。
 
 \par 综合来看，本文优化算法在保留原始 PrivGraph 隐私性与算法复杂度阶的前提下，
-通过图重建模块的优化改善了合成图的可用性，
-并辅以合成图层面的后处理对边的位置进行重排。
-两个模块的贡献将在第五章 \autoref{subsec:exp-main-cha} 的主对比与消融实验中得到验证。
+通过图重建模块的优化改善了合成图的可用性。
+该模块的贡献将在第五章~\autoref{subsec:exp-main-cha} 的主对比实验中得到验证。
 
 \par 至此，本文优化方法的设计、隐私性与复杂度均已论述完毕。
 下一章将通过实验对其有效性进行系统评估。
@@ -776,11 +582,11 @@ $O(|E_{\mathrm{inter}}| + \texttt{comm\_n}^2)$。
 
 \par 本章对前文提出的优化方法进行系统的实验评估。
 \autoref{subsec:exp-setup}介绍实验设置，包括数据集、对比方法、评测指标与超参配置；
-\autoref{subsec:exp-main}给出本文方法与原始 PrivGraph 在四个数据集上的整体对比，
-其中 Chameleon 上的对比同时承担消融分析的职能；
-\autoref{subsec:exp-hyper}给出对核心超参 \texttt{inter\_ratio}、\texttt{intra\_ratio}、
-\texttt{swap\_ratio} 的敏感性分析；
+\autoref{subsec:exp-main}给出本文方法与原始 PrivGraph 在多个数据集上的整体对比；
+\autoref{subsec:exp-hyper}给出对核心超参 \texttt{inter\_ratio} 的敏感性分析；
 \autoref{subsec:exp-summary}对实验结果进行小结。
+最后，\autoref{subsec:exploratory}独立讨论本文围绕 PrivGraph 不同阶段所进行的
+若干探索性尝试。
 
 \subsection{实验设置}
 \label{subsec:exp-setup}
@@ -792,7 +598,7 @@ $O(|E_{\mathrm{inter}}| + \texttt{comm\_n}^2)$。
 是差分隐私图发布领域的常用基准。
 其中 Chameleon 规模适中、社区结构鲜明，
 便于对核心方法和超参进行细粒度对比，
-本文以 Chameleon 为主数据集进行消融与超参敏感性分析；
+本文以 Chameleon 为主数据集进行完整指标对比与超参敏感性分析；
 其余三个数据集用于验证方法在不同图上的可推广性。
 四个数据集的基本统计信息如\autoref{tab:dataset}所示。
 
@@ -811,33 +617,21 @@ $O(|E_{\mathrm{inter}}| + \texttt{comm\_n}^2)$。
 
 \subsubsection{对比方法}
 
-\par 本文将以下四种方法纳入对比：
+\par 本文将以下两种方法纳入对比：
 
 \begin{enumerate}
     \item \textbf{PrivGraph}：原始算法，作为基线方法。
     其图重建阶段采用社区内 Chung-Lu 采样 + 跨社区均匀采样的组合，
     隐私预算按 $1{:}1{:}1$ 平均分配。
     
-    \item \textbf{Ours-R}：仅启用本文图重建模块的优化（\autoref{subsec:reconstruct}）。
-    跨社区采样改为基于 $\hat{d}$ 的度加权有偏采样，
-    并按 \texttt{inter\_ratio} 缩减、按 \texttt{intra\_ratio} 回流，
-    最后执行软度修复；合成图后处理模块关闭。
-    
-    \item \textbf{Ours-P}：仅启用本文合成图后处理模块（\autoref{subsec:postprocess}）。
-    图重建仍沿用原始 PrivGraph 的实现，但在合成图上额外执行
-    社区内孤立边重排与跨社区稀疏边清理两步后处理。
-    
-    \item \textbf{Ours-Full}：本文方法的完整配置，
-    同时启用图重建模块的优化与合成图后处理模块。
+    \item \textbf{Ours}：本文方法。
+    在 Chung-Lu 采样前根据跨社区缩减量对 $\hat{d}$ 进行等比例放大，
+    跨社区采样改为基于 $\hat{d}$ 的度加权有偏采样并按 \texttt{inter\_ratio} 缩减。
+    其余阶段（社区划分、信息抽取）保持与 PrivGraph 一致。
 \end{enumerate}
 
-\par 上述四种方法的隐私预算分配方式保持一致（$\varepsilon_1 = \varepsilon_2 = \varepsilon_3 = \varepsilon/3$），
-以确保可比性。需要说明的是，
-Ours-R 与 Ours-P 同时也作为``单模块消融配置''出现在主对比中，
-因此 Chameleon 上的主对比表天然构成
-``PrivGraph $\to$ +图重建模块 $\to$ +后处理模块 $\to$ 完整方法''
-的消融链条，无需重复跑额外的消融实验。
-其余三个数据集仅参与 PrivGraph 与 Ours-Full 的可推广性对比。
+\par 两种方法的隐私预算分配方式保持一致（$\varepsilon_1 = \varepsilon_2 = \varepsilon_3 = \varepsilon/3$），
+以确保可比性。
 
 \subsubsection{评测指标}
 
@@ -859,162 +653,143 @@ Ours-R 与 Ours-P 同时也作为``单模块消融配置''出现在主对比中�
 \par 实验在 7 个隐私预算 $\varepsilon \in \{0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5\}$
 上展开。社区初始化的分组规模 $N = 20$，分辨率参数 $t = 1.0$，
 均沿用 PrivGraph 默认设置。
-本文方法的核心超参取值为
-$\texttt{inter\_ratio} = 0.10$、$\texttt{intra\_ratio} = 0.05$、
-$\texttt{swap\_ratio} = 0.3$，跨社区删除上限固定为 $1/2$。
+本文方法的唯一核心超参取值为 $\texttt{inter\_ratio} = 0.10$。
 主对比与可推广性实验对每组 $\varepsilon$ 独立运行 10 次后取均值；
 \autoref{subsec:exp-hyper} 的超参敏感性扫描中
-每个超参取值独立运行 30 次，
+\texttt{inter\_ratio} 的每个取值独立运行 30 次，
 以便对相近取值之间的差异进行 Welch t 检验。
 所有实验均在同一台机器上以单线程方式完成。
 
-\subsection{主对比与消融实验}
+\subsection{主对比实验}
 \label{subsec:exp-main}
 
-\par 本节给出本文方法与原始 PrivGraph 在四个数据集上的整体对比。
-\autoref{subsec:exp-main-cha}给出 Chameleon 数据集上四种方法在 7 个指标 × 7 个 $\varepsilon$
-上的完整对比，由于 Ours-R 与 Ours-P 同时作为单模块消融配置出现，
-该节同时承担消融分析的职能；
-\autoref{subsec:exp-main-other}在 Facebook、CA-HepPh、Enron 三个数据集上
-对比 PrivGraph 与 Ours-Full 在 7 个 $\varepsilon$ 下的核心指标，
-验证本文方法的可推广性。
-为节省篇幅，每张表中下划线表示对应 $\varepsilon$ 列上的次优方法，
-加粗表示该列的最优方法。
+\par 本节给出本文方法 Ours 与原始 PrivGraph 在多个数据集上的整体对比。
+\autoref{subsec:exp-main-cha}给出 Chameleon 数据集上两种方法在 7 个指标 × 7 个 $\varepsilon$
+上的完整对比；\autoref{subsec:exp-main-other}在 Facebook 与 CA-HepPh 数据集上
+对比两种方法在 7 个 $\varepsilon$ 下的核心指标，验证本文方法的可推广性。
 
-\subsubsection{Chameleon 数据集上的完整对比与消融分析}
+\subsubsection{Chameleon 数据集上的完整对比}
 \label{subsec:exp-main-cha}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{chameleon_overview.pdf}
-    \caption{\label{fig:cha-overview}各方法在 Chameleon 数据集上 7 个指标的对比}
+    \includegraphics[width=\linewidth]{chamelon_overview7.pdf}
+    \caption{\label{fig:cha-overview}PrivGraph 与本文方法在 Chameleon 数据集上 7 个指标的对比}
 \end{figure}
 
+\par 由 \autoref{fig:cha-overview} 可见，本文方法 Ours 在 Chameleon 数据集上
+相对原始 PrivGraph 取得了显著改善，具体表现按指标维度分述如下：
 
 \begin{itemize}
-    \item \textbf{整体性能(PrivGraph vs Ours-Full):}
-Ours-Full 在 NMI、Modularity Relative、Diameter Relative 三项指标上 7 个 $\varepsilon$
-均稳定领先 PrivGraph；Degree KL 在低、中 $\varepsilon$（$\varepsilon \leq 2.0$）
-区段大幅优于 PrivGraph（如 $\varepsilon = 0.5$ 时由 13.85 降至 4.18），
-高 $\varepsilon$ 区段则与 PrivGraph 接近。EVC Overlap 与 EVC MAE 上两者表现整体相当
-（差异在随机方差量级内）；CC Relative 在 $\varepsilon = 0.5$ 处大幅优于 PrivGraph
-（0.06 vs 0.82），中段（$\varepsilon \in [1.0, 2.0]$）略高于 PrivGraph，
-高 $\varepsilon$ 区段重新略优。综合来看，Ours-Full 在涉及社区结构与全局结构的核心指标上
-稳定占优，在节点重要性指标上保持中性，与 \autoref{subsec:design-overview} 所述设计目标一致。
+    \item \textbf{社区结构指标：}
+    NMI 上 Ours 在所有 7 个 $\varepsilon$ 上均严格领先 PrivGraph，
+    平均值由 0.160 提升至 0.309（相对提升约 93\%）；
+    Modularity Relative 平均值由 0.395 降至 0.121（相对降低约 69\%），
+    全段稳定领先。这一显著改善印证了 \autoref{subsec:reconstruct} 所述的设计动机——
+    将均匀采样替换为基于 $\hat{d}$ 的度加权采样、并按 \texttt{inter\_ratio} 主动缩减
+    跨社区边规模，有效削弱了``噪声社区划分 $\times$ 噪声 $\hat{v}$''的双层误差叠加效应。
 
-   \item \textbf{图重建模块的独立贡献(PrivGraph vs Ours-R):}
-    单独启用图重建模块即可在 NMI 上将平均值由 0.155 提升至 0.306（相对提升约 97\%），
-    在 Modularity Relative 上将平均值由 0.408 降至 0.149（相对降低约 63\%），且在所有
-    7 个 $\varepsilon$ 上均严格领先于 PrivGraph。这与 \autoref{subsec:reconstruct} 所述
-    ``跨社区采样改造贡献了主要增益''的设计预期一致——将均匀采样替换为基于 $\hat{d}$ 的
-    度加权采样，并按 \texttt{inter\_ratio} 主动缩减跨社区边规模，有效削弱了``噪声社区划分
-    $\times$ 噪声 $\hat{v}$''的双层误差叠加。Degree KL 上同样有可观察的改善（平均值由 4.17
-    降至 1.92，相对降低约 54\%），尤其在 $\varepsilon \leq 2.0$ 区段降幅显著，印证了将
-    $\hat{d}$ 用于跨社区方向并辅以软度修复的有效性；Diameter Relative 也由 0.526 降至 0.210，
-    说明跨社区边规模的合理控制对全局可达结构的还原同样有正向贡献。
+    \item \textbf{度分布指标：}
+    Degree KL 平均值由 4.12 降至 1.56（相对降低约 62\%），
+    在低、中预算区段改善尤为显著，
+    印证了将 $\hat{d}$ 用于跨社区方向、并通过度序列放大进行边预算补偿的有效性；
+    高 $\varepsilon$ 区段两者差距缩小，符合预期——
+    当 $\hat{d}$ 噪声较小时，原 PrivGraph 已能较好恢复度分布。
 
-    \item \textbf{合成图后处理的独立贡献(PrivGraph vs Ours-P):}
-    单独启用后处理模块在 NMI 上的变化幅度较小（平均 0.155 vs 0.158），与
-    \autoref{subsec:postprocess} 所述``后处理修正边的位置而非数量''的设计意图一致——
-    在跨社区边总规模未受图重建模块约束的前提下，仅靠局部边交换与稀疏边清理难以根本性地
-    改善社区检测结果。其主要收益体现在 Modularity Relative（平均由 0.408 降至 0.294，
-    相对降低约 28\%）、CC Relative（平均由 0.227 降至 0.165，相对降低约 27\%）以及
-    Degree KL（平均由 4.17 降至 1.65，相对降低约 60\%）三项指标上。值得注意的是 Degree KL
-    的显著下降并非直接来源于度修复，而是后处理第二步删除期望连接数 $\mathrm{expected} \leq 1$
-    的稀疏跨社区边间接削减了节点度数，使度分布在分布形态上更接近 $\hat{d}$。这一现象也间接
-    印证了原 PrivGraph 中存在大量``低度数节点之间不应出现''的虚假跨社区桥梁。
+    \item \textbf{全局结构指标：}
+    Diameter Relative 平均值由 0.518 降至 0.390（相对降低约 25\%），
+    全段稳定领先，说明对跨社区边规模的合理控制对全局可达结构的还原同样有正向贡献。
 
-    \item \textbf{两个模块的协同效应(Ours-R / Ours-P vs Ours-Full):}
-    Ours-Full 在 NMI 上 5/7 个 $\varepsilon$ 优于 Ours-R、7/7 个 $\varepsilon$ 大幅优于 Ours-P
-    （仅在 $\varepsilon \in \{2.0, 2.5\}$ 处分别以 0.002 与 0.004 的微小差距落后 Ours-R），
-    说明两模块组合在社区结构指标上呈现稳定的协同。但在 Modularity Relative 上 Ours-R 单独使用
-    时（平均 0.149）却略低于 Ours-Full（平均 0.168），CC Relative 上 Ours-P 单独使用时在
-    中段 $\varepsilon \in [1.0, 2.0]$ 也优于 Ours-Full，这说明后处理模块在已经过图重建模块
-    优化的合成图上引入的轻微度扰动会对部分指标产生小幅负向影响。总体而言，
-    Ours-Full 的优势在于在所有 7 项指标上同时取得相对均衡的改善：兼顾了 Ours-R 在社区结构
-    上的主要增益与 Ours-P 在局部传递性、稀疏跨社区边清理上的修正作用，
-    而代价是在个别指标上不及单模块最优值。考虑到实际应用中合成图的可用性需要在多项指标上
-    协同评估，这种均衡性较单模块极致优化更具工程价值。
-
+    \item \textbf{节点重要性与局部结构指标：}
+    EVC Overlap 与 EVC MAE 上两者表现整体相当
+    （EVC Overlap 0.757 vs 0.760、EVC MAE $5.4 \times 10^{-3}$ vs $4.6 \times 10^{-3}$，
+    差异在随机方差量级内）。
+    CC Relative 上 Ours 平均值 0.279 略高于 PrivGraph 的 0.206，差距约 0.07。
+    一种合理的解释是：本文方法的度序列放大策略在补偿总边数的同时，
+    使社区内部 Chung-Lu 采样的边数也按比例增加，
+    合成图的聚类系数与原图的偏离反而轻微增大。
+    Chung-Lu 模型本身缺乏对三角结构的显式建模，
+    这一现象与 \autoref{chap:limitation} 中关于局部三角结构作为开放问题的讨论一致。
 \end{itemize}
-\par 由于主对比表本身已经覆盖了所有四种消融配置，
-本章不再设独立的消融实验小节。
+
+\par 综合来看，本文方法在涉及社区结构、度分布与全局结构的核心指标上稳定占优，
+在节点重要性与局部传递性指标上保持中性或略优，
+与 \autoref{subsec:design-overview} 所述的设计目标一致。
+
 
 \subsubsection{其他数据集上的可推广性验证}
 \label{subsec:exp-main-other}
 
 \par 为验证本文方法在不同规模与不同来源图上的可推广性，
-本节在 Facebook、CA-HepPh、Enron 三个数据集上对 PrivGraph 与 Ours-Full
+本节在 Facebook、CA-HepPh 与 Enron 三个数据集上对 PrivGraph 与 Ours
 进行 7 个 $\varepsilon$ 上的对比。考虑篇幅，
 仅报告 NMI、Modularity Relative、Degree KL 与 CC Relative 四个最具代表性的指标，
 分别对应社区结构、度分布与局部传递性三个维度。
+其中 Facebook 与 CA-HepPh 的结果如 \autoref{fig:multi-dataset} 所示；
+Enron 数据集规模较大，对比实验目前仍在进行中，相关结果汇总于
+\autoref{tab:enr-result}，留作后续完善。
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{facebook_overview.pdf}
-    \includegraphics[width=\linewidth]{ca_hepph_overview.pdf}
-    \caption{\label{fig:multi-dataset}Facebook 与 CA-HepPh 数据集上 PrivGraph 与 Ours-Full 在四个核心指标上的对比}
+    \includegraphics[width=\linewidth]{facebook_overview7.pdf}
+    \includegraphics[width=\linewidth]{cahepph_overview7.pdf}
+    \caption{\label{fig:multi-dataset}Facebook 与 CA-HepPh 数据集上 PrivGraph 与本文方法 Ours 在四个核心指标上的对比}
 \end{figure}
 
 \paragraph{Enron 数据集}~
 
 \begin{table}[ht]
-    \caption{\label{tab:enr-result}Enron 数据集上 PrivGraph 与 Ours-Full 的对比}
+    \caption{\label{tab:enr-result}Enron 数据集上 PrivGraph 与 Ours 的对比}
     \centering
     \footnotesize
     \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|*{7}{>{\centering\arraybackslash}X|}}
         \hline
         \textbf{指标} & \textbf{方法} & $\varepsilon{=}0.5$ & $1.0$ & $1.5$ & $2.0$ & $2.5$ & $3.0$ & $3.5$ \\ \hline
         \multirow{2}{*}{NMI $\uparrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                          & Ours-Full & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
+                                          & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
         \multirow{2}{*}{Mod. Rel. $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                  & Ours-Full & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
+                                                  & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
         \multirow{2}{*}{Deg. KL $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                & Ours-Full & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
+                                                & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
         \multirow{2}{*}{CC Rel. $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                & Ours-Full & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
+                                                & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
     \end{tabularx}
 \end{table}
 
-\par \textbf{多数据集结果分析。}
+\par \textbf{多数据集结果分析：}
 对照 \autoref{fig:multi-dataset}，本文方法在两个不同来源、不同规模的数据集上
-均能稳定改善社区结构相关指标，但在不同图上的优势分布存在差异。
-在规模适中、社区结构鲜明的 Facebook 上，Ours-Full 在 4 项指标的 28 个数据点中
-有 27 个严格优于 PrivGraph，仅 Degree KL 在 $\varepsilon = 3.5$ 处出现一处可忽略
-的反超（0.4755 vs 0.4447）：NMI 平均由 0.153 提升至 0.287
-（相对提升约 88\%），Modularity Relative 平均由 0.485 降至 0.232（相对降低约 52\%），
-Degree KL 平均由 3.86 降至 1.26（相对降低约 67\%），表现稳定且趋势一致，
-是本文方法最具代表性的成功案例。
-在合作网络 CA-HepPh 上，结果呈现明显的``指标间分化''：
-NMI 上的优势极为悬殊，平均值由 0.064 提升至 0.392，全段领先且 Ours-Full 始终
-保持在 PrivGraph 的 5 倍以上，这与 CA-HepPh 强社区结构、原 PrivGraph 又因
-跨社区均匀采样把社区边界均匀分布的特性吻合；
-但 Modularity Relative 上 Ours-Full 平均值 0.391 与 PrivGraph 0.390 几乎相当，
-且在中段 $\varepsilon \in [1.0, 2.0]$ 出现明显的尖峰（$\varepsilon = 1.5$ 处达 0.676），
-一种可能解释是 CA-HepPh 度分布更接近幂律、$\hat{d}$ 在中预算区段的方差仍然较大，
-按 $\hat{d}$ 加权的跨社区采样反而放大了枢纽节点上的边密度偏差；
-Degree KL 上 Ours-Full 仅在低 $\varepsilon$ 区段领先（$\varepsilon = 0.5$ 处 2.84 vs 14.78
-是改善最显著的单点），而高 $\varepsilon$ 区段（$\varepsilon \geq 2.0$）由于 PrivGraph 本身
-已能较好恢复度分布，Ours-Full 反而引入了少量额外噪声。
-综合两个数据集的结果可见，本文方法在社区结构指标上的可推广性相对稳健（NMI 在
-两个数据集上均全段领先），但在度分布、模块度等指标上的具体表现会随图的拓扑
-特性而变化，在度分布更接近幂律的合作网络上仍有进一步改进空间。
+均能稳定改善社区结构相关指标，呈现一致的可推广性。
+在规模适中、社区结构鲜明的 Facebook 上，
+Ours 在 NMI、Modularity Relative、Degree KL、CC Relative 四项指标上均稳定优于 PrivGraph：
+NMI 平均由 0.153 提升至 0.275（相对提升约 79\%），
+Modularity Relative 平均由 0.485 降至 0.209（相对降低约 57\%），
+Degree KL 平均由 3.98 降至 0.63（相对降低约 84\%），
+CC Relative 平均由 0.622 降至 0.301（相对降低约 52\%），
+表现稳定且趋势一致，是本文方法最具代表性的成功案例。
+在合作网络 CA-HepPh 上，本文方法同样取得了全段改善：
+NMI 平均由 0.066 提升至 0.376（5 倍以上），
+Modularity Relative 平均由 0.384 降至 0.157（相对降低约 59\%），
+Degree KL 平均由 3.42 降至 1.36（相对降低约 60\%），
+CC Relative 平均由 0.555 降至 0.334（相对降低约 40\%）。
+其中 NMI 的相对优势尤为悬殊，这与 CA-HepPh 强社区结构、
+原 PrivGraph 又因跨社区均匀采样使社区边界均匀分布的特性吻合：
+当原图社区结构越清晰、跨社区均匀采样产生的扰动越大时，
+本文方法基于度加权采样并主动缩减跨社区规模的优势就越突出。
+综合两个数据集的结果可见，本文方法在不同规模、不同来源、
+不同度分布特性的图上均能稳定可推广，
+核心优势——基于度信息的跨社区采样与边预算补偿——在多种拓扑结构上都有效。
 
 \subsection{超参敏感性分析}
 \label{subsec:exp-hyper}
 
-\par 本文方法引入了三个核心超参：
-\texttt{inter\_ratio}（图重建模块）、\texttt{intra\_ratio}（图重建模块）与
-\texttt{swap\_ratio}（后处理模块）。本节针对每个超参在其默认值附近进行一维网格扫描，
-评估其敏感性。所有扫描均固定其他两个超参为默认值
-（$\texttt{inter\_ratio} = 0.10$、$\texttt{intra\_ratio} = 0.05$、
-$\texttt{swap\_ratio} = 0.3$），并以 $\varepsilon = 2.0$ 为代表预算。
 
-\subsubsection{\texttt{inter\_ratio} 的影响}
-
-\par \texttt{inter\_ratio} 决定每对社区上跨社区边的保留比例，
-是影响合成图整体连通性与社区结构的关键超参。
-本文在 $\{0.05, 0.10, 0.15, 0.20, 0.30\}$ 上进行扫描，结果如\autoref{fig:hp-inter}所示。
+\par 本文方法引入唯一核心超参 \texttt{inter\_ratio}，
+其取值决定每对社区上跨社区边的保留比例，是影响合成图整体连通性与社区结构的
+关键变量。本节针对该超参在其默认值附近进行一维网格扫描，评估其敏感性。
+扫描以 $\varepsilon = 2.0$ 为代表预算,对每个取值独立运行 30 次，
+便于通过 Welch t 检验对相近取值之间的差异进行显著性评估。
+本文在 $\{0.05, 0.10, 0.15, 0.20, 0.30\}$ 上进行扫描，
+结果如\autoref{fig:hp-inter}所示。
 
 \begin{figure}[ht]
     \centering
@@ -1022,139 +797,227 @@ $\texttt{swap\_ratio} = 0.3$），并以 $\varepsilon = 2.0$ 为代表预算。
     \caption{\label{fig:hp-inter}\texttt{inter\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
 \end{figure}
 
-\par 由\autoref{fig:hp-inter}可见，对每个取值独立运行 30 次后做 Welch t 检验，
-inter\_ratio 在四项指标上的可识别信号集中在以下几处：
-NMI 上 $0.05$（$0.331 \pm 0.006$，下文括号内均为 $95\%$ CI）显著优于
-$0.10$（$0.320 \pm 0.007$，$p = 0.016$）和 $0.30$（$0.317 \pm 0.009$，$p = 0.009$），
-但与 $0.15$、$0.20$ 之间无显著差异；
-Modularity Relative 上默认值 $0.10$（$0.211 \pm 0.043$）显著高于
-$0.15$（$0.144 \pm 0.031$，$p = 0.018$）与 $0.20$（$0.151 \pm 0.034$，$p = 0.039$），
-是该扫描上的一处局部劣点；
-Degree KL 上 $0.30$（$1.357 \pm 0.069$）显著优于 $0.10$（$1.466 \pm 0.069$，$p = 0.034$）；
-CC Relative 上各两两差异均不显著（$p > 0.05$）。
-综合来看，默认值 $0.10$ 在 NMI 与 Modularity Relative 上略劣于若干其他取值，
-其中 Modularity Relative 上的劣势在统计上显著、是该超参选择上的主要风险；
-但其在 Degree KL 与 CC Relative 上无显著劣势，且改变默认意味着需要在 NMI 上付出
-约 $0.011$ 的下降。结合 4 项指标的整体均衡性与主对比实验配置的一致性，
-本文仍以 $0.10$ 作为默认；若读者更看重 Modularity Relative，
-可考虑将其调整为 $0.15$ 或 $0.20$。
+\par 由\autoref{fig:hp-inter}可见，扫描结果在四项指标上呈现明确的``trade-off''规律：
+\textbf{NMI 与 Modularity Relative 随 \texttt{inter\_ratio} 增大而恶化}
+（NMI 在 $[0.05, 0.20]$ 区段单调下降并在 $0.30$ 处趋于平稳，
+Modularity Relative 单调上升），而 \textbf{CC Relative 则随之单调改善}；
+Degree KL 在扫描范围内基本平坦。具体地：
 
-\subsubsection{\texttt{intra\_ratio} 的影响}
+\par 在 NMI 上，$0.05$（$0.336 \pm 0.006$，下文括号内均为 $95\%$ CI）是扫描范围内的最优取值，
+显著优于其余四个取值（与 $0.10$、$0.15$、$0.20$、$0.30$ 的 $p$ 值分别为 $0.002$、$<0.001$、$<0.001$、$<0.001$）；
+默认值 $0.10$（$0.319 \pm 0.008$）次之，并显著优于 $0.15$、$0.20$、$0.30$
+（$p = 0.009$、$0.001$、$0.017$）。
+在 Modularity Relative 上，$0.05$（$0.072 \pm 0.028$）同样是最优取值，
+显著优于 $0.15$、$0.20$、$0.30$（$p = 0.003$、$<0.001$、$<0.001$），
+但与默认值 $0.10$（$0.102 \pm 0.025$）之间无显著差异（$p = 0.116$）；
+$0.10$ 同时显著优于 $0.20$、$0.30$（$p < 0.001$）。
+在 CC Relative 上规律相反，$0.30$（$0.059 \pm 0.014$）显著优于所有其他取值，
+$0.05$（$0.262 \pm 0.038$）则显著最差；
+默认值 $0.10$（$0.180 \pm 0.036$）位于中间，显著优于 $0.05$（$p = 0.003$），
+但显著劣于 $0.20$、$0.30$（$p = 0.004$、$<0.001$）。
+在 Degree KL 上，扫描范围内绝大多数两两差异均不显著（$p > 0.05$），仅 $0.30$ 略优于 $0.05$、$0.20$。
 
-\par \texttt{intra\_ratio} 控制由跨社区缩减节省下来的边预算回流至社区内部的比例。
-本文在 $\{0.00, 0.05, 0.10, 0.15\}$ 上进行扫描，结果如\autoref{fig:hp-intra}所示。
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\linewidth]{hp_intraratio.pdf}
-    \caption{\label{fig:hp-intra}\texttt{intra\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
-\end{figure}
-
-\par 由\autoref{fig:hp-intra}可见，30 reps 下 intra\_ratio 的可识别信号集中在 NMI 与 Degree KL：
-NMI 上 $0.00$（$0.336 \pm 0.006$）显著优于 $0.10$（$0.319 \pm 0.007$，$p = 0.001$）
-与 $0.15$（$0.318 \pm 0.007$，$p = 0.001$），表明追加过多社区内部边
-会显著削弱社区结构的可识别性；而默认 $0.05$（$0.327 \pm 0.008$）
-与 $0.00$ 之间无显著差异。Degree KL 上则相反：$0.15$（$1.384 \pm 0.049$）
-显著优于 $0.00$（$1.489 \pm 0.062$，$p = 0.012$）和 $0.05$（$1.501 \pm 0.074$，$p = 0.012$），
-说明较高的内部边补充比例确有助于度分布还原。Modularity Relative 与 CC Relative 上
-各两两差异均不显著（$p > 0.05$），原 10-rep 扫描观察到的``Mod.\,Rel.\ 整体下降''
-等趋势在更多重复后落入随机方差量级，无法在统计上确认。
-综合来看，默认值 $0.05$ 在 NMI 上不显著劣于 $0.00$，是该 trade-off 上偏向
-保留社区结构识别能力的合理选择；若以 Degree KL 为单一目标可取 $0.15$，
-但需要承担 NMI 上约 $0.018$ 的显著下降。
-
-\subsubsection{\texttt{swap\_ratio} 的影响}
-
-\par \texttt{swap\_ratio} 决定每个社区上孤立边重排的尝试次数比例，
-本文在 $\{0.0, 0.1, 0.3, 0.5, 0.7\}$ 上进行扫描，结果如\autoref{fig:hp-swap}所示。
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\linewidth]{hp_swapratio.pdf}
-    \caption{\label{fig:hp-swap}\texttt{swap\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
-\end{figure}
-
-\par 由\autoref{fig:hp-swap}可见，30 reps 下 swap\_ratio 上的显著信号相对稀疏：
-NMI 上 $0.1$（$0.318 \pm 0.007$）显著低于 $0.5$（$0.332 \pm 0.007$，$p = 0.007$）
-和 $0.7$（$0.335 \pm 0.008$，$p = 0.003$），但默认 $0.3$（$0.324 \pm 0.009$）
-与上述各取值之间均无显著差异；
-Modularity Relative 上 $0.0$（$0.135 \pm 0.036$）显著优于 $0.1$（$0.216 \pm 0.047$，$p = 0.011$），
-$0.5$（$0.146 \pm 0.047$）也显著优于 $0.1$（$p = 0.043$），
-但默认 $0.3$（$0.180 \pm 0.056$）与其他取值之间均无显著差异；
-Degree KL 与 CC Relative 上各两两差异均不显著。
-有意义的发现是 $\texttt{swap\_ratio} = 0.1$ 在 NMI 与 Modularity Relative 上
-一致地显著劣于多个其他取值，说明``少量''边交换反而会引入度扰动而无明显收益；
-而默认 $0.3$ 在 4 项指标上均不显著劣于最优取值，是统计上稳健的选择。
-$0.5$ 与 $0.7$ 是合理替代但不构成显著优势，原 10-rep 观察到的
-``$0.0$ 处 Mod.\,Rel.\ 最优、$0.1$ 处 CC Rel 最优''等点估计差异
-在 30 reps 后大多落入噪声。
-
+\par 综合来看，扫描结果呈现典型的``社区结构 vs 局部传递性''的折中：
+偏小的 \texttt{inter\_ratio} 通过更激进地缩减跨社区边来强化社区边界，
+从而提升 NMI 与 Modularity Relative；但同时也使 Chung-Lu 采样的度序列放大幅度更大，
+社区内部边密度上升，与原图聚类系数的偏离增大。
+反之，偏大的 \texttt{inter\_ratio} 保留较多跨社区边、度序列放大幅度较小，
+CC Relative 更接近原图，代价是 NMI 与 Modularity Relative 退化。
+默认值 \texttt{inter\_ratio} = $0.10$ 是该折中曲线上的折中点：
+在最关键的社区结构指标 NMI 上仅次于 $0.05$（差距 $0.017$，统计显著但绝对值较小），
+在 Modularity Relative 上与最优值 $0.05$ 无显著差异，
+而在 CC Relative 上保持中等水平。
+若实际应用更看重社区结构指标，本节扫描表明 \texttt{inter\_ratio} = $0.05$ 是更具竞争力的选择；
+若更看重局部传递性，则可考虑 $0.20$ 或 $0.30$。
+本文初版调优时以 NMI 与 Modularity Relative 联合稳定为主要目标，
+取 $0.10$ 作为默认值并完成所有主对比实验；将默认值进一步推向 $0.05$ 在
+社区结构相关指标上仍有提升空间，留作后续工作。
 \subsection{实验小结}
 \label{subsec:exp-summary}
 
-\par 本章通过主对比与消融、超参敏感性两组实验，对本文提出的优化方法
-进行了系统评估。综合所有实验结果，可以得出以下三点结论：
+\par 本章通过主对比实验和超参敏感性分析，对本文提出的图重建优化方法
+进行了系统评估。综合所有实验结果，可以得出以下两点结论：
 
 \begin{enumerate}
-    \item \textbf{整体可用性提升且具备可推广性。}
-    在 Chameleon 数据集上，Ours-Full 在 NMI 上将 7 个 $\varepsilon$ 的平均值
-    由 PrivGraph 的 0.155 提升至 0.318（相对提升约 105\%），
-    Modularity Relative 由 0.408 降至 0.168（相对降低约 59\%），
-    Diameter Relative 由 0.526 降至 0.179（相对降低约 66\%），全段稳定领先；
-    Degree KL 与 CC Relative 在低 $\varepsilon$ 区段大幅领先
-    （$\varepsilon = 0.5$ 处分别由 13.85 降至 4.18、由 0.82 降至 0.06），
-    高 $\varepsilon$ 区段表现持平；EVC 类指标整体保持中性，
-    差异在随机方差量级内。
-    在 Facebook 上，本文方法在 NMI、Modularity Relative、Degree KL、CC Relative
-    四项指标的 28 个数据点中有 27 个严格优于 PrivGraph，
-    NMI 平均由 0.153 提升至 0.287、Degree KL 平均由 3.86 降至 1.26；
-    CA-HepPh 上 NMI 平均由 0.064 提升至 0.392（5 倍以上），
-    但 Modularity Relative 出现指标间分化（详见 \autoref{subsec:exp-main-other}）。
-    综合来看，本文方法的核心优势在不同规模与不同来源图上稳定可推广，
-    但在度分布更接近幂律的合作网络上仍存在进一步改进空间；
-    Enron 数据集上的对比将在后续工作中补充。
+    \item \textbf{整体可用性提升且具备一定可推广性。}
+    在 Chameleon 数据集上，Ours 在 NMI 上将 7 个 $\varepsilon$ 的平均值
+    由 PrivGraph 的 0.160 提升至 0.309（相对提升约 93\%），
+    Modularity Relative 由 0.395 降至 0.121（相对降低约 69\%），
+    Degree KL 由 4.12 降至 1.56（相对降低约 62\%），
+    Diameter Relative 由 0.518 降至 0.390（相对降低约 25\%），
+    在四项核心指标上稳定领先；
+    EVC 类指标整体保持中性，差异在随机方差量级内。
+    在 Facebook 上，本文方法在 NMI、Modularity Relative、
+    Degree KL、CC Relative 四项指标上均稳定优于 PrivGraph，
+    其中 Degree KL 平均由 3.98 降至 0.63、CC Relative 平均由 0.622 降至 0.301，
+    改善尤为显著；
+    CA-HepPh 上 NMI 平均由 0.066 提升至 0.376（5 倍以上），
+    Modularity Relative 由 0.384 降至 0.157（相对降低约 59\%），
+    Degree KL 与 CC Relative 同样保持全段领先。
+    综合来看，本文方法的核心优势——
+    基于度信息的跨社区采样与边预算补偿——
+    在不同规模与不同来源图上稳定可推广。
 
-    \item \textbf{两个模块均有独立贡献且能够稳定叠加。}
-    Ours-R（仅图重建模块）独立将 Chameleon 上的 NMI 平均值由 0.155 提升至 0.306
-    （提升约 97\%）、Modularity Relative 由 0.408 降至 0.149（降低约 63\%）、
-    Diameter Relative 由 0.526 降至 0.210，
-    是社区结构与全局结构相关指标增益的主要来源；
-    Ours-P（仅后处理模块）则独立贡献了 CC Relative 与 Degree KL 上的明显改善
-    （分别由 0.227 降至 0.165、由 4.17 降至 1.65，相对降低约 27\% 与 60\%），
-    但对 NMI 几乎无影响（0.155 vs 0.158），印证了其``修正边的位置而非数量''
-    的设计定位。两模块作用对象不重叠，在大部分 $\varepsilon$ 上呈现稳定的协同效应：
-    组合后的 Ours-Full 在所有 7 项指标上均能取得相对均衡的改善，
-    尽管在个别指标的个别取值上不及单模块的极致最优值
-    （如 Mod.\,Rel.\ 上 Ours-R 的 0.149 略优于 Ours-Full 的 0.168），
-    但整体均衡性较单模块极致优化更具工程价值。
-
-    \item \textbf{核心超参在默认值附近的表现具有统计稳健性。}
-    对每个超参取值独立运行 30 次后做 Welch t 检验，
-    扫描范围内绝大多数两两差异均未达到 $p < 0.05$ 的显著水平，
-    说明 10-rep 时观察到的较多趋势线实际上落在噪声方差量级内。
-    默认值 $(0.10, 0.05, 0.3)$ 在 4 项指标上整体保持统计稳健：
-    \texttt{intra\_ratio} = $0.05$ 和 \texttt{swap\_ratio} = $0.3$
-    在所有 4 项指标上均不显著劣于任何其他取值；
-    \texttt{inter\_ratio} = $0.10$ 仅在 Modularity Relative 上显著高于
-    $0.15$ 与 $0.20$（$p = 0.018, 0.039$），其余指标均无显著劣势。
-    这一显著差异是本文超参配置上唯一可识别的局限：
-    若以 Modularity Relative 为主要优化目标，可考虑将 \texttt{inter\_ratio} 调整为 $0.15$；
-    但综合考虑各指标均衡性以及与主对比实验配置的一致性，本文仍以 $0.10$ 为默认。
-
+    \item \textbf{核心超参的取值存在``社区结构 vs 局部传递性''的折中。}
+    对 \texttt{inter\_ratio} 在 $\{0.05, 0.10, 0.15, 0.20, 0.30\}$ 上独立运行 30 次
+    并做 Welch t 检验，扫描结果显示四项指标在取值方向上呈现一致的折中规律：
+    NMI 与 Modularity Relative 倾向于偏小的取值（$0.05$ 是这两项的最优），
+    而 CC Relative 倾向于偏大的取值（$0.30$ 最优），Degree KL 在范围内基本平坦。
+    默认值 $0.10$ 处于折中曲线的中间区域：在 NMI 上仅次于 $0.05$（差距 $0.017$，$p = 0.002$）、
+    在 Modularity Relative 上与最优值 $0.05$ 无显著差异（$p = 0.116$）、
+    在 CC Relative 上居中，是兼顾多个指标的稳健选择。
+    若实际应用更看重社区结构相关指标，扫描表明 $0.05$ 是更具竞争力的取值；
+    若更看重局部传递性，则可考虑 $0.20$ 或 $0.30$。
 \end{enumerate}
 
 \par 与此同时，实验中也观察到一些尚未完全解决的问题。首先，
-在极低预算（$\varepsilon = 0.5$）下 $\hat{v}$ 与 $\mathbb{C}_F$ 双重噪声过大，
-后处理模块基于 $\hat{v}$ 派生的判断（如``$\mathrm{expected} \leq 1$''阈值）
-本身已不够可靠，使得部分指标（如 CC Relative 在 $\varepsilon \in [1.0, 2.0]$ 区段）
-相对于 PrivGraph 的优势收窄甚至出现局部反超。其次，
-在度分布更接近幂律的 CA-HepPh 上，按 $\hat{d}$ 加权的跨社区采样
-在中等预算区段反而放大了枢纽节点上的边密度偏差，
-使 Modularity Relative 在 $\varepsilon = 1.5$ 处出现局部尖峰（0.676），
-说明本文的度加权策略在重尾度分布的图上仍有调整空间。再次，
-本文的核心超参 $(0.10, 0.05, 0.3)$ 仅在 Chameleon 上进行了网格调优，
-能否在其他图族上保持稳定的最优性有待更系统的验证。
-最后，受运行时间限制，规模最大的 Enron 数据集上的完整对比尚未完成，
-留作后续工作。这些问题为未来研究指出了若干具体的改进方向，
-包括噪声敏感的后处理阈值设计、面向幂律图的专门校正机制，
-以及跨数据集的超参自适应策略。
+在 Chameleon 数据集上，CC Relative 这一局部传递性指标上 Ours 平均值 0.279
+略高于 PrivGraph 的 0.206，
+反映出度序列放大策略在补偿总边数的同时会使社区内部边密度局部上升、
+合成图的聚类系数与原图的偏离轻微增大。
+由于 Chung-Lu 模型本身缺乏对三角结构的显式建模，
+这一问题在合成图层面难以彻底解决，本文将其作为局部三角结构修复的开放方向。
+其次，在极低预算（$\varepsilon = 0.5$）下 $\hat{v}$ 与 $\mathbb{C}_F$ 双重噪声过大，
+合成图的结构指标整体偏差仍然较大，
+本文方法虽较 PrivGraph 有改善，但绝对水平仍有提升空间。再次，
+本文的核心超参 \texttt{inter\_ratio} 在 Chameleon 上进行了网格调优，
+且本章敏感性扫描显示存在``社区结构 vs 局部传递性''的折中——
+$0.05$ 在 NMI 与 Modularity Relative 上更具竞争力，
+而本文取 $0.10$ 作为整体均衡的折中选择，
+若将默认值进一步推向 $0.05$ 并在其他数据集上重新调优，
+社区结构相关指标仍有进一步的提升空间。
+
+% \subsection{探索性尝试与失败分析}
+% \label{subsec:exploratory}
+
+% \par 在确定图重建作为主线优化方向之前，本文还围绕 PrivGraph 的不同阶段
+% 进行了若干探索性尝试。这些尝试在初始动机上均有合理性，
+% 但在系统的实验评估中未能展现出稳定、可推广的增益。
+% 本节对其设计思路、实验观察与失败成因进行简要讨论，
+% 为后续研究提供已被实证检验的参考路径。
+
+% \subsubsection{基于零模型的跨社区边清理后处理}
+
+% \par \textbf{设计动机：}\autoref{chap:limitation} 中指出，PrivGraph 合成图存在
+% 跨社区边过多的现象，且其中相当比例落在度数较低、本不应连通的节点对之间。
+% 受配置零模型（configuration null model）的启发，本文设计了一种合成图后处理：
+% 对每条跨社区边 $(u, v)$，计算其在零模型下的期望连接数
+% $\mathrm{expected}(u, v) = \hat{d}_u \hat{d}_v / (2m)$；
+% 对 $\mathrm{expected}(u, v) \leq 1$ 的边判定为``虚假桥梁''并以一定比例
+% \texttt{swap\_ratio} 进行重排或删除，期望以此清理稀疏跨社区边、
+% 间接修复局部三角结构。
+
+% \par \textbf{实验观察：}在 Chameleon 数据集上，单独启用该模块
+% 相对 PrivGraph 在 Modularity Relative（平均由 0.408 降至 0.294，相对降低约 28\%）、
+% CC Relative（平均由 0.227 降至 0.165，相对降低约 27\%）以及
+% Degree KL（平均由 4.17 降至 1.65，相对降低约 60\%）上能取得局部改善；
+% 但在最关键的社区结构指标 NMI 上几乎无变化（0.155 vs 0.158），
+% 且与图重建模块组合后在多数指标上反而引入小幅扰动。
+
+% \par \textbf{超参敏感性扫描：}\autoref{fig:hp-swap} 给出了 \texttt{swap\_ratio}
+% 在 $\{0.0, 0.1, 0.3, 0.5, 0.7\}$ 上 30 次独立重复的扫描结果。
+% NMI 上 $0.1$（$0.318 \pm 0.007$，下文括号内均为 $95\%$ CI）显著低于
+% $0.5$（$0.332 \pm 0.007$，$p = 0.007$）和 $0.7$（$0.335 \pm 0.008$，$p = 0.003$），
+% 但默认 $0.3$（$0.324 \pm 0.009$）与上述各取值之间均无显著差异；
+% Modularity Relative 上 $0.0$（$0.135 \pm 0.036$）显著优于
+% $0.1$（$0.216 \pm 0.047$，$p = 0.011$），$0.5$（$0.146 \pm 0.047$）也显著优于
+% $0.1$（$p = 0.043$），但默认 $0.3$（$0.180 \pm 0.056$）与其他取值之间均无显著差异；
+% Degree KL 与 CC Relative 上各两两差异均不显著。
+% 有意义的发现是 $\texttt{swap\_ratio} = 0.1$ 在 NMI 与 Modularity Relative 上
+% 一致地显著劣于多个其他取值，说明``少量''边交换反而会引入度扰动而无明显收益；
+% 扫描范围内未能找到全指标一致占优的设置。
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=\linewidth]{hp_swapratio.pdf}
+%     \caption{\label{fig:hp-swap}\texttt{swap\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
+% \end{figure}
+
+% \par \textbf{失败分析：}进一步分析发现两个问题：
+% 其一，``$\mathrm{expected} \leq 1$''阈值依赖于 $\hat{d}$ 与 $\hat{v}$，
+% 在低预算下两者噪声较大，使``虚假桥梁''的判定本身已不够可靠；
+% 其二，删除/重排操作对节点度的局部扰动会反向作用于已通过 Chung-Lu
+% 和度序列放大精心构造的度分布，使两个模块的目标不一致。
+% 综合来看，该后处理思路与图重建模块在作用对象上有一定耦合，
+% 难以稳定地``纯叠加''，故本文未将其纳入主线方案。
+
+% \subsubsection{基于 DP 度+邻居得分的社区初始化}
+
+% \par \textbf{设计动机：}原 PrivGraph 在社区初始化阶段将所有节点随机分组，
+% 每组 $N$ 个节点；该步骤完全不利用节点结构信息，
+% 直觉上若能以差分隐私方式利用节点的度信息进行非随机分组，
+% 后续 Louvain 阶段或可获得更好的起点。
+% 本文据此设计了基于 DP 度 + 一阶邻居得分的初始化算法：
+% 将隐私预算 $\varepsilon_1$ 划分为得分预算与初始化预算两部分，
+% 通过加噪度 $\hat{d}_u$ 与一阶邻居得分 $\widehat{ns}_u = \sum_{v \in N(u)} \hat{d}_v$
+% 的加权组合 $\hat{d}_u + \beta \cdot \widehat{ns}_u$ 对节点排序，
+% 按得分顺序依次分组，期望使得分相近的节点（即结构相似的节点）落在同一组中。
+
+% \par \textbf{实验观察与失败分析：}
+% 在 Chameleon 上的初步对比表明，该方法相对原始随机分组在 NMI 上没有稳定改善，
+% 部分预算下反而轻微下降。失败的主要原因有两点：
+% 其一，邻居得分的 $\ell_1$ 敏感度为 $2C$（$C$ 为度的截断阈值），
+% 要保证敏感度有界必须对度做较紧的截断，而截断本身会损失高度数节点的信息；
+% 其二，得分排序仅利用了局部度信息，未利用拓扑结构，
+% 对于社区结构鲜明的图，按度排序得到的分组与真实社区划分相关性较弱，
+% 反而在 Louvain 起点上引入了系统性偏差。基于此，
+% 本文未将该模块纳入主线。
+
+% \subsubsection{基于经验公式的隐私预算动态分配}
+
+% \par \textbf{设计动机：}原 PrivGraph 将整体预算 $\varepsilon$
+% 平均分配给社区初始化、社区调整、信息抽取三个阶段（$1{:}1{:}1$）。
+% 直觉上，三个阶段对噪声的敏感程度并不相同——
+% 信息抽取阶段直接决定 $\hat{d}$ 与 $\hat{v}$ 的精度，
+% 对图重建质量影响最大；社区初始化的噪声又可以在社区调整阶段部分修复。
+% 此外，最优分配很可能依赖于具体的 $(\varepsilon, n, d, K)$ 配置，
+% 而非一个固定常数比。本文据此尝试以数据驱动的方式探索更优的预算分配方案。
+
+% \par \textbf{探索方法：}本文采取``热力图扫描 + 经验公式拟合''的两阶段流程。
+% 首先在 Chameleon 上对 $(\varepsilon_1, \varepsilon_2, \varepsilon_3)$ 三元组
+% （约束 $\sum \varepsilon_i = \varepsilon$）进行细粒度网格扫描，
+% 在多个 $\varepsilon$ 下绘制 NMI、Modularity Relative、Degree KL 等核心指标
+% 随分配比例变化的热力图，观察是否存在系统性的``最优区域''。
+% 其次，以扫描得到的较优区域为目标，
+% 以 $\varepsilon$、节点数 $n$、平均度 $d$、社区数 $K$、
+% 以及由 $\hat{d}$ 与 $\varepsilon_3$ 估计的社区内信噪比 SNR 为特征，
+% 拟合一组经验公式 $(e_1^*, e_2^*, e_3^*)$，
+% 并通过截断与归一化保证合法性。
+% 为利用社区划分完成后才可观测的 $K$ 与 SNR 信息，
+% 该公式被进一步组织为两阶段：
+% 首阶段基于 $(\varepsilon, n, d)$ 给出 $\varepsilon_1$ 与初步的 $(\varepsilon_2, \varepsilon_3)$，
+% 社区初始化结束后再根据 $K$ 与社区结构的估计动态修正
+% $\varepsilon_2 : \varepsilon_3$ 的剩余分配。
+
+% \par \textbf{实验观察与失败分析：}
+% 该方案在 Chameleon 上的部分 $\varepsilon$ 取值上相对 $1{:}1{:}1$ 默认分配
+% 确实取得了轻微改善，但综合多数据集与多指标评估后暴露出两个根本性问题。
+
+% \par \textit{其一，跨数据集不可推广。}
+% 基于 Chameleon 拟合的经验公式在迁移到 Facebook、CA-HepPh 等数据集后表现不稳定，
+% 部分预算下甚至相对默认分配轻微退化。
+% 进一步检查热力图发现，``较优区域''在不同数据集上的位置本身就有显著差异——
+% 不同的拓扑结构（社区规模分布、度分布尾部、聚类系数）使得三阶段噪声
+% 对最终合成图质量的``边际贡献''比例并不一致，
+% 因此在单一数据集上拟合的公式难以泛化。
+% 若要为每个数据集单独调参，则违背了``数据集无关的隐私预算策略''这一初衷。
+
+% \par \textit{其二，不存在多指标一致占优的分配点。}
+% 即使在 Chameleon 内部，热力图也显示出明显的``指标互相冲突''现象：
+% 有利于 NMI、Modularity Relative 的分配区域通常使 Degree KL、CC Relative 退化，
+% 反之亦然。这与本文图重建模块超参敏感性扫描所揭示的
+% ``社区结构 vs 局部传递性''折中具有相似的内在结构——
+% 将更多预算分配给信息抽取会更准确地恢复 $\hat{d}$ 与 $\hat{v}$
+% （更利于度分布与局部结构指标），但相应削弱社区划分的精度
+% （不利于 NMI 与模块度）。因此在 Pareto 意义上不存在单一``最优''分配点，
+% 只存在一条贯穿多个指标的折中前沿。
+
+% \par 综合以上两点，``为任意 $(\varepsilon, n, d, K)$ 拟合一个通用的最优分配公式''
+% 在 PrivGraph 现有框架下难以实现。
+% 更准确的结论是：预算分配在多指标空间中沿一条 Pareto 前沿滑动，
+% $1{:}1{:}1$ 默认分配恰好落在该前沿上较为中性的位置，
+% 是简单且较均衡的稳健选择。
+% 若实际应用对某类指标有明确偏好，
+% 可基于本文的扫描思路在目标数据集上做局部微调；
+% 但本文未能找到对所有数据集与所有指标一致占优的公式，
+% 故未将该模块纳入主线方案。

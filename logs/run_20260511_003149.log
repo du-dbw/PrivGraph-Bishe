@@ -1,0 +1,473 @@
+实验启动 @ 2026-05-11 00:31:49
+日志:  ./logs\run_20260511_003149.log
+结果:  ./results/
+
+==============================================================================
+  Job 1: 主对比实验（PrivGraph vs Ours）
+==============================================================================
+已完成: 3/560
+剩余:   557
+
+[加载数据集 Chamelon]
+  [基准] 构建图 ...
+  [基准] 节点=2277, 边=31371
+  [基准] Louvain 社区划分 ...
+  [基准] 度分布 / 聚类系数 / 直径 ...
+  [基准] 特征向量中心性（可能较慢）...
+  [基准] 完成。mod=0.6961, cc=0.3136, diam=11
+[   1/557] Chamelon   privgraph ε=0.5 rep=3  | NMI=0.0203 mod_rel=0.6618 deg_kl=12.903 | t=  3.8s ETA=1.51h
+[   2/557] Chamelon   privgraph ε=0.5 rep=4  | NMI=0.0134 mod_rel=0.6487 deg_kl=14.823 | t=  4.2s ETA=1.08h
+[   3/557] Chamelon   privgraph ε=0.5 rep=5  | NMI=0.0200 mod_rel=0.6758 deg_kl=13.677 | t=  4.4s ETA=56.8min
+[   4/557] Chamelon   privgraph ε=0.5 rep=6  | NMI=0.0143 mod_rel=0.6675 deg_kl=13.809 | t=  3.9s ETA=51.5min
+[   5/557] Chamelon   privgraph ε=0.5 rep=7  | NMI=0.0134 mod_rel=0.6687 deg_kl=12.757 | t=  4.1s ETA=48.7min
+[   6/557] Chamelon   privgraph ε=0.5 rep=8  | NMI=0.0121 mod_rel=0.6395 deg_kl=15.049 | t=  3.9s ETA=46.4min
+[   7/557] Chamelon   privgraph ε=0.5 rep=9  | NMI=0.0145 mod_rel=0.6548 deg_kl=13.730 | t=  4.1s ETA=45.1min
+[   8/557] Chamelon   privgraph ε=1.0 rep=0  | NMI=0.1099 mod_rel=0.4401 deg_kl=6.199 | t=  5.2s ETA=45.3min
+[   9/557] Chamelon   privgraph ε=1.0 rep=1  | NMI=0.1078 mod_rel=0.4511 deg_kl=6.391 | t=  5.1s ETA=45.3min
+[  10/557] Chamelon   privgraph ε=1.0 rep=2  | NMI=0.0744 mod_rel=0.5496 deg_kl=10.047 | t=  4.3s ETA=44.6min
+[  11/557] Chamelon   privgraph ε=1.0 rep=3  | NMI=0.0764 mod_rel=0.5787 deg_kl=7.117 | t=  5.2s ETA=44.8min
+[  12/557] Chamelon   privgraph ε=1.0 rep=4  | NMI=0.0654 mod_rel=0.5174 deg_kl=8.859 | t=  4.5s ETA=44.4min
+[  13/557] Chamelon   privgraph ε=1.0 rep=5  | NMI=0.1049 mod_rel=0.4522 deg_kl=5.860 | t=  5.2s ETA=44.6min
+[  14/557] Chamelon   privgraph ε=1.0 rep=6  | NMI=0.0861 mod_rel=0.4774 deg_kl=8.446 | t=  4.7s ETA=44.4min
+[  15/557] Chamelon   privgraph ε=1.0 rep=7  | NMI=0.0802 mod_rel=0.5208 deg_kl=7.705 | t=  4.7s ETA=44.2min
+[  16/557] Chamelon   privgraph ε=1.0 rep=8  | NMI=0.0964 mod_rel=0.4660 deg_kl=6.353 | t=  4.9s ETA=44.1min
+[  17/557] Chamelon   privgraph ε=1.0 rep=9  | NMI=0.1276 mod_rel=0.3809 deg_kl=7.979 | t=  5.3s ETA=44.2min
+[  18/557] Chamelon   privgraph ε=1.5 rep=0  | NMI=0.0953 mod_rel=0.6602 deg_kl=1.639 | t=  6.0s ETA=44.7min
+[  19/557] Chamelon   privgraph ε=1.5 rep=1  | NMI=0.1507 mod_rel=0.4447 deg_kl=1.659 | t=  6.1s ETA=45.1min
+[  20/557] Chamelon   privgraph ε=1.5 rep=2  | NMI=0.1754 mod_rel=0.4059 deg_kl=2.804 | t=  5.8s ETA=45.4min
+[  21/557] Chamelon   privgraph ε=1.5 rep=3  | NMI=0.1428 mod_rel=0.3815 deg_kl=4.494 | t=  5.5s ETA=45.5min
+[  22/557] Chamelon   privgraph ε=1.5 rep=4  | NMI=0.1696 mod_rel=0.3625 deg_kl=1.418 | t=  5.9s ETA=45.8min
+[  23/557] Chamelon   privgraph ε=1.5 rep=5  | NMI=0.1625 mod_rel=0.3541 deg_kl=2.985 | t=  5.6s ETA=45.8min
+[  24/557] Chamelon   privgraph ε=1.5 rep=6  | NMI=0.1624 mod_rel=0.4282 deg_kl=2.805 | t=  5.9s ETA=46.0min
+[  25/557] Chamelon   privgraph ε=1.5 rep=7  | NMI=0.1781 mod_rel=0.3316 deg_kl=1.528 | t=  5.9s ETA=46.2min
+[  26/557] Chamelon   privgraph ε=1.5 rep=8  | NMI=0.1859 mod_rel=0.3614 deg_kl=2.523 | t=  6.3s ETA=46.5min
+[  27/557] Chamelon   privgraph ε=1.5 rep=9  | NMI=0.1575 mod_rel=0.3639 deg_kl=3.154 | t=  5.7s ETA=46.5min
+[  28/557] Chamelon   privgraph ε=2.0 rep=0  | NMI=0.1918 mod_rel=0.3065 deg_kl=1.227 | t=  6.1s ETA=46.7min
+[  29/557] Chamelon   privgraph ε=2.0 rep=1  | NMI=0.1995 mod_rel=0.3406 deg_kl=1.296 | t=  6.0s ETA=46.8min
+[  30/557] Chamelon   privgraph ε=2.0 rep=2  | NMI=0.1752 mod_rel=0.2939 deg_kl=1.076 | t=  6.4s ETA=47.0min
+[  31/557] Chamelon   privgraph ε=2.0 rep=3  | NMI=0.1869 mod_rel=0.3794 deg_kl=2.680 | t=  5.9s ETA=47.1min
+[  32/557] Chamelon   privgraph ε=2.0 rep=4  | NMI=0.1764 mod_rel=0.3728 deg_kl=4.028 | t=  5.8s ETA=47.1min
+[  33/557] Chamelon   privgraph ε=2.0 rep=5  | NMI=0.1927 mod_rel=0.3900 deg_kl=1.163 | t=  6.3s ETA=47.3min
+[  34/557] Chamelon   privgraph ε=2.0 rep=6  | NMI=0.1769 mod_rel=0.3446 deg_kl=1.103 | t=  6.3s ETA=47.4min
+[  35/557] Chamelon   privgraph ε=2.0 rep=7  | NMI=0.1548 mod_rel=0.3951 deg_kl=1.412 | t=  6.1s ETA=47.5min
+[  36/557] Chamelon   privgraph ε=2.0 rep=8  | NMI=0.1903 mod_rel=0.3150 deg_kl=0.986 | t=  6.1s ETA=47.6min
+[  37/557] Chamelon   privgraph ε=2.0 rep=9  | NMI=0.1844 mod_rel=0.3885 deg_kl=2.933 | t=  6.1s ETA=47.7min
+[  38/557] Chamelon   privgraph ε=2.5 rep=0  | NMI=0.2047 mod_rel=0.2593 deg_kl=1.035 | t=  6.5s ETA=47.8min
+[  39/557] Chamelon   privgraph ε=2.5 rep=1  | NMI=0.2324 mod_rel=0.2429 deg_kl=0.797 | t=  6.6s ETA=47.9min
+[  40/557] Chamelon   privgraph ε=2.5 rep=2  | NMI=0.2220 mod_rel=0.3503 deg_kl=1.394 | t=  6.0s ETA=47.9min
+[  41/557] Chamelon   privgraph ε=2.5 rep=3  | NMI=0.1867 mod_rel=0.3099 deg_kl=1.088 | t=  6.3s ETA=48.0min
+[  42/557] Chamelon   privgraph ε=2.5 rep=4  | NMI=0.1964 mod_rel=0.2788 deg_kl=0.981 | t=  6.4s ETA=48.1min
+[  43/557] Chamelon   privgraph ε=2.5 rep=5  | NMI=0.2118 mod_rel=0.2955 deg_kl=1.070 | t=  6.2s ETA=48.1min
+[  44/557] Chamelon   privgraph ε=2.5 rep=6  | NMI=0.2101 mod_rel=0.3230 deg_kl=2.736 | t=  5.9s ETA=48.1min
+[  45/557] Chamelon   privgraph ε=2.5 rep=7  | NMI=0.2039 mod_rel=0.2801 deg_kl=1.325 | t=  6.3s ETA=48.1min
+[  46/557] Chamelon   privgraph ε=2.5 rep=8  | NMI=0.1880 mod_rel=0.3493 deg_kl=1.202 | t=  6.3s ETA=48.1min
+[  47/557] Chamelon   privgraph ε=2.5 rep=9  | NMI=0.2028 mod_rel=0.2728 deg_kl=1.089 | t=  6.4s ETA=48.2min
+[  48/557] Chamelon   privgraph ε=3.0 rep=0  | NMI=0.2506 mod_rel=0.2448 deg_kl=0.832 | t=  6.3s ETA=48.2min
+[  49/557] Chamelon   privgraph ε=3.0 rep=1  | NMI=0.2257 mod_rel=0.2937 deg_kl=1.327 | t=  6.4s ETA=48.2min
+[  50/557] Chamelon   privgraph ε=3.0 rep=2  | NMI=0.1958 mod_rel=0.5022 deg_kl=1.129 | t=  6.6s ETA=48.3min
+[  51/557] Chamelon   privgraph ε=3.0 rep=3  | NMI=0.2121 mod_rel=0.3800 deg_kl=0.862 | t=  6.3s ETA=48.3min
+[  52/557] Chamelon   privgraph ε=3.0 rep=4  | NMI=0.2284 mod_rel=0.2494 deg_kl=1.071 | t=  6.3s ETA=48.3min
+[  53/557] Chamelon   privgraph ε=3.0 rep=5  | NMI=0.2271 mod_rel=0.2835 deg_kl=1.020 | t=  6.3s ETA=48.3min
+[  54/557] Chamelon   privgraph ε=3.0 rep=6  | NMI=0.2577 mod_rel=0.2810 deg_kl=1.272 | t=  6.2s ETA=48.2min
+[  55/557] Chamelon   privgraph ε=3.0 rep=7  | NMI=0.2189 mod_rel=0.3825 deg_kl=0.868 | t=  6.6s ETA=48.3min
+[  56/557] Chamelon   privgraph ε=3.0 rep=8  | NMI=0.2320 mod_rel=0.2525 deg_kl=1.252 | t=  5.9s ETA=48.2min
+[  57/557] Chamelon   privgraph ε=3.0 rep=9  | NMI=0.2465 mod_rel=0.2618 deg_kl=0.903 | t=  6.5s ETA=48.2min
+[  58/557] Chamelon   privgraph ε=3.5 rep=0  | NMI=0.2236 mod_rel=0.2450 deg_kl=0.976 | t=  6.3s ETA=48.2min
+[  59/557] Chamelon   privgraph ε=3.5 rep=1  | NMI=0.2596 mod_rel=0.2165 deg_kl=0.895 | t=  6.2s ETA=48.2min
+[  60/557] Chamelon   privgraph ε=3.5 rep=2  | NMI=0.2673 mod_rel=0.2153 deg_kl=0.976 | t=  6.2s ETA=48.1min
+[  61/557] Chamelon   privgraph ε=3.5 rep=3  | NMI=0.2513 mod_rel=0.2233 deg_kl=1.071 | t=  6.2s ETA=48.1min
+[  62/557] Chamelon   privgraph ε=3.5 rep=4  | NMI=0.2385 mod_rel=0.2434 deg_kl=0.931 | t=  6.2s ETA=48.0min
+[  63/557] Chamelon   privgraph ε=3.5 rep=5  | NMI=0.2420 mod_rel=0.2561 deg_kl=1.143 | t=  6.5s ETA=48.0min
+[  64/557] Chamelon   privgraph ε=3.5 rep=6  | NMI=0.2111 mod_rel=0.2496 deg_kl=0.957 | t=  6.2s ETA=48.0min
+[  65/557] Chamelon   privgraph ε=3.5 rep=7  | NMI=0.2111 mod_rel=0.3013 deg_kl=0.933 | t=  6.4s ETA=47.9min
+[  66/557] Chamelon   privgraph ε=3.5 rep=8  | NMI=0.2197 mod_rel=0.2957 deg_kl=1.039 | t=  5.9s ETA=47.9min
+[  67/557] Chamelon   privgraph ε=3.5 rep=9  | NMI=0.2268 mod_rel=0.3553 deg_kl=1.002 | t=  6.2s ETA=47.8min
+[  68/557] Chamelon   ours      ε=0.5 rep=0  | NMI=0.2911 mod_rel=0.0007 deg_kl=2.385 | t=  2.6s ETA=47.3min
+[  69/557] Chamelon   ours      ε=0.5 rep=1  | NMI=0.2629 mod_rel=0.0089 deg_kl=2.613 | t=  2.9s ETA=46.9min
+[  70/557] Chamelon   ours      ε=0.5 rep=2  | NMI=0.2690 mod_rel=0.0002 deg_kl=2.810 | t=  2.4s ETA=46.4min
+[  71/557] Chamelon   ours      ε=0.5 rep=3  | NMI=0.2762 mod_rel=0.0328 deg_kl=2.294 | t=  2.9s ETA=46.0min
+[  72/557] Chamelon   ours      ε=0.5 rep=4  | NMI=0.2715 mod_rel=0.0574 deg_kl=2.709 | t=  2.2s ETA=45.5min
+[  73/557] Chamelon   ours      ε=0.5 rep=5  | NMI=0.2623 mod_rel=0.0189 deg_kl=3.428 | t=  2.2s ETA=45.0min
+[  74/557] Chamelon   ours      ε=0.5 rep=6  | NMI=0.2768 mod_rel=0.0362 deg_kl=2.598 | t=  2.4s ETA=44.6min
+[  75/557] Chamelon   ours      ε=0.5 rep=7  | NMI=0.2737 mod_rel=0.0401 deg_kl=2.705 | t=  2.6s ETA=44.2min
+[  76/557] Chamelon   ours      ε=0.5 rep=8  | NMI=0.2558 mod_rel=0.0421 deg_kl=4.611 | t=  2.2s ETA=43.7min
+[  77/557] Chamelon   ours      ε=0.5 rep=9  | NMI=0.2739 mod_rel=0.0330 deg_kl=2.383 | t=  2.5s ETA=43.3min
+[  78/557] Chamelon   ours      ε=1.0 rep=0  | NMI=0.2725 mod_rel=0.1169 deg_kl=1.601 | t=  3.5s ETA=43.0min
+[  79/557] Chamelon   ours      ε=1.0 rep=1  | NMI=0.3037 mod_rel=0.0992 deg_kl=1.519 | t=  3.8s ETA=42.8min
+[  80/557] Chamelon   ours      ε=1.0 rep=2  | NMI=0.2809 mod_rel=0.1122 deg_kl=1.609 | t=  3.8s ETA=42.5min
+[  81/557] Chamelon   ours      ε=1.0 rep=3  | NMI=0.3008 mod_rel=0.0528 deg_kl=1.472 | t=  3.9s ETA=42.3min
+[  82/557] Chamelon   ours      ε=1.0 rep=4  | NMI=0.3052 mod_rel=0.0679 deg_kl=1.481 | t=  3.6s ETA=42.1min
+[  83/557] Chamelon   ours      ε=1.0 rep=5  | NMI=0.3029 mod_rel=0.0628 deg_kl=1.794 | t=  3.6s ETA=41.8min
+[  84/557] Chamelon   ours      ε=1.0 rep=6  | NMI=0.2964 mod_rel=0.0923 deg_kl=1.448 | t=  3.6s ETA=41.6min
+[  85/557] Chamelon   ours      ε=1.0 rep=7  | NMI=0.2929 mod_rel=0.0189 deg_kl=1.464 | t=  3.4s ETA=41.3min
+[  86/557] Chamelon   ours      ε=1.0 rep=8  | NMI=0.2952 mod_rel=0.0354 deg_kl=1.506 | t=  3.8s ETA=41.1min
+[  87/557] Chamelon   ours      ε=1.0 rep=9  | NMI=0.2898 mod_rel=0.0173 deg_kl=1.612 | t=  3.4s ETA=40.8min
+[  88/557] Chamelon   ours      ε=1.5 rep=0  | NMI=0.2955 mod_rel=0.1430 deg_kl=1.661 | t=  4.0s ETA=40.6min
+[  89/557] Chamelon   ours      ε=1.5 rep=1  | NMI=0.2923 mod_rel=0.0342 deg_kl=1.226 | t=  4.1s ETA=40.5min
+[  90/557] Chamelon   ours      ε=1.5 rep=2  | NMI=0.3394 mod_rel=0.1113 deg_kl=1.379 | t=  4.2s ETA=40.3min
+[  91/557] Chamelon   ours      ε=1.5 rep=3  | NMI=0.2915 mod_rel=0.1184 deg_kl=1.455 | t=  4.0s ETA=40.1min
+[  92/557] Chamelon   ours      ε=1.5 rep=4  | NMI=0.2890 mod_rel=0.2434 deg_kl=1.410 | t=  4.5s ETA=40.0min
+[  93/557] Chamelon   ours      ε=1.5 rep=5  | NMI=0.3005 mod_rel=0.1869 deg_kl=1.493 | t=  4.3s ETA=39.8min
+[  94/557] Chamelon   ours      ε=1.5 rep=6  | NMI=0.3006 mod_rel=0.0862 deg_kl=1.290 | t=  4.1s ETA=39.6min
+[  95/557] Chamelon   ours      ε=1.5 rep=7  | NMI=0.3177 mod_rel=0.1172 deg_kl=1.412 | t=  4.3s ETA=39.5min
+[  96/557] Chamelon   ours      ε=1.5 rep=8  | NMI=0.2995 mod_rel=0.0090 deg_kl=1.356 | t=  4.1s ETA=39.3min
+[  97/557] Chamelon   ours      ε=1.5 rep=9  | NMI=0.3206 mod_rel=0.0779 deg_kl=1.361 | t=  4.0s ETA=39.1min
+[  98/557] Chamelon   ours      ε=2.0 rep=0  | NMI=0.3054 mod_rel=0.2591 deg_kl=1.394 | t=  4.4s ETA=39.0min
+[  99/557] Chamelon   ours      ε=2.0 rep=1  | NMI=0.3476 mod_rel=0.0762 deg_kl=1.398 | t=  4.3s ETA=38.8min
+[ 100/557] Chamelon   ours      ε=2.0 rep=2  | NMI=0.2748 mod_rel=0.2131 deg_kl=1.139 | t=  4.8s ETA=38.7min
+[ 101/557] Chamelon   ours      ε=2.0 rep=3  | NMI=0.2927 mod_rel=0.0926 deg_kl=1.441 | t=  4.3s ETA=38.6min
+[ 102/557] Chamelon   ours      ε=2.0 rep=4  | NMI=0.3356 mod_rel=0.1300 deg_kl=1.235 | t=  4.3s ETA=38.4min
+[ 103/557] Chamelon   ours      ε=2.0 rep=5  | NMI=0.3311 mod_rel=0.1163 deg_kl=1.084 | t=  4.4s ETA=38.3min
+[ 104/557] Chamelon   ours      ε=2.0 rep=6  | NMI=0.3036 mod_rel=0.1820 deg_kl=1.232 | t=  4.5s ETA=38.2min
+[ 105/557] Chamelon   ours      ε=2.0 rep=7  | NMI=0.3394 mod_rel=0.0764 deg_kl=1.267 | t=  4.3s ETA=38.0min
+[ 106/557] Chamelon   ours      ε=2.0 rep=8  | NMI=0.3124 mod_rel=0.0373 deg_kl=1.253 | t=  4.0s ETA=37.9min
+[ 107/557] Chamelon   ours      ε=2.0 rep=9  | NMI=0.3318 mod_rel=0.0426 deg_kl=1.405 | t=  4.2s ETA=37.7min
+[ 108/557] Chamelon   ours      ε=2.5 rep=0  | NMI=0.3174 mod_rel=0.2548 deg_kl=1.406 | t=  4.6s ETA=37.6min
+[ 109/557] Chamelon   ours      ε=2.5 rep=1  | NMI=0.3562 mod_rel=0.1064 deg_kl=1.138 | t=  4.5s ETA=37.5min
+[ 110/557] Chamelon   ours      ε=2.5 rep=2  | NMI=0.3283 mod_rel=0.1225 deg_kl=1.256 | t=  4.5s ETA=37.4min
+[ 111/557] Chamelon   ours      ε=2.5 rep=3  | NMI=0.3093 mod_rel=0.2627 deg_kl=1.431 | t=  4.6s ETA=37.3min
+[ 112/557] Chamelon   ours      ε=2.5 rep=4  | NMI=0.2795 mod_rel=0.2061 deg_kl=1.137 | t=  4.7s ETA=37.2min
+[ 113/557] Chamelon   ours      ε=2.5 rep=5  | NMI=0.3011 mod_rel=0.1306 deg_kl=1.279 | t=  4.9s ETA=37.1min
+[ 114/557] Chamelon   ours      ε=2.5 rep=6  | NMI=0.2836 mod_rel=0.2123 deg_kl=1.294 | t=  4.6s ETA=37.0min
+[ 115/557] Chamelon   ours      ε=2.5 rep=7  | NMI=0.3110 mod_rel=0.1348 deg_kl=1.510 | t=  4.4s ETA=36.8min
+[ 116/557] Chamelon   ours      ε=2.5 rep=8  | NMI=0.3461 mod_rel=0.0493 deg_kl=1.212 | t=  4.4s ETA=36.7min
+[ 117/557] Chamelon   ours      ε=2.5 rep=9  | NMI=0.3420 mod_rel=0.1164 deg_kl=1.136 | t=  4.5s ETA=36.6min
+[ 118/557] Chamelon   ours      ε=3.0 rep=0  | NMI=0.3609 mod_rel=0.1049 deg_kl=1.220 | t=  4.7s ETA=36.5min
+[ 119/557] Chamelon   ours      ε=3.0 rep=1  | NMI=0.3679 mod_rel=0.1064 deg_kl=1.109 | t=  4.8s ETA=36.4min
+[ 120/557] Chamelon   ours      ε=3.0 rep=2  | NMI=0.3511 mod_rel=0.1069 deg_kl=1.273 | t=  4.8s ETA=36.3min
+[ 121/557] Chamelon   ours      ε=3.0 rep=3  | NMI=0.3127 mod_rel=0.0828 deg_kl=1.093 | t=  4.4s ETA=36.2min
+[ 122/557] Chamelon   ours      ε=3.0 rep=4  | NMI=0.2948 mod_rel=0.2294 deg_kl=1.317 | t=  4.9s ETA=36.1min
+[ 123/557] Chamelon   ours      ε=3.0 rep=5  | NMI=0.3437 mod_rel=0.1936 deg_kl=1.328 | t=  4.9s ETA=36.0min
+[ 124/557] Chamelon   ours      ε=3.0 rep=6  | NMI=0.3090 mod_rel=0.0798 deg_kl=1.415 | t=  4.6s ETA=35.9min
+[ 125/557] Chamelon   ours      ε=3.0 rep=7  | NMI=0.2761 mod_rel=0.3273 deg_kl=1.366 | t=  5.0s ETA=35.8min
+[ 126/557] Chamelon   ours      ε=3.0 rep=8  | NMI=0.3087 mod_rel=0.2378 deg_kl=1.149 | t=  5.0s ETA=35.7min
+[ 127/557] Chamelon   ours      ε=3.0 rep=9  | NMI=0.3704 mod_rel=0.0990 deg_kl=1.160 | t=  4.7s ETA=35.6min
+[ 128/557] Chamelon   ours      ε=3.5 rep=0  | NMI=0.2759 mod_rel=0.3248 deg_kl=1.422 | t=  5.0s ETA=35.6min
+[ 129/557] Chamelon   ours      ε=3.5 rep=1  | NMI=0.3276 mod_rel=0.2416 deg_kl=1.344 | t=  4.8s ETA=35.5min
+[ 130/557] Chamelon   ours      ε=3.5 rep=2  | NMI=0.3031 mod_rel=0.2433 deg_kl=1.213 | t=  5.0s ETA=35.4min
+[ 131/557] Chamelon   ours      ε=3.5 rep=3  | NMI=0.3021 mod_rel=0.2669 deg_kl=1.369 | t=  4.8s ETA=35.3min
+[ 132/557] Chamelon   ours      ε=3.5 rep=4  | NMI=0.3475 mod_rel=0.1229 deg_kl=1.193 | t=  4.7s ETA=35.2min
+[ 133/557] Chamelon   ours      ε=3.5 rep=5  | NMI=0.3801 mod_rel=0.1110 deg_kl=1.430 | t=  4.7s ETA=35.1min
+[ 134/557] Chamelon   ours      ε=3.5 rep=6  | NMI=0.3074 mod_rel=0.1661 deg_kl=1.263 | t=  4.8s ETA=35.0min
+[ 135/557] Chamelon   ours      ε=3.5 rep=7  | NMI=0.3085 mod_rel=0.2786 deg_kl=1.177 | t=  4.8s ETA=34.9min
+[ 136/557] Chamelon   ours      ε=3.5 rep=8  | NMI=0.3528 mod_rel=0.0986 deg_kl=1.212 | t=  4.8s ETA=34.8min
+[ 137/557] Chamelon   ours      ε=3.5 rep=9  | NMI=0.3477 mod_rel=0.1286 deg_kl=1.124 | t=  4.9s ETA=34.7min
+
+[加载数据集 Facebook]
+  [基准] 构建图 ...
+  [基准] 节点=4039, 边=88234
+  [基准] Louvain 社区划分 ...
+  [基准] 度分布 / 聚类系数 / 直径 ...
+  [基准] 特征向量中心性（可能较慢）...
+  [基准] 完成。mod=0.8349, cc=0.5192, diam=8
+[ 138/557] Facebook   privgraph ε=0.5 rep=0  | NMI=0.0120 mod_rel=0.7515 deg_kl=14.751 | t= 13.5s ETA=36.2min
+[ 139/557] Facebook   privgraph ε=0.5 rep=1  | NMI=0.0331 mod_rel=0.7193 deg_kl=12.647 | t= 15.0s ETA=36.6min
+[ 140/557] Facebook   privgraph ε=0.5 rep=2  | NMI=0.0222 mod_rel=0.7319 deg_kl=13.641 | t= 13.9s ETA=37.0min
+[ 141/557] Facebook   privgraph ε=0.5 rep=3  | NMI=0.0080 mod_rel=0.7590 deg_kl=14.893 | t= 13.4s ETA=37.3min
+[ 142/557] Facebook   privgraph ε=0.5 rep=4  | NMI=0.0115 mod_rel=0.7672 deg_kl=13.593 | t= 13.6s ETA=37.6min
+[ 143/557] Facebook   privgraph ε=0.5 rep=5  | NMI=0.0050 mod_rel=0.7756 deg_kl=16.090 | t= 13.0s ETA=37.9min
+[ 144/557] Facebook   privgraph ε=0.5 rep=6  | NMI=0.0133 mod_rel=0.7459 deg_kl=13.983 | t= 13.7s ETA=38.2min
+[ 145/557] Facebook   privgraph ε=0.5 rep=7  | NMI=0.0096 mod_rel=0.7746 deg_kl=15.796 | t= 12.9s ETA=38.4min
+[ 146/557] Facebook   privgraph ε=0.5 rep=8  | NMI=0.0111 mod_rel=0.7732 deg_kl=15.017 | t= 13.5s ETA=38.7min
+[ 147/557] Facebook   privgraph ε=0.5 rep=9  | NMI=0.0121 mod_rel=0.7656 deg_kl=14.819 | t= 14.0s ETA=39.0min
+[ 148/557] Facebook   privgraph ε=1.0 rep=0  | NMI=0.1247 mod_rel=0.5546 deg_kl=8.251 | t= 18.3s ETA=39.5min
+[ 149/557] Facebook   privgraph ε=1.0 rep=1  | NMI=0.1490 mod_rel=0.5041 deg_kl=5.821 | t= 20.5s ETA=40.0min
+[ 150/557] Facebook   privgraph ε=1.0 rep=2  | NMI=0.1012 mod_rel=0.6049 deg_kl=7.669 | t= 18.7s ETA=40.5min
+[ 151/557] Facebook   privgraph ε=1.0 rep=3  | NMI=0.1431 mod_rel=0.5465 deg_kl=6.582 | t= 19.7s ETA=41.0min
+[ 152/557] Facebook   privgraph ε=1.0 rep=4  | NMI=0.1500 mod_rel=0.5412 deg_kl=5.963 | t= 21.6s ETA=41.6min
+[ 153/557] Facebook   privgraph ε=1.0 rep=5  | NMI=0.1318 mod_rel=0.4713 deg_kl=4.934 | t= 23.3s ETA=42.3min
+[ 154/557] Facebook   privgraph ε=1.0 rep=6  | NMI=0.1038 mod_rel=0.6582 deg_kl=9.021 | t= 18.3s ETA=42.7min
+[ 155/557] Facebook   privgraph ε=1.0 rep=7  | NMI=0.1658 mod_rel=0.4599 deg_kl=4.252 | t= 23.7s ETA=43.3min
+[ 156/557] Facebook   privgraph ε=1.0 rep=8  | NMI=0.1255 mod_rel=0.5766 deg_kl=6.176 | t= 19.7s ETA=43.8min
+[ 157/557] Facebook   privgraph ε=1.0 rep=9  | NMI=0.1653 mod_rel=0.4724 deg_kl=5.016 | t= 23.3s ETA=44.4min
+[ 158/557] Facebook   privgraph ε=1.5 rep=0  | NMI=0.1605 mod_rel=0.5180 deg_kl=5.793 | t= 22.2s ETA=45.0min
+[ 159/557] Facebook   privgraph ε=1.5 rep=1  | NMI=0.1588 mod_rel=0.4201 deg_kl=1.967 | t= 25.2s ETA=45.6min
+[ 160/557] Facebook   privgraph ε=1.5 rep=2  | NMI=0.1902 mod_rel=0.3858 deg_kl=2.683 | t= 24.4s ETA=46.2min
+[ 161/557] Facebook   privgraph ε=1.5 rep=3  | NMI=0.1809 mod_rel=0.4442 deg_kl=2.590 | t= 25.5s ETA=46.9min
+[ 162/557] Facebook   privgraph ε=1.5 rep=4  | NMI=0.1890 mod_rel=0.4278 deg_kl=2.809 | t= 24.2s ETA=47.4min
+[ 163/557] Facebook   privgraph ε=1.5 rep=5  | NMI=0.1572 mod_rel=0.4590 deg_kl=1.252 | t= 27.0s ETA=48.1min
+[ 164/557] Facebook   privgraph ε=1.5 rep=6  | NMI=0.1761 mod_rel=0.4326 deg_kl=3.400 | t= 25.1s ETA=48.7min
+[ 165/557] Facebook   privgraph ε=1.5 rep=7  | NMI=0.1673 mod_rel=0.4726 deg_kl=1.891 | t= 27.4s ETA=49.4min
+[ 166/557] Facebook   privgraph ε=1.5 rep=8  | NMI=0.1681 mod_rel=0.4430 deg_kl=3.299 | t= 25.1s ETA=49.9min
+[ 167/557] Facebook   privgraph ε=1.5 rep=9  | NMI=0.1648 mod_rel=0.4270 deg_kl=3.521 | t= 22.6s ETA=50.4min
+[ 168/557] Facebook   privgraph ε=2.0 rep=0  | NMI=0.1824 mod_rel=0.4343 deg_kl=1.853 | t= 26.4s ETA=51.0min
+[ 169/557] Facebook   privgraph ε=2.0 rep=1  | NMI=0.2162 mod_rel=0.4180 deg_kl=1.885 | t= 26.2s ETA=51.5min
+[ 170/557] Facebook   privgraph ε=2.0 rep=2  | NMI=0.1750 mod_rel=0.4342 deg_kl=3.144 | t= 27.5s ETA=52.2min
+[ 171/557] Facebook   privgraph ε=2.0 rep=3  | NMI=0.1434 mod_rel=0.4569 deg_kl=1.823 | t= 28.4s ETA=52.8min
+[ 172/557] Facebook   privgraph ε=2.0 rep=4  | NMI=0.1746 mod_rel=0.3962 deg_kl=0.599 | t= 30.8s ETA=53.5min
+[ 173/557] Facebook   privgraph ε=2.0 rep=5  | NMI=0.1792 mod_rel=0.4365 deg_kl=1.775 | t= 29.3s ETA=54.1min
+[ 174/557] Facebook   privgraph ε=2.0 rep=6  | NMI=0.1907 mod_rel=0.4035 deg_kl=1.666 | t= 30.4s ETA=54.8min
+[ 175/557] Facebook   privgraph ε=2.0 rep=7  | NMI=0.1734 mod_rel=0.4885 deg_kl=1.205 | t= 29.0s ETA=55.4min
+[ 176/557] Facebook   privgraph ε=2.0 rep=8  | NMI=0.1521 mod_rel=0.5307 deg_kl=0.965 | t= 30.5s ETA=56.0min
+[ 177/557] Facebook   privgraph ε=2.0 rep=9  | NMI=0.1767 mod_rel=0.4639 deg_kl=1.707 | t= 30.9s ETA=56.7min
+[ 178/557] Facebook   privgraph ε=2.5 rep=0  | NMI=0.1917 mod_rel=0.4562 deg_kl=0.559 | t= 30.4s ETA=57.3min
+[ 179/557] Facebook   privgraph ε=2.5 rep=1  | NMI=0.1894 mod_rel=0.3692 deg_kl=1.798 | t= 26.2s ETA=57.7min
+[ 180/557] Facebook   privgraph ε=2.5 rep=2  | NMI=0.1956 mod_rel=0.3899 deg_kl=1.034 | t= 29.2s ETA=58.3min
+[ 181/557] Facebook   privgraph ε=2.5 rep=3  | NMI=0.2246 mod_rel=0.3691 deg_kl=1.727 | t= 27.5s ETA=58.8min
+[ 182/557] Facebook   privgraph ε=2.5 rep=4  | NMI=0.1569 mod_rel=0.4205 deg_kl=0.939 | t= 28.6s ETA=59.3min
+[ 183/557] Facebook   privgraph ε=2.5 rep=5  | NMI=0.1818 mod_rel=0.4124 deg_kl=0.926 | t= 30.2s ETA=59.8min
+[ 184/557] Facebook   privgraph ε=2.5 rep=6  | NMI=0.1845 mod_rel=0.3904 deg_kl=0.396 | t= 31.7s ETA=1.01h
+[ 185/557] Facebook   privgraph ε=2.5 rep=7  | NMI=0.2078 mod_rel=0.4825 deg_kl=1.001 | t= 28.9s ETA=1.01h
+[ 186/557] Facebook   privgraph ε=2.5 rep=8  | NMI=0.1908 mod_rel=0.4694 deg_kl=1.137 | t= 29.8s ETA=1.02h
+[ 187/557] Facebook   privgraph ε=2.5 rep=9  | NMI=0.1693 mod_rel=0.4019 deg_kl=1.050 | t= 29.4s ETA=1.03h
+[ 188/557] Facebook   privgraph ε=3.0 rep=0  | NMI=0.2040 mod_rel=0.3863 deg_kl=0.451 | t= 30.3s ETA=1.04h
+[ 189/557] Facebook   privgraph ε=3.0 rep=1  | NMI=0.2080 mod_rel=0.4106 deg_kl=0.347 | t= 32.0s ETA=1.05h
+[ 190/557] Facebook   privgraph ε=3.0 rep=2  | NMI=0.1776 mod_rel=0.4303 deg_kl=0.952 | t= 29.8s ETA=1.06h
+[ 191/557] Facebook   privgraph ε=3.0 rep=3  | NMI=0.2143 mod_rel=0.3729 deg_kl=1.006 | t= 28.6s ETA=1.06h
+[ 192/557] Facebook   privgraph ε=3.0 rep=4  | NMI=0.1625 mod_rel=0.3951 deg_kl=0.916 | t= 29.4s ETA=1.07h
+[ 193/557] Facebook   privgraph ε=3.0 rep=5  | NMI=0.1918 mod_rel=0.4153 deg_kl=0.402 | t= 32.0s ETA=1.08h
+[ 194/557] Facebook   privgraph ε=3.0 rep=6  | NMI=0.2072 mod_rel=0.3807 deg_kl=0.944 | t= 30.0s ETA=1.09h
+[ 195/557] Facebook   privgraph ε=3.0 rep=7  | NMI=0.1906 mod_rel=0.4347 deg_kl=0.333 | t= 32.0s ETA=1.09h
+[ 196/557] Facebook   privgraph ε=3.0 rep=8  | NMI=0.1597 mod_rel=0.4197 deg_kl=1.772 | t= 28.2s ETA=1.10h
+[ 197/557] Facebook   privgraph ε=3.0 rep=9  | NMI=0.1439 mod_rel=0.4674 deg_kl=0.944 | t= 31.1s ETA=1.11h
+[ 198/557] Facebook   privgraph ε=3.5 rep=0  | NMI=0.1817 mod_rel=0.4110 deg_kl=0.396 | t= 33.0s ETA=1.11h
+[ 199/557] Facebook   privgraph ε=3.5 rep=1  | NMI=0.2203 mod_rel=0.3726 deg_kl=0.354 | t= 32.8s ETA=1.12h
+[ 200/557] Facebook   privgraph ε=3.5 rep=2  | NMI=0.1909 mod_rel=0.3990 deg_kl=0.453 | t= 30.6s ETA=1.13h
+[ 201/557] Facebook   privgraph ε=3.5 rep=3  | NMI=0.2044 mod_rel=0.3200 deg_kl=0.924 | t= 29.3s ETA=1.13h
+[ 202/557] Facebook   privgraph ε=3.5 rep=4  | NMI=0.2108 mod_rel=0.4495 deg_kl=0.376 | t= 33.0s ETA=1.14h
+[ 203/557] Facebook   privgraph ε=3.5 rep=5  | NMI=0.1782 mod_rel=0.3824 deg_kl=0.298 | t= 31.3s ETA=1.15h
+[ 204/557] Facebook   privgraph ε=3.5 rep=6  | NMI=0.1785 mod_rel=0.3868 deg_kl=0.367 | t= 31.3s ETA=1.15h
+[ 205/557] Facebook   privgraph ε=3.5 rep=7  | NMI=0.2136 mod_rel=0.3176 deg_kl=0.469 | t= 30.8s ETA=1.16h
+[ 206/557] Facebook   privgraph ε=3.5 rep=8  | NMI=0.1928 mod_rel=0.3995 deg_kl=0.978 | t= 30.3s ETA=1.16h
+[ 207/557] Facebook   privgraph ε=3.5 rep=9  | NMI=0.2236 mod_rel=0.3639 deg_kl=0.350 | t= 30.4s ETA=1.17h
+[ 208/557] Facebook   ours      ε=0.5 rep=0  | NMI=0.2344 mod_rel=0.0745 deg_kl=1.705 | t= 15.6s ETA=1.17h
+[ 209/557] Facebook   ours      ε=0.5 rep=1  | NMI=0.2639 mod_rel=0.0912 deg_kl=1.256 | t= 16.8s ETA=1.17h
+[ 210/557] Facebook   ours      ε=0.5 rep=2  | NMI=0.2425 mod_rel=0.0766 deg_kl=1.378 | t= 16.6s ETA=1.17h
+[ 211/557] Facebook   ours      ε=0.5 rep=3  | NMI=0.2419 mod_rel=0.0919 deg_kl=1.480 | t= 14.6s ETA=1.16h
+[ 212/557] Facebook   ours      ε=0.5 rep=4  | NMI=0.2394 mod_rel=0.0838 deg_kl=1.468 | t= 16.1s ETA=1.16h
+[ 213/557] Facebook   ours      ε=0.5 rep=5  | NMI=0.2392 mod_rel=0.0719 deg_kl=2.046 | t= 13.7s ETA=1.16h
+[ 214/557] Facebook   ours      ε=0.5 rep=6  | NMI=0.2419 mod_rel=0.0708 deg_kl=1.461 | t= 15.2s ETA=1.16h
+[ 215/557] Facebook   ours      ε=0.5 rep=7  | NMI=0.2408 mod_rel=0.0695 deg_kl=1.327 | t= 17.0s ETA=1.16h
+[ 216/557] Facebook   ours      ε=0.5 rep=8  | NMI=0.2452 mod_rel=0.0876 deg_kl=1.251 | t= 16.1s ETA=1.15h
+[ 217/557] Facebook   ours      ε=0.5 rep=9  | NMI=0.2375 mod_rel=0.0737 deg_kl=1.812 | t= 14.8s ETA=1.15h
+[ 218/557] Facebook   ours      ε=1.0 rep=0  | NMI=0.2820 mod_rel=0.1297 deg_kl=0.848 | t= 20.2s ETA=1.15h
+[ 219/557] Facebook   ours      ε=1.0 rep=1  | NMI=0.2662 mod_rel=0.1845 deg_kl=0.728 | t= 21.3s ETA=1.15h
+[ 220/557] Facebook   ours      ε=1.0 rep=2  | NMI=0.2688 mod_rel=0.1999 deg_kl=0.498 | t= 23.9s ETA=1.15h
+[ 221/557] Facebook   ours      ε=1.0 rep=3  | NMI=0.2805 mod_rel=0.2042 deg_kl=0.760 | t= 23.0s ETA=1.16h
+[ 222/557] Facebook   ours      ε=1.0 rep=4  | NMI=0.2466 mod_rel=0.2124 deg_kl=0.549 | t= 24.7s ETA=1.16h
+[ 223/557] Facebook   ours      ε=1.0 rep=5  | NMI=0.2855 mod_rel=0.1280 deg_kl=0.821 | t= 22.3s ETA=1.16h
+[ 224/557] Facebook   ours      ε=1.0 rep=6  | NMI=0.2452 mod_rel=0.1662 deg_kl=0.691 | t= 22.7s ETA=1.16h
+[ 225/557] Facebook   ours      ε=1.0 rep=7  | NMI=0.2714 mod_rel=0.1679 deg_kl=0.723 | t= 22.3s ETA=1.16h
+[ 226/557] Facebook   ours      ε=1.0 rep=8  | NMI=0.2935 mod_rel=0.1838 deg_kl=0.661 | t= 20.7s ETA=1.16h
+[ 227/557] Facebook   ours      ε=1.0 rep=9  | NMI=0.2688 mod_rel=0.1267 deg_kl=0.825 | t= 20.6s ETA=1.16h
+[ 228/557] Facebook   ours      ε=1.5 rep=0  | NMI=0.2337 mod_rel=0.2863 deg_kl=0.487 | t= 26.3s ETA=1.16h
+[ 229/557] Facebook   ours      ε=1.5 rep=1  | NMI=0.2727 mod_rel=0.1769 deg_kl=0.583 | t= 23.4s ETA=1.16h
+[ 230/557] Facebook   ours      ε=1.5 rep=2  | NMI=0.2428 mod_rel=0.3257 deg_kl=0.522 | t= 26.3s ETA=1.16h
+[ 231/557] Facebook   ours      ε=1.5 rep=3  | NMI=0.2733 mod_rel=0.2439 deg_kl=0.561 | t= 25.7s ETA=1.16h
+[ 232/557] Facebook   ours      ε=1.5 rep=4  | NMI=0.2473 mod_rel=0.2307 deg_kl=0.526 | t= 24.7s ETA=1.17h
+[ 233/557] Facebook   ours      ε=1.5 rep=5  | NMI=0.2740 mod_rel=0.1768 deg_kl=0.522 | t= 25.1s ETA=1.17h
+[ 234/557] Facebook   ours      ε=1.5 rep=6  | NMI=0.2834 mod_rel=0.1815 deg_kl=0.489 | t= 24.3s ETA=1.17h
+[ 235/557] Facebook   ours      ε=1.5 rep=7  | NMI=0.2531 mod_rel=0.2345 deg_kl=0.665 | t= 25.2s ETA=1.17h
+[ 236/557] Facebook   ours      ε=1.5 rep=8  | NMI=0.2829 mod_rel=0.2370 deg_kl=0.554 | t= 23.5s ETA=1.17h
+[ 237/557] Facebook   ours      ε=1.5 rep=9  | NMI=0.3060 mod_rel=0.1103 deg_kl=0.578 | t= 23.0s ETA=1.17h
+[ 238/557] Facebook   ours      ε=2.0 rep=0  | NMI=0.2405 mod_rel=0.5161 deg_kl=0.460 | t= 26.6s ETA=1.17h
+[ 239/557] Facebook   ours      ε=2.0 rep=1  | NMI=0.2550 mod_rel=0.2687 deg_kl=0.417 | t= 26.5s ETA=1.17h
+[ 240/557] Facebook   ours      ε=2.0 rep=2  | NMI=0.2750 mod_rel=0.1823 deg_kl=0.486 | t= 24.8s ETA=1.17h
+[ 241/557] Facebook   ours      ε=2.0 rep=3  | NMI=0.3119 mod_rel=0.1566 deg_kl=0.461 | t= 24.5s ETA=1.17h
+[ 242/557] Facebook   ours      ε=2.0 rep=4  | NMI=0.2812 mod_rel=0.2073 deg_kl=0.466 | t= 25.4s ETA=1.17h
+[ 243/557] Facebook   ours      ε=2.0 rep=5  | NMI=0.2606 mod_rel=0.2178 deg_kl=0.430 | t= 26.7s ETA=1.17h
+[ 244/557] Facebook   ours      ε=2.0 rep=6  | NMI=0.2905 mod_rel=0.3191 deg_kl=0.427 | t= 24.2s ETA=1.17h
+[ 245/557] Facebook   ours      ε=2.0 rep=7  | NMI=0.2598 mod_rel=0.2200 deg_kl=0.421 | t= 26.5s ETA=1.18h
+[ 246/557] Facebook   ours      ε=2.0 rep=8  | NMI=0.2727 mod_rel=0.2498 deg_kl=0.402 | t= 25.9s ETA=1.18h
+[ 247/557] Facebook   ours      ε=2.0 rep=9  | NMI=0.2518 mod_rel=0.2585 deg_kl=0.342 | t= 27.2s ETA=1.18h
+[ 248/557] Facebook   ours      ε=2.5 rep=0  | NMI=0.2627 mod_rel=0.2544 deg_kl=0.381 | t= 27.1s ETA=1.18h
+[ 249/557] Facebook   ours      ε=2.5 rep=1  | NMI=0.3188 mod_rel=0.1851 deg_kl=0.419 | t= 26.6s ETA=1.18h
+[ 250/557] Facebook   ours      ε=2.5 rep=2  | NMI=0.2888 mod_rel=0.2408 deg_kl=0.451 | t= 26.6s ETA=1.18h
+[ 251/557] Facebook   ours      ε=2.5 rep=3  | NMI=0.2937 mod_rel=0.1645 deg_kl=0.515 | t= 24.9s ETA=1.18h
+[ 252/557] Facebook   ours      ε=2.5 rep=4  | NMI=0.3011 mod_rel=0.1933 deg_kl=0.469 | t= 26.7s ETA=1.18h
+[ 253/557] Facebook   ours      ε=2.5 rep=5  | NMI=0.3101 mod_rel=0.2085 deg_kl=0.399 | t= 26.6s ETA=1.18h
+[ 254/557] Facebook   ours      ε=2.5 rep=6  | NMI=0.2797 mod_rel=0.2552 deg_kl=0.401 | t= 27.4s ETA=1.18h
+[ 255/557] Facebook   ours      ε=2.5 rep=7  | NMI=0.2877 mod_rel=0.1904 deg_kl=0.453 | t= 25.8s ETA=1.18h
+[ 256/557] Facebook   ours      ε=2.5 rep=8  | NMI=0.2931 mod_rel=0.2121 deg_kl=0.384 | t= 27.4s ETA=1.18h
+[ 257/557] Facebook   ours      ε=2.5 rep=9  | NMI=0.3195 mod_rel=0.1325 deg_kl=0.443 | t= 26.1s ETA=1.18h
+[ 258/557] Facebook   ours      ε=3.0 rep=0  | NMI=0.3100 mod_rel=0.2634 deg_kl=0.395 | t= 26.6s ETA=1.18h
+[ 259/557] Facebook   ours      ε=3.0 rep=1  | NMI=0.2412 mod_rel=0.4116 deg_kl=0.390 | t= 28.0s ETA=1.18h
+[ 260/557] Facebook   ours      ε=3.0 rep=2  | NMI=0.2816 mod_rel=0.2298 deg_kl=0.424 | t= 28.0s ETA=1.18h
+[ 261/557] Facebook   ours      ε=3.0 rep=3  | NMI=0.2988 mod_rel=0.1542 deg_kl=0.562 | t= 25.5s ETA=1.18h
+[ 262/557] Facebook   ours      ε=3.0 rep=4  | NMI=0.3152 mod_rel=0.2189 deg_kl=0.405 | t= 25.9s ETA=1.18h
+[ 263/557] Facebook   ours      ε=3.0 rep=5  | NMI=0.2541 mod_rel=0.2304 deg_kl=0.410 | t= 27.9s ETA=1.18h
+[ 264/557] Facebook   ours      ε=3.0 rep=6  | NMI=0.2362 mod_rel=0.4047 deg_kl=0.366 | t= 29.8s ETA=1.18h
+[ 265/557] Facebook   ours      ε=3.0 rep=7  | NMI=0.3131 mod_rel=0.2002 deg_kl=0.458 | t= 25.7s ETA=1.18h
+[ 266/557] Facebook   ours      ε=3.0 rep=8  | NMI=0.3187 mod_rel=0.1957 deg_kl=0.405 | t= 27.3s ETA=1.18h
+[ 267/557] Facebook   ours      ε=3.0 rep=9  | NMI=0.3111 mod_rel=0.2899 deg_kl=0.423 | t= 28.1s ETA=1.18h
+[ 268/557] Facebook   ours      ε=3.5 rep=0  | NMI=0.2762 mod_rel=0.2707 deg_kl=0.289 | t= 29.5s ETA=1.18h
+[ 269/557] Facebook   ours      ε=3.5 rep=1  | NMI=0.2770 mod_rel=0.2263 deg_kl=0.419 | t= 27.3s ETA=1.18h
+[ 270/557] Facebook   ours      ε=3.5 rep=2  | NMI=0.3018 mod_rel=0.2408 deg_kl=0.354 | t= 27.5s ETA=1.18h
+[ 271/557] Facebook   ours      ε=3.5 rep=3  | NMI=0.3403 mod_rel=0.1733 deg_kl=0.405 | t= 26.4s ETA=1.18h
+[ 272/557] Facebook   ours      ε=3.5 rep=4  | NMI=0.3163 mod_rel=0.2605 deg_kl=0.412 | t= 25.6s ETA=1.18h
+[ 273/557] Facebook   ours      ε=3.5 rep=5  | NMI=0.2642 mod_rel=0.3842 deg_kl=0.315 | t= 27.4s ETA=1.18h
+[ 274/557] Facebook   ours      ε=3.5 rep=6  | NMI=0.2202 mod_rel=0.4107 deg_kl=0.350 | t= 28.7s ETA=1.18h
+[ 275/557] Facebook   ours      ε=3.5 rep=7  | NMI=0.3075 mod_rel=0.2629 deg_kl=0.363 | t= 27.5s ETA=1.18h
+[ 276/557] Facebook   ours      ε=3.5 rep=8  | NMI=0.3170 mod_rel=0.1957 deg_kl=0.395 | t= 26.3s ETA=1.18h
+[ 277/557] Facebook   ours      ε=3.5 rep=9  | NMI=0.2656 mod_rel=0.2397 deg_kl=0.392 | t= 28.6s ETA=1.18h
+
+[加载数据集 CA-HepPh]
+  [基准] 构建图 ...
+  [基准] 节点=12008, 边=118489
+  [基准] Louvain 社区划分 ...
+  [基准] 度分布 / 聚类系数 / 直径 ...
+  [基准] 特征向量中心性（可能较慢）...
+  [基准] 完成。mod=0.6588, cc=0.6595, diam=13
+[ 278/557] CA-HepPh   privgraph ε=0.5 rep=0  | NMI=0.0388 mod_rel=0.6261 deg_kl=18.355 | t=136.7s ETA=1.25h
+[ 279/557] CA-HepPh   privgraph ε=0.5 rep=1  | NMI=0.0394 mod_rel=0.6086 deg_kl=8.378 | t=151.8s ETA=1.28h
+[ 280/557] CA-HepPh   privgraph ε=0.5 rep=2  | NMI=0.0450 mod_rel=0.4915 deg_kl=4.690 | t=164.4s ETA=1.32h
+[ 281/557] CA-HepPh   privgraph ε=0.5 rep=3  | NMI=0.0392 mod_rel=0.5776 deg_kl=15.378 | t=147.7s ETA=1.35h
+[ 282/557] CA-HepPh   privgraph ε=0.5 rep=4  | NMI=0.0392 mod_rel=0.6083 deg_kl=15.787 | t=143.5s ETA=1.38h
+[ 283/557] CA-HepPh   privgraph ε=0.5 rep=5  | NMI=0.0363 mod_rel=0.6330 deg_kl=16.193 | t=140.5s ETA=1.40h
+[ 284/557] CA-HepPh   privgraph ε=0.5 rep=6  | NMI=0.0361 mod_rel=0.6027 deg_kl=12.405 | t=141.4s ETA=1.43h
+[ 285/557] CA-HepPh   privgraph ε=0.5 rep=7  | NMI=0.0380 mod_rel=0.6244 deg_kl=15.586 | t=141.7s ETA=1.46h
+[ 286/557] CA-HepPh   privgraph ε=0.5 rep=8  | NMI=0.0360 mod_rel=0.6300 deg_kl=16.115 | t=141.5s ETA=1.49h
+[ 287/557] CA-HepPh   privgraph ε=0.5 rep=9  | NMI=0.0365 mod_rel=0.6223 deg_kl=12.264 | t=143.1s ETA=1.51h
+[ 288/557] CA-HepPh   privgraph ε=1.0 rep=0  | NMI=0.0551 mod_rel=0.4042 deg_kl=2.767 | t=181.6s ETA=1.55h
+[ 289/557] CA-HepPh   privgraph ε=1.0 rep=1  | NMI=0.0540 mod_rel=0.4356 deg_kl=6.698 | t=169.8s ETA=1.58h
+[ 290/557] CA-HepPh   privgraph ε=1.0 rep=2  | NMI=0.0464 mod_rel=0.4694 deg_kl=7.244 | t=166.8s ETA=1.61h
+[ 291/557] CA-HepPh   privgraph ε=1.0 rep=3  | NMI=0.0532 mod_rel=0.3985 deg_kl=6.630 | t=174.3s ETA=1.64h
+[ 292/557] CA-HepPh   privgraph ε=1.0 rep=4  | NMI=0.0512 mod_rel=0.4299 deg_kl=3.490 | t=173.9s ETA=1.68h
+[ 293/557] CA-HepPh   privgraph ε=1.0 rep=5  | NMI=0.0479 mod_rel=0.5120 deg_kl=11.740 | t=164.7s ETA=1.71h
+[ 294/557] CA-HepPh   privgraph ε=1.0 rep=6  | NMI=0.0451 mod_rel=0.5465 deg_kl=8.052 | t=163.4s ETA=1.73h
+[ 295/557] CA-HepPh   privgraph ε=1.0 rep=7  | NMI=0.0560 mod_rel=0.4006 deg_kl=2.922 | t=183.7s ETA=1.77h
+[ 296/557] CA-HepPh   privgraph ε=1.0 rep=8  | NMI=0.0510 mod_rel=0.4359 deg_kl=3.241 | t=176.4s ETA=1.80h
+[ 297/557] CA-HepPh   privgraph ε=1.0 rep=9  | NMI=0.0498 mod_rel=0.4192 deg_kl=3.705 | t=168.9s ETA=1.83h
+[ 298/557] CA-HepPh   privgraph ε=1.5 rep=0  | NMI=0.0581 mod_rel=0.3367 deg_kl=1.451 | t=195.8s ETA=1.86h
+[ 299/557] CA-HepPh   privgraph ε=1.5 rep=1  | NMI=0.0593 mod_rel=0.4099 deg_kl=1.723 | t=188.0s ETA=1.89h
+[ 300/557] CA-HepPh   privgraph ε=1.5 rep=2  | NMI=0.0542 mod_rel=0.3912 deg_kl=1.835 | t=195.1s ETA=1.92h
+[ 301/557] CA-HepPh   privgraph ε=1.5 rep=3  | NMI=0.0632 mod_rel=0.3887 deg_kl=1.650 | t=191.3s ETA=1.96h
+[ 302/557] CA-HepPh   privgraph ε=1.5 rep=4  | NMI=0.0644 mod_rel=0.4144 deg_kl=1.409 | t=190.6s ETA=1.99h
+[ 303/557] CA-HepPh   privgraph ε=1.5 rep=5  | NMI=0.0597 mod_rel=0.4091 deg_kl=1.699 | t=188.8s ETA=2.02h
+[ 304/557] CA-HepPh   privgraph ε=1.5 rep=6  | NMI=0.0575 mod_rel=0.4026 deg_kl=1.862 | t=194.1s ETA=2.05h
+[ 305/557] CA-HepPh   privgraph ε=1.5 rep=7  | NMI=0.0594 mod_rel=0.4163 deg_kl=1.689 | t=188.9s ETA=2.08h
+[ 306/557] CA-HepPh   privgraph ε=1.5 rep=8  | NMI=0.0653 mod_rel=0.4163 deg_kl=1.665 | t=190.9s ETA=2.10h
+[ 307/557] CA-HepPh   privgraph ε=1.5 rep=9  | NMI=0.0598 mod_rel=0.3806 deg_kl=1.905 | t=188.8s ETA=2.13h
+[ 308/557] CA-HepPh   privgraph ε=2.0 rep=0  | NMI=0.0692 mod_rel=0.4178 deg_kl=1.018 | t=190.9s ETA=2.16h
+[ 309/557] CA-HepPh   privgraph ε=2.0 rep=1  | NMI=0.0705 mod_rel=0.3520 deg_kl=0.936 | t=188.6s ETA=2.18h
+[ 310/557] CA-HepPh   privgraph ε=2.0 rep=2  | NMI=0.0669 mod_rel=0.4083 deg_kl=0.993 | t=197.4s ETA=2.21h
+[ 311/557] CA-HepPh   privgraph ε=2.0 rep=3  | NMI=0.0660 mod_rel=0.3182 deg_kl=1.132 | t=195.6s ETA=2.24h
+[ 312/557] CA-HepPh   privgraph ε=2.0 rep=4  | NMI=0.0697 mod_rel=0.3335 deg_kl=0.934 | t=192.9s ETA=2.27h
+[ 313/557] CA-HepPh   privgraph ε=2.0 rep=5  | NMI=0.0697 mod_rel=0.3845 deg_kl=1.163 | t=187.9s ETA=2.29h
+[ 314/557] CA-HepPh   privgraph ε=2.0 rep=6  | NMI=0.0784 mod_rel=0.2991 deg_kl=0.880 | t=191.9s ETA=2.31h
+[ 315/557] CA-HepPh   privgraph ε=2.0 rep=7  | NMI=0.0739 mod_rel=0.3541 deg_kl=0.921 | t=191.4s ETA=2.34h
+[ 316/557] CA-HepPh   privgraph ε=2.0 rep=8  | NMI=0.0792 mod_rel=0.4466 deg_kl=1.080 | t=190.7s ETA=2.36h
+[ 317/557] CA-HepPh   privgraph ε=2.0 rep=9  | NMI=0.0644 mod_rel=0.3466 deg_kl=1.409 | t=190.2s ETA=2.38h
+[ 318/557] CA-HepPh   privgraph ε=2.5 rep=0  | NMI=0.0717 mod_rel=0.2925 deg_kl=0.843 | t=188.6s ETA=2.41h
+[ 319/557] CA-HepPh   privgraph ε=2.5 rep=1  | NMI=0.0690 mod_rel=0.3406 deg_kl=0.825 | t=189.0s ETA=2.43h
+[ 320/557] CA-HepPh   privgraph ε=2.5 rep=2  | NMI=0.0753 mod_rel=0.3041 deg_kl=0.758 | t=187.9s ETA=2.45h
+[ 321/557] CA-HepPh   privgraph ε=2.5 rep=3  | NMI=0.0713 mod_rel=0.3221 deg_kl=0.883 | t=188.1s ETA=2.47h
+[ 322/557] CA-HepPh   privgraph ε=2.5 rep=4  | NMI=0.0753 mod_rel=0.2674 deg_kl=0.715 | t=189.5s ETA=2.49h
+[ 323/557] CA-HepPh   privgraph ε=2.5 rep=5  | NMI=0.0783 mod_rel=0.2953 deg_kl=0.728 | t=188.4s ETA=2.51h
+[ 324/557] CA-HepPh   privgraph ε=2.5 rep=6  | NMI=0.0719 mod_rel=0.3196 deg_kl=0.806 | t=188.7s ETA=2.53h
+[ 325/557] CA-HepPh   privgraph ε=2.5 rep=7  | NMI=0.0870 mod_rel=0.2854 deg_kl=0.588 | t=185.3s ETA=2.55h
+[ 326/557] CA-HepPh   privgraph ε=2.5 rep=8  | NMI=0.0710 mod_rel=0.3152 deg_kl=0.946 | t=192.4s ETA=2.57h
+[ 327/557] CA-HepPh   privgraph ε=2.5 rep=9  | NMI=0.0757 mod_rel=0.3819 deg_kl=0.803 | t=192.4s ETA=2.58h
+[ 328/557] CA-HepPh   privgraph ε=3.0 rep=0  | NMI=0.0791 mod_rel=0.2535 deg_kl=0.642 | t=189.6s ETA=2.60h
+[ 329/557] CA-HepPh   privgraph ε=3.0 rep=1  | NMI=0.0793 mod_rel=0.2756 deg_kl=0.797 | t=191.9s ETA=2.62h
+[ 330/557] CA-HepPh   privgraph ε=3.0 rep=2  | NMI=0.0873 mod_rel=0.2553 deg_kl=0.614 | t=186.4s ETA=2.64h
+[ 331/557] CA-HepPh   privgraph ε=3.0 rep=3  | NMI=0.0812 mod_rel=0.2702 deg_kl=0.926 | t=191.8s ETA=2.65h
+[ 332/557] CA-HepPh   privgraph ε=3.0 rep=4  | NMI=0.0778 mod_rel=0.2668 deg_kl=0.692 | t=191.2s ETA=2.67h
+[ 333/557] CA-HepPh   privgraph ε=3.0 rep=5  | NMI=0.0742 mod_rel=0.2620 deg_kl=0.735 | t=191.0s ETA=2.69h
+[ 334/557] CA-HepPh   privgraph ε=3.0 rep=6  | NMI=0.0775 mod_rel=0.2752 deg_kl=0.790 | t=195.3s ETA=2.70h
+[ 335/557] CA-HepPh   privgraph ε=3.0 rep=7  | NMI=0.0776 mod_rel=0.3224 deg_kl=0.836 | t=192.7s ETA=2.72h
+[ 336/557] CA-HepPh   privgraph ε=3.0 rep=8  | NMI=0.0864 mod_rel=0.2784 deg_kl=0.474 | t=189.8s ETA=2.73h
+[ 337/557] CA-HepPh   privgraph ε=3.0 rep=9  | NMI=0.0792 mod_rel=0.2685 deg_kl=0.667 | t=193.3s ETA=2.75h
+[ 338/557] CA-HepPh   privgraph ε=3.5 rep=0  | NMI=0.0757 mod_rel=0.2763 deg_kl=0.597 | t=193.8s ETA=2.76h
+[ 339/557] CA-HepPh   privgraph ε=3.5 rep=1  | NMI=0.0894 mod_rel=0.2990 deg_kl=0.503 | t=191.2s ETA=2.77h
+[ 340/557] CA-HepPh   privgraph ε=3.5 rep=2  | NMI=0.0801 mod_rel=0.2530 deg_kl=0.671 | t=190.8s ETA=2.79h
+[ 341/557] CA-HepPh   privgraph ε=3.5 rep=3  | NMI=0.0852 mod_rel=0.2972 deg_kl=0.456 | t=187.9s ETA=2.80h
+[ 342/557] CA-HepPh   privgraph ε=3.5 rep=4  | NMI=0.0851 mod_rel=0.2931 deg_kl=0.509 | t=194.0s ETA=2.81h
+[ 343/557] CA-HepPh   privgraph ε=3.5 rep=5  | NMI=0.0828 mod_rel=0.2752 deg_kl=0.574 | t=192.4s ETA=2.82h
+[ 344/557] CA-HepPh   privgraph ε=3.5 rep=6  | NMI=0.0890 mod_rel=0.2951 deg_kl=0.456 | t=190.7s ETA=2.83h
+[ 345/557] CA-HepPh   privgraph ε=3.5 rep=7  | NMI=0.0891 mod_rel=0.3063 deg_kl=0.501 | t=189.3s ETA=2.85h
+[ 346/557] CA-HepPh   privgraph ε=3.5 rep=8  | NMI=0.0822 mod_rel=0.2662 deg_kl=0.641 | t=192.5s ETA=2.86h
+[ 347/557] CA-HepPh   privgraph ε=3.5 rep=9  | NMI=0.0930 mod_rel=0.3424 deg_kl=0.554 | t=195.1s ETA=2.87h
+[ 348/557] CA-HepPh   ours      ε=0.5 rep=0  | NMI=0.3461 mod_rel=0.2320 deg_kl=2.179 | t= 47.1s ETA=2.85h
+[ 349/557] CA-HepPh   ours      ε=0.5 rep=1  | NMI=0.3623 mod_rel=0.2187 deg_kl=2.347 | t= 48.4s ETA=2.84h
+[ 350/557] CA-HepPh   ours      ε=0.5 rep=2  | NMI=0.3462 mod_rel=0.2272 deg_kl=2.182 | t= 45.6s ETA=2.83h
+[ 351/557] CA-HepPh   ours      ε=0.5 rep=3  | NMI=0.3528 mod_rel=0.2367 deg_kl=2.137 | t= 50.0s ETA=2.81h
+[ 352/557] CA-HepPh   ours      ε=0.5 rep=4  | NMI=0.3595 mod_rel=0.2271 deg_kl=2.143 | t= 50.7s ETA=2.80h
+[ 353/557] CA-HepPh   ours      ε=0.5 rep=5  | NMI=0.3532 mod_rel=0.1959 deg_kl=1.902 | t= 49.3s ETA=2.79h
+[ 354/557] CA-HepPh   ours      ε=0.5 rep=6  | NMI=0.3491 mod_rel=0.2331 deg_kl=2.178 | t= 48.6s ETA=2.77h
+[ 355/557] CA-HepPh   ours      ε=0.5 rep=7  | NMI=0.3574 mod_rel=0.2492 deg_kl=2.229 | t= 49.4s ETA=2.76h
+[ 356/557] CA-HepPh   ours      ε=0.5 rep=8  | NMI=0.3524 mod_rel=0.2312 deg_kl=2.230 | t= 43.2s ETA=2.74h
+[ 357/557] CA-HepPh   ours      ε=0.5 rep=9  | NMI=0.3637 mod_rel=0.2556 deg_kl=2.278 | t= 50.7s ETA=2.73h
+[ 358/557] CA-HepPh   ours      ε=1.0 rep=0  | NMI=0.3743 mod_rel=0.1673 deg_kl=1.778 | t= 63.8s ETA=2.72h
+[ 359/557] CA-HepPh   ours      ε=1.0 rep=1  | NMI=0.3528 mod_rel=0.2661 deg_kl=1.808 | t= 63.6s ETA=2.71h
+[ 360/557] CA-HepPh   ours      ε=1.0 rep=2  | NMI=0.3692 mod_rel=0.1620 deg_kl=1.762 | t= 62.1s ETA=2.70h
+[ 361/557] CA-HepPh   ours      ε=1.0 rep=3  | NMI=0.3823 mod_rel=0.0062 deg_kl=1.775 | t= 58.7s ETA=2.68h
+[ 362/557] CA-HepPh   ours      ε=1.0 rep=4  | NMI=0.3817 mod_rel=0.0696 deg_kl=1.702 | t= 66.4s ETA=2.67h
+[ 363/557] CA-HepPh   ours      ε=1.0 rep=5  | NMI=0.3845 mod_rel=0.0096 deg_kl=1.725 | t= 64.5s ETA=2.66h
+[ 364/557] CA-HepPh   ours      ε=1.0 rep=6  | NMI=0.3792 mod_rel=0.0601 deg_kl=1.870 | t= 58.9s ETA=2.65h
+[ 365/557] CA-HepPh   ours      ε=1.0 rep=7  | NMI=0.3851 mod_rel=0.0661 deg_kl=1.798 | t= 61.8s ETA=2.64h
+[ 366/557] CA-HepPh   ours      ε=1.0 rep=8  | NMI=0.3829 mod_rel=0.0371 deg_kl=1.707 | t= 65.7s ETA=2.62h
+[ 367/557] CA-HepPh   ours      ε=1.0 rep=9  | NMI=0.3783 mod_rel=0.0919 deg_kl=1.694 | t= 66.2s ETA=2.61h
+[ 368/557] CA-HepPh   ours      ε=1.5 rep=0  | NMI=0.3901 mod_rel=0.0803 deg_kl=1.428 | t= 77.3s ETA=2.60h
+[ 369/557] CA-HepPh   ours      ε=1.5 rep=1  | NMI=0.3814 mod_rel=0.0957 deg_kl=1.462 | t= 76.2s ETA=2.59h
+[ 370/557] CA-HepPh   ours      ε=1.5 rep=2  | NMI=0.3890 mod_rel=0.1611 deg_kl=1.399 | t= 78.6s ETA=2.58h
+[ 371/557] CA-HepPh   ours      ε=1.5 rep=3  | NMI=0.3895 mod_rel=0.0587 deg_kl=1.458 | t= 73.5s ETA=2.57h
+[ 372/557] CA-HepPh   ours      ε=1.5 rep=4  | NMI=0.3851 mod_rel=0.0881 deg_kl=1.422 | t= 76.0s ETA=2.56h
+[ 373/557] CA-HepPh   ours      ε=1.5 rep=5  | NMI=0.3837 mod_rel=0.0808 deg_kl=1.509 | t= 75.2s ETA=2.55h
+[ 374/557] CA-HepPh   ours      ε=1.5 rep=6  | NMI=0.3800 mod_rel=0.0824 deg_kl=1.381 | t= 80.6s ETA=2.54h
+[ 375/557] CA-HepPh   ours      ε=1.5 rep=7  | NMI=0.3847 mod_rel=0.0358 deg_kl=1.417 | t= 77.5s ETA=2.53h
+[ 376/557] CA-HepPh   ours      ε=1.5 rep=8  | NMI=0.3886 mod_rel=0.1032 deg_kl=1.481 | t= 76.5s ETA=2.52h
+[ 377/557] CA-HepPh   ours      ε=1.5 rep=9  | NMI=0.3895 mod_rel=0.0502 deg_kl=1.291 | t= 77.5s ETA=2.51h
+[ 378/557] CA-HepPh   ours      ε=2.0 rep=0  | NMI=0.3969 mod_rel=0.1776 deg_kl=1.246 | t= 76.3s ETA=2.50h
+[ 379/557] CA-HepPh   ours      ε=2.0 rep=1  | NMI=0.3922 mod_rel=0.1229 deg_kl=1.171 | t= 80.4s ETA=2.49h
+[ 380/557] CA-HepPh   ours      ε=2.0 rep=2  | NMI=0.3892 mod_rel=0.1305 deg_kl=1.202 | t= 85.3s ETA=2.48h
+[ 381/557] CA-HepPh   ours      ε=2.0 rep=3  | NMI=0.3942 mod_rel=0.1574 deg_kl=1.137 | t= 86.3s ETA=2.47h
+[ 382/557] CA-HepPh   ours      ε=2.0 rep=4  | NMI=0.3887 mod_rel=0.1708 deg_kl=1.118 | t= 84.7s ETA=2.46h
+[ 383/557] CA-HepPh   ours      ε=2.0 rep=5  | NMI=0.3812 mod_rel=0.2020 deg_kl=0.998 | t= 89.8s ETA=2.45h
+[ 384/557] CA-HepPh   ours      ε=2.0 rep=6  | NMI=0.3932 mod_rel=0.1607 deg_kl=1.087 | t= 81.9s ETA=2.44h
+[ 385/557] CA-HepPh   ours      ε=2.0 rep=7  | NMI=0.3849 mod_rel=0.2012 deg_kl=1.075 | t= 87.8s ETA=2.43h
+[ 386/557] CA-HepPh   ours      ε=2.0 rep=8  | NMI=0.3814 mod_rel=0.1695 deg_kl=1.202 | t= 88.3s ETA=2.42h
+[ 387/557] CA-HepPh   ours      ε=2.0 rep=9  | NMI=0.3838 mod_rel=0.2871 deg_kl=1.127 | t= 88.1s ETA=2.42h
+[ 388/557] CA-HepPh   ours      ε=2.5 rep=0  | NMI=0.3912 mod_rel=0.1372 deg_kl=1.063 | t= 81.3s ETA=2.40h
+[ 389/557] CA-HepPh   ours      ε=2.5 rep=1  | NMI=0.3920 mod_rel=0.1851 deg_kl=1.109 | t= 83.7s ETA=2.39h
+[ 390/557] CA-HepPh   ours      ε=2.5 rep=2  | NMI=0.3865 mod_rel=0.1823 deg_kl=1.136 | t= 87.1s ETA=2.38h
+[ 391/557] CA-HepPh   ours      ε=2.5 rep=3  | NMI=0.3920 mod_rel=0.1252 deg_kl=1.073 | t= 85.5s ETA=2.37h
+[ 392/557] CA-HepPh   ours      ε=2.5 rep=4  | NMI=0.3826 mod_rel=0.2253 deg_kl=1.038 | t= 87.5s ETA=2.36h
+[ 393/557] CA-HepPh   ours      ε=2.5 rep=5  | NMI=0.3836 mod_rel=0.1392 deg_kl=1.099 | t= 86.1s ETA=2.35h
+[ 394/557] CA-HepPh   ours      ε=2.5 rep=6  | NMI=0.3869 mod_rel=0.1172 deg_kl=0.998 | t= 87.3s ETA=2.34h
+[ 395/557] CA-HepPh   ours      ε=2.5 rep=7  | NMI=0.3828 mod_rel=0.1939 deg_kl=0.922 | t= 92.1s ETA=2.33h
+[ 396/557] CA-HepPh   ours      ε=2.5 rep=8  | NMI=0.3913 mod_rel=0.1586 deg_kl=1.125 | t= 85.3s ETA=2.32h
+[ 397/557] CA-HepPh   ours      ε=2.5 rep=9  | NMI=0.3677 mod_rel=0.1675 deg_kl=0.925 | t= 97.8s ETA=2.31h
+[ 398/557] CA-HepPh   ours      ε=3.0 rep=0  | NMI=0.3660 mod_rel=0.2250 deg_kl=1.030 | t=101.8s ETA=2.30h
+[ 399/557] CA-HepPh   ours      ε=3.0 rep=1  | NMI=0.3707 mod_rel=0.1417 deg_kl=1.106 | t= 97.4s ETA=2.30h
+[ 400/557] CA-HepPh   ours      ε=3.0 rep=2  | NMI=0.3925 mod_rel=0.1181 deg_kl=1.156 | t= 83.2s ETA=2.28h
+[ 401/557] CA-HepPh   ours      ε=3.0 rep=3  | NMI=0.3782 mod_rel=0.0806 deg_kl=1.031 | t= 92.0s ETA=2.27h
+[ 402/557] CA-HepPh   ours      ε=3.0 rep=4  | NMI=0.3766 mod_rel=0.1762 deg_kl=1.046 | t= 97.8s ETA=2.26h
+[ 403/557] CA-HepPh   ours      ε=3.0 rep=5  | NMI=0.3871 mod_rel=0.1414 deg_kl=1.140 | t= 90.5s ETA=2.25h
+[ 404/557] CA-HepPh   ours      ε=3.0 rep=6  | NMI=0.3562 mod_rel=0.1492 deg_kl=0.909 | t=105.7s ETA=2.24h
+[ 405/557] CA-HepPh   ours      ε=3.0 rep=7  | NMI=0.3581 mod_rel=0.1943 deg_kl=0.892 | t=105.9s ETA=2.24h
+[ 406/557] CA-HepPh   ours      ε=3.0 rep=8  | NMI=0.3831 mod_rel=0.2045 deg_kl=1.006 | t= 91.6s ETA=2.22h
+[ 407/557] CA-HepPh   ours      ε=3.0 rep=9  | NMI=0.3776 mod_rel=0.1785 deg_kl=1.025 | t= 96.6s ETA=2.21h
+[ 408/557] CA-HepPh   ours      ε=3.5 rep=0  | NMI=0.3490 mod_rel=0.2164 deg_kl=0.882 | t=111.6s ETA=2.21h
+[ 409/557] CA-HepPh   ours      ε=3.5 rep=1  | NMI=0.3687 mod_rel=0.1915 deg_kl=0.957 | t=105.1s ETA=2.20h
+[ 410/557] CA-HepPh   ours      ε=3.5 rep=2  | NMI=0.3655 mod_rel=0.1777 deg_kl=0.944 | t=105.3s ETA=2.19h
+[ 411/557] CA-HepPh   ours      ε=3.5 rep=3  | NMI=0.3649 mod_rel=0.1826 deg_kl=0.916 | t=103.9s ETA=2.18h
+[ 412/557] CA-HepPh   ours      ε=3.5 rep=4  | NMI=0.3571 mod_rel=0.1986 deg_kl=0.818 | t=107.1s ETA=2.17h
+[ 413/557] CA-HepPh   ours      ε=3.5 rep=5  | NMI=0.3685 mod_rel=0.2077 deg_kl=0.957 | t=104.8s ETA=2.16h
+[ 414/557] CA-HepPh   ours      ε=3.5 rep=6  | NMI=0.3780 mod_rel=0.1874 deg_kl=1.007 | t= 96.3s ETA=2.15h
+[ 415/557] CA-HepPh   ours      ε=3.5 rep=7  | NMI=0.3664 mod_rel=0.1491 deg_kl=0.933 | t=105.0s ETA=2.14h
+[ 416/557] CA-HepPh   ours      ε=3.5 rep=8  | NMI=0.3608 mod_rel=0.1788 deg_kl=0.947 | t=104.8s ETA=2.13h
+[ 417/557] CA-HepPh   ours      ε=3.5 rep=9  | NMI=0.3627 mod_rel=0.1909 deg_kl=0.977 | t=103.4s ETA=2.11h
+
+[加载数据集 Enron]
+  [基准] 构建图 ...
+  [基准] 节点=33696, 边=180811
+  [基准] Louvain 社区划分 ...
+  [基准] 度分布 / 聚类系数 / 直径 ...
+  [基准] 特征向量中心性（可能较慢）...
+  [基准] 完成。mod=0.5963, cc=0.0851, diam=13
+[ 418/557] Enron      privgraph ε=0.5 rep=0  | NMI=0.0122 mod_rel=0.5129 deg_kl=3.508 | t=1627.3s ETA=2.32h
+[ 419/557] Enron      privgraph ε=0.5 rep=1  | NMI=0.0128 mod_rel=0.4954 deg_kl=3.335 | t=1604.7s ETA=2.45h
+[ 420/557] Enron      privgraph ε=0.5 rep=2  | NMI=0.0135 mod_rel=0.5019 deg_kl=3.518 | t=1617.5s ETA=2.57h
+[ 421/557] Enron      privgraph ε=0.5 rep=3  | NMI=0.0133 mod_rel=0.4893 deg_kl=3.471 | t=1630.0s ETA=2.69h
+[ 422/557] Enron      privgraph ε=0.5 rep=4  | NMI=0.0134 mod_rel=0.5069 deg_kl=3.384 | t=1627.9s ETA=2.81h
+[ 423/557] Enron      privgraph ε=0.5 rep=5  | NMI=0.0133 mod_rel=0.4983 deg_kl=3.338 | t=1631.7s ETA=2.93h
+[ 424/557] Enron      privgraph ε=0.5 rep=6  | NMI=0.0139 mod_rel=0.4835 deg_kl=3.235 | t=1649.1s ETA=3.04h
+[ 425/557] Enron      privgraph ε=0.5 rep=7  | NMI=0.0119 mod_rel=0.5078 deg_kl=3.285 | t=1640.8s ETA=3.15h
+[ 426/557] Enron      privgraph ε=0.5 rep=8  | NMI=0.0137 mod_rel=0.4984 deg_kl=3.299 | t=1616.2s ETA=3.26h
+[ 427/557] Enron      privgraph ε=0.5 rep=9  | NMI=0.0118 mod_rel=0.5040 deg_kl=3.410 | t=1594.3s ETA=3.36h
+[ 428/557] Enron      privgraph ε=1.0 rep=0  | NMI=0.0139 mod_rel=0.4689 deg_kl=3.178 | t=1602.5s ETA=3.46h
+
+[中断] 已保存到上一 rep。下次启动会自动续跑。
+
+用户中断。下次启动可自动从断点恢复。

@@ -56,6 +56,30 @@
 %% Uncomment the following lines if you need multi line department names on cover pages
 % \departmenttwolines{学院名第一行}{学院名第二行}
 
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+   \begin{center}
+     \refstepcounter{algorithm}%
+     \hrule height.8pt depth0pt \kern2pt%
+     \renewcommand{\caption}[2][\relax]{%
+       {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+       \ifx\relax##1\relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+       \else
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+       \fi
+       \kern2pt\hrule\kern2pt
+     }
+  }{%
+     \kern2pt\hrule\relax%
+   \end{center}
+  }
+\makeatother
+
+
+
+
 \newcommand{\inputundergraduate}
 {
     \ifthenelse{\equal{\Period}{final}}
@@ -83,19 +107,19 @@
         \inputpage{final}{post}
 
         % Proposal part
-        \renewcommand{\undergradcurrstage}{proposal}
-        \newrefsection
+        % \renewcommand{\undergradcurrstage}{proposal}
+        % \newrefsection
 
-        \coverstyle
-        \inputpage{proposal}{cover-part}
-        \inputpage{proposal}{cover}
-        \inputpage{proposal}{previous}
+        % \coverstyle
+        % \inputpage{proposal}{cover-part}
+        % \inputpage{proposal}{cover}
+        % \inputpage{proposal}{previous}
         
-        \bodystyle
-        \inputbody{proposal/content}
+        % \bodystyle
+        % \inputbody{proposal/content}
 
-        \poststyle
-        \inputpage{proposal}{post}
+        % \poststyle
+        % \inputpage{proposal}{post}
     }
 
     \ifthenelse{\equal{\Period}{proposal}}
@@ -162,6 +186,7 @@
     \poststyle
     \inputbody{post}
 }
+
 
 \begin{document}
 

@@ -150,26 +150,26 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
                 dd_s.append(dd1)
 
             # Graph Reconstruction
-            # mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
-            # for i in range(comm_n):
-            #     # Intra-community
-            #     pi = mat1_pvs[i]
-            #     dd_ind = mat1_pvs[i]
-            #     dd1 = dd_s[i]
-            #     mat2[np.ix_(dd_ind,dd_ind)] = generate_intra_edge(dd1)
+            mat2 = np.zeros([mat0_node,mat0_node],dtype=np.int8)
+            for i in range(comm_n):
+                # Intra-community
+                pi = mat1_pvs[i]
+                dd_ind = mat1_pvs[i]
+                dd1 = dd_s[i]
+                mat2[np.ix_(dd_ind,dd_ind)] = generate_intra_edge(dd1)
                     
-            #     # Inter-community
-            #     for j in range(i+1,comm_n):
-            #         ev1 = ev_mat[i,j]
-            #         pj = mat1_pvs[j]
-            #         if ev1 > 0:
-            #             c1 = np.random.choice(pi,ev1)
-            #             c2 = np.random.choice(pj,ev1)
-            #             for ind in range(ev1):
-            #                 mat2[c1[ind],c2[ind]] = 1
-            #                 mat2[c2[ind],c1[ind]] = 1
+                # Inter-community
+                for j in range(i+1,comm_n):
+                    ev1 = ev_mat[i,j]
+                    pj = mat1_pvs[j]
+                    if ev1 > 0:
+                        c1 = np.random.choice(pi,ev1)
+                        c2 = np.random.choice(pj,ev1)
+                        for ind in range(ev1):
+                            mat2[c1[ind],c2[ind]] = 1
+                            mat2[c2[ind],c1[ind]] = 1
             
-            mat2 = step6_v3_full_fixed(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat, intra_ratio=0.05, inter_ratio=0.1)
+            # mat2 = step6_v6_cl_compensated(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,inter_ratio=0.1)
 
 
             mat2 = mat2 + np.transpose(mat2)
@@ -178,7 +178,7 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
             mat2[mat2>0] = 1
 
             # 边交换
-            mat2 = post_process_edge_swap(mat2, mat1_pvs, comm_n, n_iter_ratio=0.3)   
+            # mat2 = post_process_edge_swap_verbose(mat2, mat1_pvs, comm_n, n_iter_ratio=0.3)   
 
 
             mat2_graph = nx.from_numpy_array(mat2,create_using=nx.Graph)
@@ -297,7 +297,7 @@ def main_func(dataset_name='Chamelon',eps=[0.5,1,1.5,2,2.5,3,3.5],e1_r=1/3,e2_r=
 if __name__ == '__main__':
     # set the dataset
     # 'Facebook', 'CA-HepPh', 'Enron' ， Chamelon
-    dataset_name = 'Enron'
+    dataset_name = 'Chamelon'
 
     # set the privacy budget, list type
     eps = [0.5,1,1.5,2,2.5,3,3.5]

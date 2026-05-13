@@ -150,103 +150,6 @@ def community_init(mat0,mat0_graph,epsilon,nr,t=1.0):
 
     return label1
 
-
-def community_init_dp_degree_adaptive(mat0, mat0_graph, epsilon, nr=None, t=1.0, alpha=0.3):
-    """
-    DP度排序 + 自适应分组版本
-
-    参数：
-    epsilon : 总预算（用于初始化阶段）
-    nr      : 可选（不再使用固定分组）
-    alpha   : 分给“度排序”的预算比例（推荐 0.2~0.4）
-    """
-
-    n = len(mat0)
-
-    # ===== Step0: 隐私预算拆分 =====
-    e_deg = alpha * epsilon
-    e_init = (1 - alpha) * epsilon
-
-    # ===== Step1: DP度序列 =====
-    deg = np.sum(mat0, axis=1)
-
-    deg_noise = deg + laplace(0, 1 / e_deg, n)
-
-    # 排序（降序）
-    sort_idx = np.argsort(-deg_noise)
-
-    # ===== Step2: 自适应分组（√n）=====
-    group_size = int(np.sqrt(n))
-    group_size = max(group_size, 1)
-
-    num_groups = int(np.ceil(n / group_size))
-
-    g1 = np.zeros(n, dtype=np.int32)
-    for i in range(n):
-        g1[sort_idx[i]] = i // group_size
-
-    mat0_par3 = {i: int(g1[i]) for i in range(n)}
-    gr1 = max(mat0_par3.values()) + 1
-
-    # ===== Step3: 社区 → 节点集合 =====
-    mat0_par3_pv = np.array(list(mat0_par3.values()))
-    mat0_par3_pvs = []
-
-    for i in range(gr1):
-        pv = np.where(mat0_par3_pv == i)[0]
-        mat0_par3_pvs.append(list(pv))
-
-    # ===== Step4: 构建社区级图 =====
-    mat_one_level = np.zeros([gr1, gr1])
-
-    for i in range(gr1):
-        pi = mat0_par3_pvs[i]
-        mat_one_level[i, i] = np.sum(mat0[np.ix_(pi, pi)])
-        for j in range(i + 1, gr1):
-            pj = mat0_par3_pvs[j]
-            mat_one_level[i, j] = np.sum(mat0[np.ix_(pi, pj)])
-
-    # ===== Step5: DP扰动 =====
-    ga = get_uptri_arr(mat_one_level, ind=1)
-    ga_noise = ga + laplace(0, 1 / e_init, len(ga))
-    ga_noise_pp = FO_pp(ga_noise)
-    mat_one_level_noise = get_upmat(ga_noise_pp, gr1, ind=1)
-
-    noise_diag = np.int32(
-        mat_one_level.diagonal() + laplace(0, 2 / e_init, len(mat_one_level))
-    )
-    noise_diag = FO_pp(noise_diag)
-
-    mat_one_level_noise = np.triu(mat_one_level_noise, 1)
-    mat_one_level_noise = mat_one_level_noise + mat_one_level_noise.T
-
-    row, col = np.diag_indices_from(mat_one_level_noise)
-    mat_one_level_noise[row, col] = noise_diag
-    mat_one_level_noise[mat_one_level_noise < 0] = 0
-
-    mat_one_level_graph = nx.from_numpy_array(mat_one_level_noise, create_using=nx.Graph)
-
-    # ===== Step6: Louvain =====
-    mat_new_par = community.best_partition(mat_one_level_graph, resolution=t)
-
-    gr2 = max(mat_new_par.values()) + 1
-    mat_new_pv = np.array(list(mat_new_par.values()))
-
-    mat_final_pvs = []
-    for i in range(gr2):
-        pv = np.where(mat_new_pv == i)[0]
-        mat_final_pv = []
-        for j in range(len(pv)):
-            mat_final_pv.extend(mat0_par3_pvs[pv[j]])
-        mat_final_pvs.append(mat_final_pv)
-
-    # ===== Step7: 输出标签 =====
-    label1 = np.zeros(n, dtype=np.int32)
-    for i in range(len(mat_final_pvs)):
-        label1[mat_final_pvs[i]] = i
-
-    return label1
-
 def community_init_dp_neighbor_fixed(mat0, mat0_graph, epsilon, nr=None, t=1.0,
                                       alpha=0.3, beta=0.5, C=None):
     n = len(mat0)
@@ -1843,6 +1746,94 @@ def post_process_global_refill(mat2, target_edges, max_trials_factor=3):
     
     return mat2
 
+
+def step6_v5_no_degfix(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+                        intra_ratio=0.05, inter_ratio=0.10):
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    # ---- 阶段1: generate_intra_edge 只用 dd_s ----
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s[i])
+
+    # ---- 阶段2: 根据 intra_ratio 和 inter_ratio 分配边 ----
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_intra = int(ev1 * intra_ratio)
+            n_ri = n_intra // 2
+            n_rj = n_intra - n_ri
+            n_inter = int(ev1 * inter_ratio)
+
+            if n_ri > 0 and len(pi) > 1:
+                max_ei = len(pi) * (len(pi) - 1) // 2
+                actual_target = min(n_ri, max_ei)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ei * 2)
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pi[c1_idx[k]], pi[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_rj > 0 and len(pj) > 1:
+                max_ej = len(pj) * (len(pj) - 1) // 2
+                actual_target = min(n_rj, max_ej)
+                n_sample = min(int(actual_target * 1.5) + 10, max_ej * 2)
+                c1_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                for k in range(n_sample):
+                    if added >= actual_target:
+                        break
+                    a, b = pj[c1_idx[k]], pj[c2_idx[k]]
+                    if a != b and mat2[a, b] == 0:
+                        mat2[a, b] = 1
+                        mat2[b, a] = 1
+                        added += 1
+
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.3) + 5, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
+
+    # ---- 阶段3: ★ 已删除 ★ ----
+    # 不做任何度修复，直接返回
+
+    return mat2
+
+
 def post_process_double_edge_swap_v2(mat2, pvs, comm_n,
                                       n_iter_ratio=0.3,
                                       cross_clean_ratio=0.5,
@@ -2061,5 +2052,406 @@ def post_process_double_edge_swap_v2(mat2, pvs, comm_n,
         print(f'[阶段2] 删除跨社区边={total_removed}, '
               f'补偿社区内边={total_compensated}')
         print(f'[最终] 总边数={int(np.sum(mat2))//2}')
+
+    return mat2
+
+
+
+
+def step6_v6_cl_compensated(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+                             inter_ratio=0.10):
+    """
+    参数：
+      inter_ratio : 跨社区边保留比例（默认 0.10）
+      （不再需要 intra_ratio，因为补偿由 dd_s 放大完成）
+    """
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    # ================================================================
+    # ★ 阶段 0（新增）：计算补偿量，放大 dd_s
+    # ================================================================
+    # 对每个社区 i，计算它从所有 (i,j) 对中"省下来"的边数
+    # 省下的 = Σ_j ev_mat[i,j] × (1 - inter_ratio)
+    # 其中一半归 i，一半归 j → i 得到 Σ_j ev_mat[i,j] × (1 - inter_ratio) / 2
+
+    dd_s_scaled = []
+    for i in range(comm_n):
+        extra_i = 0
+        for j in range(comm_n):
+            if j == i:
+                continue
+            ev_ij = ev_mat[i, j] if i < j else ev_mat[j, i]
+            if ev_ij > 0:
+                extra_i += ev_ij * (1.0 - inter_ratio) / 2.0
+
+        dd_i = list(dd_s[i])  # 拷贝
+        dd_sum = sum(dd_i)
+
+        if dd_sum > 0 and extra_i > 0:
+            # CL 生成的边数 ≈ sum(dd)/2
+            # 要多生成 extra_i 条边 → sum(dd) 需要增加 2*extra_i
+            # 放大系数
+            scale = 1.0 + (2.0 * extra_i) / dd_sum
+
+            # 按比例放大每个度，保持度分布形状
+            dd_i_scaled = []
+            for d in dd_i:
+                new_d = int(round(d * scale))
+                # 社区内度不能超过社区大小-1
+                new_d = min(new_d, len(dd_i) - 1)
+                new_d = max(new_d, 0)
+                dd_i_scaled.append(new_d)
+            dd_s_scaled.append(dd_i_scaled)
+        else:
+            dd_s_scaled.append(dd_i)
+
+    # ---- 阶段 1: CL 用放大后的 dd_s 生成社区内边 ----
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s_scaled[i])
+
+    # ---- 阶段 2: 只放 inter_ratio 比例的跨社区边 ----
+    # （不再有 intra_ratio 随机补边，补偿已在阶段 0 完成）
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_inter = int(ev1 * inter_ratio)
+
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.5) + 10, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
+
+    # ---- 阶段 3: ★ 已删除（无软度修复） ★ ----
+
+    return mat2
+
+
+
+def post_process_edge_swap_verbose(mat2, pvs, comm_n, n_iter_ratio=0.5):
+    """
+    带统计输出的版本：在原有逻辑基础上记录每个阶段的边变动情况。
+    阶段 1（社区内边交换）：理论上不改变总边数，只移动边的位置。
+    阶段 2（跨社区边清理）：实际删除边，是总边数下降的来源。
+    """
+    mat2 = mat2.copy().astype(np.int8)
+    n = mat2.shape[0]
+
+    edges_before = int(np.sum(mat2) // 2)
+
+    # ---- 阶段 1 计数器 ----
+    s1_attempts = 0          # 进入交换循环的总次数
+    s1_swaps = 0             # 真正完成交换的次数
+    s1_skip_not_isolated = 0 # 因为不是孤立边而跳过（有公共邻居）
+    s1_skip_no_candidate = 0 # 找不到能形成三角的 w 而跳过
+
+    for ci in range(comm_n):
+        nodes = np.array(pvs[ci])
+        if len(nodes) < 4:
+            continue
+
+        sub = mat2[np.ix_(nodes, nodes)]
+
+        rows, cols_idx = np.where(np.triu(sub, 1) > 0)
+        intra_edges = list(zip(rows, cols_idx))
+
+        if len(intra_edges) == 0:
+            continue
+
+        n_iter = max(1, int(len(intra_edges) * n_iter_ratio))
+
+        for _ in range(n_iter):
+            s1_attempts += 1
+            edge_idx = np.random.randint(len(intra_edges))
+            u_local, v_local = intra_edges[edge_idx]
+
+            u_neighbors = set(np.where(sub[u_local] > 0)[0])
+            v_neighbors = set(np.where(sub[v_local] > 0)[0])
+            common = u_neighbors & v_neighbors
+
+            if len(common) > 0:
+                s1_skip_not_isolated += 1
+                continue
+
+            u_non_neighbors = set(range(len(nodes))) - u_neighbors - {u_local}
+
+            best_w = None
+            best_score = 0
+            for w_local in u_non_neighbors:
+                w_neighbors = set(np.where(sub[w_local] > 0)[0])
+                score = len(u_neighbors & w_neighbors)
+                if score > best_score:
+                    best_score = score
+                    best_w = w_local
+
+            if best_w is None or best_score == 0:
+                s1_skip_no_candidate += 1
+                continue
+
+            u_global = nodes[u_local]
+            v_global = nodes[v_local]
+            w_global = nodes[best_w]
+
+            sub[u_local, v_local] = 0
+            sub[v_local, u_local] = 0
+            sub[u_local, best_w] = 1
+            sub[best_w, u_local] = 1
+
+            mat2[u_global, v_global] = 0
+            mat2[v_global, u_global] = 0
+            mat2[u_global, w_global] = 1
+            mat2[w_global, u_global] = 1
+
+            intra_edges[edge_idx] = (u_local, best_w)
+            s1_swaps += 1
+
+    edges_after_s1 = int(np.sum(mat2) // 2)
+
+    # ---- 阶段 2 计数器 ----
+    s2_cross_total = 0       # 跨社区边总数
+    s2_kept_natural = 0      # 期望强度 > 1，自然保留
+    s2_candidates = 0        # 期望强度 ≤ 1，进入候选删除池
+    s2_removed = 0           # 实际删除数
+
+    m_total = np.sum(mat2) / 2
+    if m_total == 0:
+        _print_stats(edges_before, edges_after_s1, edges_after_s1,
+                     s1_attempts, s1_swaps, s1_skip_not_isolated, s1_skip_no_candidate,
+                     s2_cross_total, s2_kept_natural, s2_candidates, s2_removed)
+        return mat2
+
+    degree = np.sum(mat2, axis=1)
+
+    for ci in range(comm_n):
+        for cj in range(ci + 1, comm_n):
+            pi = pvs[ci]
+            pj = pvs[cj]
+
+            cross_edges = [
+                (u, v) for u in pi for v in pj
+                if mat2[u, v] == 1
+            ]
+            s2_cross_total += len(cross_edges)
+
+            remove_list = []
+            for (u, v) in cross_edges:
+                expected = (degree[u] * degree[v]) / (2 * m_total)
+                if expected > 1.0:
+                    s2_kept_natural += 1
+                    continue
+                remove_list.append((u, v))
+            s2_candidates += len(remove_list)
+
+            if len(remove_list) > 0:
+                n_remove = max(0, len(cross_edges) - max(1, len(cross_edges) // 2))
+                if n_remove > len(remove_list):
+                    n_remove = len(remove_list)
+                chosen = np.random.choice(len(remove_list), n_remove, replace=False)
+                for idx in chosen:
+                    u, v = remove_list[idx]
+                    mat2[u, v] = 0
+                    mat2[v, u] = 0
+                    s2_removed += 1
+
+    edges_after = int(np.sum(mat2) // 2)
+
+    _print_stats(edges_before, edges_after_s1, edges_after,
+                 s1_attempts, s1_swaps, s1_skip_not_isolated, s1_skip_no_candidate,
+                 s2_cross_total, s2_kept_natural, s2_candidates, s2_removed)
+
+    return mat2
+
+
+def _print_stats(edges_before, edges_after_s1, edges_after,
+                 s1_attempts, s1_swaps, s1_skip_not_isolated, s1_skip_no_candidate,
+                 s2_cross_total, s2_kept_natural, s2_candidates, s2_removed):
+    print("=" * 62)
+    print("post_process_edge_swap_verbose 统计")
+    print("-" * 62)
+    print(f"处理前总边数:                {edges_before}")
+    print()
+    print("【阶段 1：社区内边交换】（理论上不改变总边数）")
+    print(f"  尝试次数:                  {s1_attempts}")
+    print(f"  成功交换:                  {s1_swaps}")
+    print(f"  跳过（非孤立边，有公共邻居）: {s1_skip_not_isolated}")
+    print(f"  跳过（找不到三角候选 w）:    {s1_skip_no_candidate}")
+    print(f"  阶段 1 后边数:             {edges_after_s1}  "
+          f"(Δ = {edges_after_s1 - edges_before:+d})")
+    print()
+    print("【阶段 2：跨社区边清理】（净删除边）")
+    print(f"  跨社区边总数:              {s2_cross_total}")
+    print(f"  保留（期望强度 > 1，自然边）: {s2_kept_natural}")
+    print(f"  候选删除（期望强度 ≤ 1）:   {s2_candidates}")
+    print(f"  实际删除:                  {s2_removed}")
+    if s2_cross_total > 0:
+        print(f"  删除占跨社区边比例:        "
+              f"{s2_removed / s2_cross_total * 100:.2f}%")
+    print()
+    print(f"处理后总边数:                {edges_after}")
+    print(f"净删除:                      {edges_before - edges_after}")
+    if edges_before > 0:
+        print(f"占总边数比例:                "
+              f"{(edges_before - edges_after) / edges_before * 100:.2f}%")
+    print("=" * 62)
+
+
+
+def step6_v6_cl_compensated_v2(mat0_node, comm_n, mat1_pvs, dd_s, ev_mat,
+                                inter_ratio=0.10,
+                                min_comm_size_for_scaling=None,
+                                scale_safety_factor=4.0):
+    """
+    修复 3 版本：基于社区规模动态决定能否吸收边补偿。
+
+    修复思路：
+      对于过小的社区，社区内本身就没有空间容纳额外的边（最大度受 |C_i|-1 约束）。
+      若强行放大度序列，会触发大量截断，导致：
+        (1) 实际补偿量远低于目标 extra_i
+        (2) 度分布形状被截断破坏（变得过于均匀）
+        (3) Chung-Lu 在该社区生成接近完全图，CC 局部爆炸
+
+      因此对小社区直接跳过 dd 放大，让其按原始 dd_s 进行 Chung-Lu 采样，
+      其余社区正常补偿。
+
+    参数：
+      inter_ratio : 跨社区边保留比例（默认 0.10）
+      min_comm_size_for_scaling : 启用 dd 放大的社区最小规模。
+            若为 None，则按 scale_safety_factor 自适应判定：
+            当社区规模 |C_i| < scale_safety_factor * sqrt(extra_i) 时禁用放大。
+            一个直觉解释：要在 |C_i| 个节点上"安全地"多塞 extra_i 条边，
+            社区规模至少应是 sqrt(extra_i) 量级的若干倍，
+            否则节点对密度过高，容易触顶截断。
+      scale_safety_factor : 自适应阈值的安全系数（默认 4.0）。
+            该值越大，对小社区越保守（更多社区会被禁用放大）。
+    """
+    mat2 = np.zeros([mat0_node, mat0_node], dtype=np.int8)
+
+    # ================================================================
+    # 阶段 0：计算补偿量，对足够大的社区放大 dd_s；
+    #         对小社区跳过放大（修复 3）
+    # ================================================================
+    dd_s_scaled = []
+    n_scaled = 0           # 实际放大的社区数（统计用）
+    n_skipped_small = 0    # 因社区过小而跳过的社区数（统计用）
+
+    for i in range(comm_n):
+        # 计算社区 i 应分得的额外边预算
+        extra_i = 0.0
+        for j in range(comm_n):
+            if j == i:
+                continue
+            ev_ij = ev_mat[i, j] if i < j else ev_mat[j, i]
+            if ev_ij > 0:
+                extra_i += ev_ij * (1.0 - inter_ratio) / 2.0
+
+        dd_i = list(dd_s[i])
+        dd_sum = sum(dd_i)
+        comm_size = len(dd_i)
+
+        # ============ 修复 3：小社区禁用 dd 放大 ============
+        if min_comm_size_for_scaling is None:
+            # 自适应阈值：|C_i| < safety * sqrt(extra_i) 时禁用
+            size_threshold = scale_safety_factor * np.sqrt(max(extra_i, 1.0))
+        else:
+            size_threshold = float(min_comm_size_for_scaling)
+
+        if comm_size < size_threshold:
+            # 社区太小，不足以吸收补偿边，直接沿用原 dd_s[i]
+            # （extra_i 对应的边预算在此社区被静默丢弃，
+            #   等价于这部分跨社区边也被裁掉，不回流）
+            dd_s_scaled.append(dd_i)
+            if extra_i > 0:
+                n_skipped_small += 1
+            continue
+        # =====================================================
+
+        if dd_sum > 0 and extra_i > 0:
+            scale = 1.0 + (2.0 * extra_i) / dd_sum
+
+            dd_i_scaled = []
+            for d in dd_i:
+                new_d = int(round(d * scale))
+                # 仍保留合法性截断（社区内度 ≤ |C_i| - 1）
+                new_d = min(new_d, comm_size - 1)
+                new_d = max(new_d, 0)
+                dd_i_scaled.append(new_d)
+            dd_s_scaled.append(dd_i_scaled)
+            n_scaled += 1
+        else:
+            dd_s_scaled.append(dd_i)
+
+    # （可选）调试输出：观察哪些社区被跳过
+    # print(f"[step6_v2] scaled={n_scaled}, skipped_small={n_skipped_small}, "
+    #       f"total={comm_n}")
+
+    # ---- 阶段 1: CL 用（部分放大后的）dd_s 生成社区内边 ----
+    from utils import generate_intra_edge  # 与原函数一致的内部依赖
+
+    for i in range(comm_n):
+        nodes = mat1_pvs[i]
+        if len(nodes) == 0:
+            continue
+        mat2[np.ix_(nodes, nodes)] = generate_intra_edge(dd_s_scaled[i])
+
+    # ---- 阶段 2: 只放 inter_ratio 比例的跨社区边（度加权采样）----
+    for i in range(comm_n):
+        dd_i = np.maximum(np.array(dd_s[i], dtype=np.float64), 1.0)
+        prob_i = dd_i / dd_i.sum()
+
+        for j in range(i + 1, comm_n):
+            ev1 = ev_mat[i, j]
+            if ev1 <= 0:
+                continue
+
+            pi = np.array(mat1_pvs[i])
+            pj = np.array(mat1_pvs[j])
+            dd_j = np.maximum(np.array(dd_s[j], dtype=np.float64), 1.0)
+            prob_j = dd_j / dd_j.sum()
+
+            n_inter = int(ev1 * inter_ratio)
+
+            if n_inter > 0:
+                n_sample = min(int(n_inter * 1.5) + 10, len(pi) * len(pj))
+                c1_idx = np.random.choice(len(pi), n_sample, p=prob_i)
+                c2_idx = np.random.choice(len(pj), n_sample, p=prob_j)
+                added = 0
+                seen = set()
+                for k in range(n_sample):
+                    if added >= n_inter:
+                        break
+                    edge = (c1_idx[k], c2_idx[k])
+                    if edge not in seen:
+                        seen.add(edge)
+                        ni, nj = pi[c1_idx[k]], pj[c2_idx[k]]
+                        if mat2[ni, nj] == 0:
+                            mat2[ni, nj] = 1
+                            mat2[nj, ni] = 1
+                            added += 1
 
     return mat2

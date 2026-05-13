@@ -1,0 +1,1664 @@
+实验启动 @ 2026-05-11 21:47:45
+日志:   ./logs\run_20260511_214745.log
+结果:   ./results/
+缓存:   ./cache/
+并行数: 19
+
+==============================================================================
+  Job 1: 主对比实验（PrivGraph vs Ours）
+==============================================================================
+已完成: 441/560
+剩余:   119
+并行:   workers=19
+
+[加载数据集 Enron]
+  [基准:Enron] 构建图 ...
+  [基准:Enron] 节点=33696, 边=180811
+  [基准:Enron] Louvain 社区划分 ...
+  [基准:Enron] 度分布 / 聚类系数 / 直径 ...
+  [基准:Enron] 特征向量中心性 ...
+  [基准:Enron] 完成。mod=0.6034, cc=0.0851, diam=13
+  [基准:Enron] 已缓存到 ./cache\Enron.pkl
+[错误] Enron/privgraph/ε=1.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=1.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.0/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=2.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.0/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/privgraph/ε=3.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=0.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.0/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=1.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.0/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=2.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.0/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=0 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=1 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=2 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=3 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=5 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=4 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=6 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=7 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=8 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+[错误] Enron/ours/ε=3.5/rep=9 ir=0.1:
+Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+Traceback (most recent call last):
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 389, in _worker_main
+    res = run_one_rep(mat0_sp, baseline, method, eps, inter_ratio=inter_ratio)
+  File "E:\桌面\thesis\111final\PrivGraph-main\PrivGraph-main\main_test_3.py", line 282, in run_one_rep
+    mat0_dense_for_init = mat0_sp.toarray()
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+  File "C:\Users\du\AppData\Local\Programs\Python\Python313\Lib\site-packages\scipy\sparse\_base.py", line 1366, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 8.46 GiB for an array with shape (33696, 33696) and data type int64
+
+
+[中断] 正在取消未完成任务 ...
+[中断] 已保存到上一 rep。下次启动会自动续跑。
+
+用户中断。下次启动可自动从断点恢复。
