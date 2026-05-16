@@ -99,7 +99,7 @@
 即两者节点集相同、边集仅相差一条边，则称 $G$ 与 $G'$ 是边邻接的。
 其中 $A \oplus B = (A \cup B) \setminus (A \cap B)$ 表示对称差。
 
-\par \textbf{节点邻接（node-neighboring）}\cite{hay_accurate_2009}：
+\par \textbf{节点邻接（node-neighboring）}\cite{kasiviswanathan_analyzing_2013}：
 若两张图中一张可以通过从另一张中移除一个节点及其所有关联边得到，
 则称二者是节点邻接的。
 
@@ -226,16 +226,9 @@
 该实现以噪声社区划分 $\mathbb{C}_F$、噪声度序列 $\hat{d}$、噪声边向量 $\hat{v}$ 为输入，
 输出一张合成图的邻接矩阵 \texttt{mat2}。
 
-\par 算法~\ref{algo:step6-original} 给出了 PrivGraph 原始图重建过程的形式化描述。
-其中输入为已发布的噪声社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$、
-噪声度序列 $\hat{d}$ 与噪声边向量 $\hat{v}$，
-$\hat{d}_i$ 表示 $\hat{d}$ 在社区 $C_i$ 上的子序列，
-$\hat{v}_{ij}$ 表示矩阵 $\hat{v}$ 中对应社区对 $(C_i, C_j)$ 的元素；
-输出为合成图 $G_s$，初始化为节点数与原图相同的空图 $G_N$。
-重建过程通过逐社区生成子图 $s_i$ 与 $s_{ij}$ 并合并入 $G_s$ 来逐步构造合成图。
-
-\begin{breakablealgorithm}
-    \caption{PrivGraph 原始图重建（Step 6）}
+\begin{algorithm}[H]
+    \footnotesize 
+    \caption{PrivGraph 原始图重建过程}
     \label{algo:step6-original}
     \begin{algorithmic}[1]
         \REQUIRE 空图 $G_N$，社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$，
@@ -254,7 +247,15 @@ $\hat{v}_{ij}$ 表示矩阵 $\hat{v}$ 中对应社区对 $(C_i, C_j)$ 的元素�
         \ENDFOR
         \RETURN $G_s$
     \end{algorithmic}
-\end{breakablealgorithm}
+\end{algorithm}
+
+\par 算法~\ref{algo:step6-original} 给出了 PrivGraph 原始图重建过程的形式化描述。
+其中输入为已发布的噪声社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$、
+噪声度序列 $\hat{d}$ 与噪声边向量 $\hat{v}$，
+$\hat{d}_i$ 表示 $\hat{d}$ 在社区 $C_i$ 上的子序列，
+$\hat{v}_{ij}$ 表示矩阵 $\hat{v}$ 中对应社区对 $(C_i, C_j)$ 的元素；
+输出为合成图 $G_s$，初始化为节点数与原图相同的空图 $G_N$。
+重建过程通过逐社区生成子图 $s_i$ 与 $s_{ij}$ 并合并入 $G_s$ 来逐步构造合成图。
 
 \par 阶段 1 对每个社区 $C_i$，基于 Chung-Lu 模型~\cite{chung_connected_2002}
 按噪声度序列 $\hat{d}_i$ 生成社区内部子图 $s_i$：每对节点 $(u, v) \in C_i \times C_i$
@@ -327,8 +328,6 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 跨社区边均匀分布在每对社区之间，使得社区与社区之间的"边界"在合成图中
 显得模糊，整体模块度低于原图，进一步削弱了合成图的局部传递性表现。
 不过需要指出的是，三角结构的根本性修复需要超出 Chung-Lu 框架的额外建模手段，
-本文在第~\ref{subsec:exploratory} 节中讨论了一种基于零模型的跨社区边清理
-后处理尝试，但实验表明其在多数指标上未能带来稳定增益，
 因此本文将这一问题作为一个开放方向，
 而将主要优化精力集中于跨社区边处理这一更为关键的瓶颈环节。
 
@@ -342,11 +341,9 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 既涉及度信息利用，又直接影响下游社区检测——
 是图重建阶段最为关键的瓶颈环节。本文据此将优化重点集中于跨社区边的处理，
 通过单一但针对性较强的图重建模块同时缓解前两类问题；
-对于第三类局部三角结构偏差，本文将其作为一个开放方向，
-相关的探索性尝试见第~\ref{subsec:exploratory} 节。
+对于第三类局部三角结构偏差，本文将其作为一个开放方向，留作后续研究。
 
 \clearpage
-
 \section{跨社区边处理的图重建优化}
 
 \par 本章详细介绍针对第三章所识别的局限性所提出的图重建优化方法。
@@ -398,7 +395,6 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 从而在保持度分布形状不变的前提下维持节点度分布的整体一致性。
 
 \par 第五章将通过实验对该模块的效果进行系统评估。
-该章末尾还独立讨论本文在 PrivGraph 其他阶段进行的若干探索性尝试。
 
 \subsection{图重建模块的优化}
 \label{subsec:reconstruct}
@@ -481,49 +477,40 @@ $\hat{v}$也经过 Laplace 加噪，二者均非真值的精确反映。
 本文取 $\texttt{inter\_ratio} = 0.10$，
 即每对社区之间仅保留约 $\hat{v}(C_i, C_j) \cdot 10\%$ 条度加权采样的跨社区边，
 其余 $90\%$ 的边预算通过度序列放大回流至社区内部的 Chung-Lu 采样。
-该值是经过对 Chameleon 数据集的初步调优后确定的，
-在多个指标上取得稳定的改善而不引入明显的过密化副作用。
 
 \par 综合上述三个阶段，本文图重建优化模块的完整流程如算法~\ref{algo:reconstruct} 所示。
 
-\begin{breakablealgorithm}
+\begin{algorithm}[H]
+    \footnotesize 
     \caption{图重建模块优化}
     \label{algo:reconstruct}
     \begin{algorithmic}[1]
-        \REQUIRE 空图 $G_N$，社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$，
-                 噪声度序列 $\hat{d}$，噪声边矩阵 $\hat{v}$，
-                 跨社区保留比例 $\eta$（即 \texttt{inter\_ratio}）
+        \REQUIRE 空图 $G_N$,社区划分 $\mathbb{C}_F = \{C_1, \ldots, C_K\}$,
+                 噪声度序列 $\hat{d}$,噪声边矩阵 $\hat{v}$,
+                 跨社区保留比例 $\eta$(即 \texttt{inter\_ratio})
         \ENSURE 合成图 $G_s$
         \STATE 初始化 $G_s \gets G_N$
-        \STATE \textbf{阶段 0：度序列放大（边预算补偿）}
+        \STATE \textbf{阶段 0:度序列放大(边预算补偿)}
         \FOR{$C_i \in \mathbb{C}_F$}
-            \STATE $\mathrm{extra}_i \gets \frac{1}{2}(1 - \eta) \sum_{j \neq i} \hat{v}_{ij}$
-            \STATE 按公式~(\ref{equ:scale-factor}) 计算放大系数 $\mathrm{scale}_i$
-            \STATE $\hat{d}_i^{\mathrm{scaled}} \gets \mathrm{scale}_i \cdot \hat{d}_i$ 
-                   \quad // 截断至 $[0,\, |C_i| - 1]$
+            \STATE 由 $\hat{v}_{ij}$ 与 $\eta$ 按公式~(\ref{equ:scale-factor}) 
+            计算 $\mathrm{scale}_i$,得 $\hat{d}_i^{\mathrm{scaled}} \gets \mathrm{scale}_i \cdot \hat{d}_i$
+            (截断至 $[0,|C_i|-1]$)
         \ENDFOR
-        \STATE \textbf{阶段 1：社区内部边生成}
+        \STATE \textbf{阶段 1:社区内部边生成}
         \FOR{$C_i \in \mathbb{C}_F$}
-            \STATE 基于 $\hat{d}_i^{\mathrm{scaled}}$ 生成 $C_i$ 内部子图 $s_i$
-                   \quad // Chung-Lu 模型
-            \STATE $G_s \gets G_s \cup s_i$
+            \STATE 基于 $\hat{d}_i^{\mathrm{scaled}}$ 用 Chung-Lu 模型生成 $s_i$,
+                   $G_s \gets G_s \cup s_i$
         \ENDFOR
-        \STATE \textbf{阶段 2：跨社区度加权缩减采样}
+        \STATE \textbf{阶段 2:跨社区度加权缩减采样}
         \FOR{$C_i, C_j \in \mathbb{C}_F,\ i < j$}
-            \STATE $n_{ij} \gets \lfloor \eta \cdot \hat{v}_{ij} \rfloor$
-            \STATE 按概率 $(\pi_i, \pi_j) \propto (\hat{d}_i, \hat{d}_j)$ 在 $C_i \times C_j$ 
-                   上采样 $n_{ij}$ 条边构成 $s_{ij}$
-            \STATE $G_s \gets G_s \cup s_{ij}$
+            \STATE 取 $n_{ij} \gets \lfloor \eta \cdot \hat{v}_{ij} \rfloor$,
+                   按 $(\pi_i, \pi_j) \propto (\hat{d}_i, \hat{d}_j)$ 在 $C_i \times C_j$ 
+                   上采样 $n_{ij}$ 条边构成 $s_{ij}$,
+                   $G_s \gets G_s \cup s_{ij}$
         \ENDFOR
         \RETURN $G_s$
     \end{algorithmic}
-\end{breakablealgorithm}
-
-\par 该模块不改变原算法的整体框架，
-可以理解为对原 Step 6 在跨社区边处理上的针对性改造。
-该模块通过开关变量与原始 PrivGraph 解耦实现：
-关闭该模块即等价于调用原始 \texttt{step6\_original}，
-便于后续实验对比。
+\end{algorithm}
 
 \subsection{整体流程、隐私性与复杂度}
 \label{subsec:analysis}
@@ -577,6 +564,7 @@ $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 \par 至此，本文优化方法的设计、隐私性与复杂度均已论述完毕。
 下一章将通过实验对其有效性进行系统评估。
 
+\clearpage
 \section{实验评估}
 \label{chap:experiment}
 
@@ -585,8 +573,6 @@ $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 \autoref{subsec:exp-main}给出本文方法与原始 PrivGraph 在多个数据集上的整体对比；
 \autoref{subsec:exp-hyper}给出对核心超参 \texttt{inter\_ratio} 的敏感性分析；
 \autoref{subsec:exp-summary}对实验结果进行小结。
-最后，\autoref{subsec:exploratory}独立讨论本文围绕 PrivGraph 不同阶段所进行的
-若干探索性尝试。
 
 \subsection{实验设置}
 \label{subsec:exp-setup}
@@ -602,7 +588,7 @@ $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 其余三个数据集用于验证方法在不同图上的可推广性。
 四个数据集的基本统计信息如\autoref{tab:dataset}所示。
 
-\begin{table}[ht]
+\begin{table}[H]
     \caption{\label{tab:dataset}实验数据集的基本统计信息}
     \centering
     \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
@@ -665,20 +651,20 @@ $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 
 \par 本节给出本文方法 Ours 与原始 PrivGraph 在多个数据集上的整体对比。
 \autoref{subsec:exp-main-cha}给出 Chameleon 数据集上两种方法在 7 个指标 × 7 个 $\varepsilon$
-上的完整对比；\autoref{subsec:exp-main-other}在 Facebook 与 CA-HepPh 数据集上
+上的完整对比；\autoref{subsec:exp-main-other}在 Facebook、CA-HepPh 与 Enron 数据集上
 对比两种方法在 7 个 $\varepsilon$ 下的核心指标，验证本文方法的可推广性。
 
 \subsubsection{Chameleon 数据集上的完整对比}
 \label{subsec:exp-main-cha}
 
-\begin{figure}[ht]
+\par 由 \autoref{fig:cha-overview} 可见，本文方法 Ours 在 Chameleon 数据集上
+相对原始 PrivGraph 取得了显著改善，具体表现按指标维度分述如下：
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{chamelon_overview7.pdf}
     \caption{\label{fig:cha-overview}PrivGraph 与本文方法在 Chameleon 数据集上 7 个指标的对比}
 \end{figure}
-
-\par 由 \autoref{fig:cha-overview} 可见，本文方法 Ours 在 Chameleon 数据集上
-相对原始 PrivGraph 取得了显著改善，具体表现按指标维度分述如下：
 
 \begin{itemize}
     \item \textbf{社区结构指标：}
@@ -725,39 +711,18 @@ $(\varepsilon_1 + \varepsilon_2 + \varepsilon_3)$-边差分隐私。
 进行 7 个 $\varepsilon$ 上的对比。考虑篇幅，
 仅报告 NMI、Modularity Relative、Degree KL 与 CC Relative 四个最具代表性的指标，
 分别对应社区结构、度分布与局部传递性三个维度。
-其中 Facebook 与 CA-HepPh 的结果如 \autoref{fig:multi-dataset} 所示；
-Enron 数据集规模较大，对比实验目前仍在进行中，相关结果汇总于
-\autoref{tab:enr-result}，留作后续完善。
+结果如 \autoref{fig:multi-fbcah} 与 \autoref{fig:multi-enron} 所示。
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{facebook_overview7.pdf}
     \includegraphics[width=\linewidth]{cahepph_overview7.pdf}
-    \caption{\label{fig:multi-dataset}Facebook 与 CA-HepPh 数据集上 PrivGraph 与本文方法 Ours 在四个核心指标上的对比}
+    \caption{\label{fig:multi-fbcah}Facebook 与 CA-HepPh 数据集上 PrivGraph 与本文方法 Ours 在七个核心指标上的对比}
 \end{figure}
 
-\paragraph{Enron 数据集}~
-
-\begin{table}[ht]
-    \caption{\label{tab:enr-result}Enron 数据集上 PrivGraph 与 Ours 的对比}
-    \centering
-    \footnotesize
-    \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|*{7}{>{\centering\arraybackslash}X|}}
-        \hline
-        \textbf{指标} & \textbf{方法} & $\varepsilon{=}0.5$ & $1.0$ & $1.5$ & $2.0$ & $2.5$ & $3.0$ & $3.5$ \\ \hline
-        \multirow{2}{*}{NMI $\uparrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                          & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
-        \multirow{2}{*}{Mod. Rel. $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                  & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
-        \multirow{2}{*}{Deg. KL $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
-        \multirow{2}{*}{CC Rel. $\downarrow$}  & PrivGraph & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \cline{2-9}
-                                                & Ours & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} & \todo{} \\ \hline
-    \end{tabularx}
-\end{table}
-
 \par \textbf{多数据集结果分析：}
-对照 \autoref{fig:multi-dataset}，本文方法在两个不同来源、不同规模的数据集上
+对照 \autoref{fig:multi-fbcah} 与 \autoref{fig:multi-enron}，
+本文方法在三个不同来源、不同规模的数据集上
 均能稳定改善社区结构相关指标，呈现一致的可推广性。
 在规模适中、社区结构鲜明的 Facebook 上，
 Ours 在 NMI、Modularity Relative、Degree KL、CC Relative 四项指标上均稳定优于 PrivGraph：
@@ -775,9 +740,68 @@ CC Relative 平均由 0.555 降至 0.334（相对降低约 40\%）。
 原 PrivGraph 又因跨社区均匀采样使社区边界均匀分布的特性吻合：
 当原图社区结构越清晰、跨社区均匀采样产生的扰动越大时，
 本文方法基于度加权采样并主动缩减跨社区规模的优势就越突出。
-综合两个数据集的结果可见，本文方法在不同规模、不同来源、
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{enron_overview7.pdf}
+    \caption{\label{fig:multi-enron}Enron 数据集上 PrivGraph 与本文方法 Ours 在七个核心指标上的对比}
+\end{figure}
+
+\par 在规模更大的邮件通信网络 Enron 上，本文方法整体仍保持显著优势，
+但在 CC Relative 一项上呈现出有别于前两个数据集的反常表现。
+社区结构方面，PrivGraph 在 7 个 $\varepsilon$ 上的 NMI 均值仅为 0.017，
+几乎无法恢复原图的社区结构；本文方法则稳定维持在 0.33--0.35 之间，
+相对提升超过一个量级，是三个数据集中改善幅度最大者。
+Modularity Relative 由 PrivGraph 的均值 0.435 降至本文方法的 0.297，
+相对降低约 32\%，其中 $\varepsilon \geq 2.5$ 时尤为明显——
+PrivGraph 在此区间始终保持在 0.38--0.40 附近，而本文方法已下降至 0.14--0.22。
+Degree KL 在低隐私预算下本文方法显著占优（$\varepsilon=0.5$ 时为 2.04 vs.\ 3.38），
+但随 $\varepsilon$ 增大，PrivGraph 因未额外引入度信息扰动而逐渐反超，
+约在 $\varepsilon=2.0$ 处出现交叉，
+反映出度加权采样在噪声幅度较小时对噪声度序列的扰动更为敏感。
+
+\par 与上述指标形成鲜明对照的是 CC Relative：
+本文方法在 7 个隐私预算下的均值为 2.93，相较 PrivGraph 的 0.44 显著偏高，
+尤其在 $\varepsilon \leq 1.0$ 区间达到 5--6 的量级。
+究其原因，可归结为以下三方面：
+其一，Enron 作为真实邮件通信网络，呈现典型的 hub-and-spoke 拓扑特征，
+少数核心节点度数极高，且原图整体聚类系数较高；
+其二，本文方法的两项核心机制——基于噪声度序列的度加权跨社区采样
+与社区内噪声度序列的等比例放大补偿——共同作用于高度数节点，
+使合成图中以 hub 为中心的星形子结构被进一步强化，
+而星形子图的局部聚类系数趋近于 0，
+从而系统性地拉低了合成图的整体 CC；
+其三，CC Relative 以原图 CC 为分母进行归一化，
+Enron 较高的原始 CC 进一步放大了上述偏差在相对指标上的呈现。
+相比之下，PrivGraph 的均匀随机采样虽在社区结构指标上表现欠佳，
+但其在各节点间分配边数较为均衡，反使合成图的 CC 与原图差距较小。
+
+\par 一种可行的缓解思路是调整 PrivGraph 在``社区划分—信息抽取—图重建''
+三个阶段间的隐私预算分配比例。作为初步验证，
+本文将默认的均等分配 $(\varepsilon_1, \varepsilon_2, \varepsilon_3) = (1/3, 1/3, 1/3)$
+调整为偏重信息抽取阶段的 $(0.25, 0.50, 0.25)$，
+即将更多预算分配于度序列与边数抽取，以降低噪声度序列的扰动幅度。
+Enron 上的实验结果表明，该调整可在多个隐私预算下稳定降低 CC Relative：
+$\varepsilon=2.0$ 时由 2.42 降至 1.68，相对降幅约 31\%；
+$\varepsilon=3.0$ 时由 1.50 降至 0.96，相对降幅约 36\%；
+与此同时，NMI、Modularity Relative 等核心指标基本不受影响，部分预算下甚至略有提升。
+上述结果表明，CC Relative 偏高的问题在相当程度上源于噪声度序列扰动
+经度加权采样与等比例放大机制后的累积效应，
+而将更多隐私预算分配于度序列抽取阶段即可有效抑制该效应。
+三阶段隐私预算的联合最优分配本身构成一个独立的优化问题，
+将作为后续工作进一步探索。
+
+\par 综合三个数据集的结果可见，本文方法在不同规模、不同来源、
 不同度分布特性的图上均能稳定可推广，
-核心优势——基于度信息的跨社区采样与边预算补偿——在多种拓扑结构上都有效。
+核心优势——基于度信息的跨社区采样与边预算补偿——在多种拓扑结构上都有效；
+而对于 Enron 等具有显著 hub 结构、高聚类特性的网络，
+通过适配性地调整三阶段隐私预算分配比例，
+还可在保持社区结构相关指标既有优势的同时，
+进一步抑制聚类系数指标上的副作用。
+
+
+
+
 
 \subsection{超参敏感性分析}
 \label{subsec:exp-hyper}
@@ -791,7 +815,7 @@ CC Relative 平均由 0.555 降至 0.334（相对降低约 40\%）。
 本文在 $\{0.05, 0.10, 0.15, 0.20, 0.30\}$ 上进行扫描，
 结果如\autoref{fig:hp-inter}所示。
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{hp_interratio.pdf}
     \caption{\label{fig:hp-inter}\texttt{inter\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
@@ -854,6 +878,15 @@ CC Relative 更接近原图，代价是 NMI 与 Modularity Relative 退化。
     CA-HepPh 上 NMI 平均由 0.066 提升至 0.376（5 倍以上），
     Modularity Relative 由 0.384 降至 0.157（相对降低约 59\%），
     Degree KL 与 CC Relative 同样保持全段领先。
+    CA-HepPh 上 NMI 平均由 0.066 提升至 0.376（5 倍以上），
+    Modularity Relative 由 0.384 降至 0.157（相对降低约 59\%），
+    Degree KL 与 CC Relative 同样保持全段领先。
+    在规模最大的 Enron 上，本文方法在社区结构相关指标上的改善最为显著——
+    NMI 均值由 0.017 提升至 0.341（相对提升超过一个量级），
+    Modularity Relative 由 0.435 降至 0.297（相对降低约 32\%）；
+    但受 Enron 显著的 hub-and-spoke 拓扑特征影响，
+    CC Relative 在该数据集上出现反常偏高，
+    相关原因与缓解思路已在 \autoref{subsec:exp-main-other} 中给出分析。
     综合来看，本文方法的核心优势——
     基于度信息的跨社区采样与边预算补偿——
     在不同规模与不同来源图上稳定可推广。
@@ -877,6 +910,14 @@ CC Relative 更接近原图，代价是 NMI 与 Modularity Relative 退化。
 合成图的聚类系数与原图的偏离轻微增大。
 由于 Chung-Lu 模型本身缺乏对三角结构的显式建模，
 这一问题在合成图层面难以彻底解决，本文将其作为局部三角结构修复的开放方向。
+该现象在 Enron 数据集上被进一步放大——
+Enron 具有显著的 hub-and-spoke 拓扑特征，
+本文方法的度加权采样与度序列等比例放大共同强化了以 hub 为中心的星形子结构，
+使 CC Relative 在 7 个 $\varepsilon$ 下均值达 2.93，远高于 PrivGraph 的 0.44。
+初步实验表明，将三阶段隐私预算从默认均等分配调整为偏重信息抽取阶段的
+$(0.25, 0.50, 0.25)$，可在多个预算下稳定降低 CC Relative 30\% 以上，
+且不损害社区结构相关指标，
+说明该副作用在算法层面尚可通过预算重配进行缓解。
 其次，在极低预算（$\varepsilon = 0.5$）下 $\hat{v}$ 与 $\mathbb{C}_F$ 双重噪声过大，
 合成图的结构指标整体偏差仍然较大，
 本文方法虽较 PrivGraph 有改善，但绝对水平仍有提升空间。再次，
@@ -886,6 +927,118 @@ $0.05$ 在 NMI 与 Modularity Relative 上更具竞争力，
 而本文取 $0.10$ 作为整体均衡的折中选择，
 若将默认值进一步推向 $0.05$ 并在其他数据集上重新调优，
 社区结构相关指标仍有进一步的提升空间。
+
+\clearpage
+
+\section{总结与展望}
+
+\par 本章对全文工作进行总结，归纳本文的主要研究内容与贡献，
+并对未来可能的研究方向进行展望。
+
+\subsection{工作总结}
+
+\par 本文以差分隐私图发布作为研究背景，
+针对当前该方向中具有代表性的 PrivGraph 算法在图重建阶段所存在的局限性，
+提出了一种基于度加权采样与边预算补偿的优化方法，
+在不引入额外隐私开销的前提下提升了合成图的可用性。
+全文的主要研究工作可以归纳为如下三个方面。
+
+\par \textbf{（1）系统梳理了差分隐私图发布领域的研究现状。}
+本文从图统计发布、图合成发布以及图数据合成的其他相关研究三条主线，
+回顾了边差分隐私与节点差分隐私下的代表性工作，
+对邻接矩阵扰动类（TmF）、密度划分类（DER）、概率图模型类（PrivHRG）、
+本地差分隐私下的图合成方法（LDPGen、Block-HRG）以及
+基于社区结构的方法（PrivGraph、PGB）进行了对比分析，
+明确了 PrivGraph 在已有方法中的位置及其图重建阶段的可改进空间，
+为本文工作的开展提供了清晰的研究脉络。
+
+\par \textbf{（2）系统分析了 PrivGraph 图重建阶段的局限性。}
+本文从噪声社区划分与噪声边向量两层误差耦合的角度，
+对 PrivGraph 原算法在跨社区边处理上的问题进行了剖析：
+原算法按噪声边向量 $\hat{v}$ 全量进行均匀采样的做法，
+既未利用噪声度序列 $\hat{d}$ 中蕴含的节点重要性信息，
+又会与已经被差分隐私机制扰动过的社区划分发生叠加效应；
+跨社区边在 Louvain 等模块度优化算法中具有``桥接''作用，
+忠实生成所有跨社区边会使合成图在重新执行社区检测时
+与原图划分差异较大，进而拉低 NMI、模块度等社区结构相关指标。
+该分析从机制层面揭示了原算法在低预算下合成图可用性下降的成因，
+为后续优化设计明确了切入点。
+
+\par \textbf{（3）提出并验证了面向跨社区边处理的图重建优化方法。}
+针对上述局限性，本文对图重建阶段做出了两项相互配合的改动：
+将原算法在跨社区方向上的均匀随机采样替换为基于噪声度序列 $\hat{d}$
+的度加权采样，并按 \texttt{inter\_ratio}（默认 $0.10$）的比例
+主动缩减每对社区之间生成的跨社区边数；
+同时，在 Chung-Lu 采样之前根据每个社区因跨社区缩减所节省的边数
+对 $\hat{d}$ 进行等比例放大，
+使 Chung-Lu 模型在社区内部自然多生成相应数量的边，
+在保持节点度分布形状不变的前提下维持总边数的稳定。
+由于所有改动仅作用于已发布的噪声中间结果、不再访问原始数据，
+根据差分隐私的后处理性质，
+该方法不消耗额外的隐私预算，
+整体隐私性与原始 PrivGraph 完全一致。
+本文在 Chameleon、Facebook、CA-HepPh、Enron 四个公开数据集上
+对所提方法进行了系统的实验评估，
+结果表明该方法在 NMI、模块度相对误差等社区结构核心指标上
+相对原始 PrivGraph 取得了稳定改善，
+在不同规模、不同来源、不同度分布特性的图上展现出较好的可推广性。
+
+\subsection{未来工作展望}
+
+\par 本文工作虽然在合成图可用性上取得了一定改善，
+但差分隐私图发布作为一个活跃的研究方向，
+仍有许多值得进一步探索的问题。
+结合本文工作的延伸方向，未来的研究可以从以下几个方面继续推进。
+
+\par \textbf{（1）面向局部三角结构的合成图后处理修复。}
+Chung-Lu 模型仅利用节点度信息生成边，
+不显式建模节点之间的三角闭合关系，
+使合成图在聚类系数等局部传递性指标上与原图之间存在系统性偏差。
+未来可在保持差分隐私后处理性质的前提下，
+引入三角闭合（triangle closure）等局部结构修复机制：
+在合成图基础上以某种受控方式将开放的二阶路径 $u\text{-}v\text{-}w$
+（即 $u \sim v$ 且 $v \sim w$ 但 $u \not\sim w$）
+按一定概率闭合为三角形，从而提升合成图的聚类系数。
+该类操作仅作用于已合成的图，符合差分隐私后处理性质，
+不会引入额外隐私开销，是值得进一步探索的方向。
+
+\par \textbf{（2）核心超参的数据自适应选取策略。}
+本文的超参敏感性分析表明，
+\texttt{inter\_ratio} 在不同取值下呈现出明确的
+``社区结构 vs 局部传递性''折中规律，
+而本文取统一默认值 $0.10$ 在不同拓扑特性的图上未必都是最优折中点。
+未来可基于图的可公开估计特征
+（如节点数、加噪后的平均度、加噪后的社区数与社区规模分布等）
+建立 \texttt{inter\_ratio} 的经验选取规则或回归模型，
+使方法在不同规模、不同拓扑特性的图上
+均能自动取得接近最优的折中点；
+进一步地，还可探索面向不同评测指标偏好的多目标超参选取策略，
+使用户能够根据实际任务需求
+灵活权衡社区结构与局部传递性两类目标。
+
+\par \textbf{（3）三阶段隐私预算的联合最优分配。}
+本文与 PrivGraph 一致，
+将整体隐私预算 $\varepsilon$ 平均分配给
+社区初始化、社区调整和信息抽取三个阶段。
+然而对 Enron 数据集的初步实验表明，
+适度偏重信息抽取阶段的预算分配可在保持社区结构指标既有优势的同时
+抑制聚类系数指标上的副作用。
+未来可对三阶段隐私预算的分配比例进行系统研究，
+建立从图特征到最优分配的映射关系，
+特别是针对具有显著 hub 结构、高聚类特性的网络
+设计自适应预算分配机制。
+该研究可与上一条方向结合，
+形成``超参 + 预算''联合自适应的优化框架。
+
+\par \textbf{（4）向更严格的隐私模型与更复杂的图形态推广。}
+本文工作仅在中心化的边差分隐私模型下展开讨论。
+将本文的核心思路——基于噪声中间结果的度加权采样与边预算补偿——
+推广至本地差分隐私（LDP）、节点差分隐私等更严格的隐私模型，
+或扩展到带属性图、动态图、异构图等更复杂的图形态，
+是值得进一步探索的方向。
+特别是在 LDP 模型下，由于每个用户仅能观测自身视图，
+如何在分布式约束下复现本文方法的两项核心机制
+将是后续研究的重要课题。
 
 % \subsection{探索性尝试与失败分析}
 % \label{subsec:exploratory}
@@ -927,7 +1080,7 @@ $0.05$ 在 NMI 与 Modularity Relative 上更具竞争力，
 % 一致地显著劣于多个其他取值，说明``少量''边交换反而会引入度扰动而无明显收益；
 % 扫描范围内未能找到全指标一致占优的设置。
 
-% \begin{figure}[ht]
+% \begin{figure}[!t]
 %     \centering
 %     \includegraphics[width=\linewidth]{hp_swapratio.pdf}
 %     \caption{\label{fig:hp-swap}\texttt{swap\_ratio} 在 $\varepsilon = 2.0$ 下的敏感性扫描}
