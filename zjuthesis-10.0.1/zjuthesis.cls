@@ -30,6 +30,7 @@
 \DeclareStringOption[false]{BlindReview}
 \DeclareStringOption[false]{PrintFilePath}
 \DeclareStringOption[true]{TwoSide}
+\DeclareBoolOption[false]{TrueBlankPage}
 \DeclareBoolOption[true]{ListOfContents}
 \DeclareBoolOption[true]{ListOfFigures}
 \DeclareBoolOption[true]{ListOfTables}
