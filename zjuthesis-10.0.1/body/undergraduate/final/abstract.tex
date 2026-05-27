@@ -3,7 +3,19 @@
     \bfseries \zihao{3} 摘~要
 \end{center}
 
-图数据广泛存在于社交网络、协作网络等真实场景中，其连接关系往往蕴含用户隐私，直接发布存在泄露风险。差分隐私为图数据安全发布提供了严格的数学保证，其中 PrivGraph 通过``社区划分—信息抽取—图重建''三阶段框架在边差分隐私下取得了较好的隐私与可用性平衡，是该方向的代表性方法。然而其图重建阶段对跨社区边采用未利用噪声度序列的均匀随机采样，并按噪声边向量全量生成跨社区边，与已受噪声扰动的社区划分形成误差叠加，使合成图在社区结构相关指标上存在系统性偏差。针对该问题，本文提出一种面向跨社区边处理的图重建优化方法：将均匀采样改为基于噪声度序列的度加权采样，按比例主动缩减跨社区边规模以削弱双层误差叠加；同时在 Chung-Lu 采样之前对噪声度序列进行等比例放大，用社区内多生成的边补偿因跨社区缩减损失的总边数，保持度分布形状不变。该方法仅访问已发布的噪声中间结果，符合差分隐私的后处理性质，不消耗额外隐私预算，整体算法严格满足 $\varepsilon$-边差分隐私。在 Chameleon、Facebook、CA-HepPh 等公开数据集上的实验表明，本文方法在 NMI、模块度相对误差、度分布 KL 散度等核心指标上相对原始 PrivGraph 取得稳定改善，并在低隐私预算下改善尤为显著。
+图数据广泛存在于社交网络、协作网络等真实场景中，其连接关系往往蕴含用户隐私，
+直接发布存在泄露风险。差分隐私为图数据安全发布提供了严格的数学保证，
+其中 PrivGraph 通过``社区划分—信息抽取—图重建''三阶段框架在边差分隐私下
+取得了较好的隐私与可用性平衡，是该方向的代表性方法。然而其图重建阶段对跨社
+区边采用未利用噪声度序列的均匀随机采样，并按噪声边向量全量生成跨社区边，
+与已受噪声扰动的社区划分形成误差叠加，使合成图在社区结构相关指标上存在系统
+性偏差。针对该问题，本文提出一种面向跨社区边处理的图重建优化方法：将均匀采
+样改为基于噪声度序列的度加权采样，按比例主动缩减跨社区边规模以削弱双层误差
+叠加；同时在 Chung-Lu 采样之前对噪声度序列进行等比例放大，用社区内多生成
+的边补偿因跨社区缩减损失的总边数，保持度分布形状不变。该方法仅访问已发布的
+噪声中间结果，符合差分隐私的后处理性质，不消耗额外隐私预算，整体算法严格
+满足 $\varepsilon$-边差分隐私。在 Chameleon、Facebook、CA-HepPh、Enron四个公开
+数据集上的实验表明，本文方法在 NMI、模块度相对误差、度分布 KL 散度等核心指标上相对原始 PrivGraph 取得稳定改善，并在低隐私预算下改善尤为显著。
 
 \textbf{关键词：}差分隐私；图数据发布；图重建；社区结构；Chung-Lu 模型
 
@@ -12,6 +24,6 @@
     \bfseries \zihao{3} Abstract
 \end{center}
 
-\par Graph data is widely present in social and collaboration networks, where connectivity often encodes sensitive user information and direct release may cause privacy leakage. Differential privacy provides rigorous guarantees for safe graph publication, and PrivGraph, through its three-stage framework of community partition, information extraction, and graph reconstruction, achieves a reasonable privacy-utility trade-off under edge differential privacy and is a representative method in this direction. However, its reconstruction stage samples cross-community edges uniformly at random without exploiting the noisy degree sequence, and generates them in full as dictated by the noisy edge vector; the resulting error compounds with that of the already noisy community partition, causing systematic bias on community-structure metrics. Targeting this problem, this thesis proposes a graph reconstruction optimization focused on cross-community edges: uniform sampling is replaced by degree-weighted sampling on the noisy degree sequence, and the number of cross-community edges is actively scaled down to weaken the compound error; prior to Chung-Lu intra-community sampling, the noisy degree sequence is amplified proportionally so that the extra intra-community edges compensate for the total-edge loss, preserving the degree distribution shape. The method accesses only DP-released intermediate outputs, satisfies the post-processing property, consumes no additional privacy budget, and the overall algorithm strictly satisfies $\varepsilon$-edge differential privacy. Experiments on Chameleon, Facebook and CA-HepPh show stable improvements over PrivGraph on core metrics such as NMI, modularity relative error, and degree-distribution KL divergence, with particularly notable gains under low privacy budgets.
+\par Graph data is widely present in social and collaboration networks, where connectivity often encodes sensitive user information and direct release may cause privacy leakage. Differential privacy provides rigorous guarantees for safe graph publication, and PrivGraph, through its three-stage framework of community partition, information extraction, and graph reconstruction, achieves a reasonable privacy-utility trade-off under edge differential privacy and is a representative method in this direction. However, its reconstruction stage samples cross-community edges uniformly at random without exploiting the noisy degree sequence, and generates them in full as dictated by the noisy edge vector; the resulting error compounds with that of the already noisy community partition, causing systematic bias on community-structure metrics. Targeting this problem, this thesis proposes a graph reconstruction optimization focused on cross-community edges: uniform sampling is replaced by degree-weighted sampling on the noisy degree sequence, and the number of cross-community edges is actively scaled down to weaken the compound error; prior to Chung-Lu intra-community sampling, the noisy degree sequence is amplified proportionally so that the extra intra-community edges compensate for the total-edge loss, preserving the degree distribution shape. The method accesses only DP-released intermediate outputs, satisfies the post-processing property, consumes no additional privacy budget, and the overall algorithm strictly satisfies $\varepsilon$-edge differential privacy. Experiments on Chameleon, Facebook, CA-HepPh, and Enron show stable improvements over PrivGraph on core metrics such as NMI, modularity relative error, and degree-distribution KL divergence, with particularly notable gains under low privacy budgets.
 
 \textbf{Keywords:} Differential Privacy; Graph Data Publication; Graph Reconstruction; Community Structure; Chung-Lu Model
